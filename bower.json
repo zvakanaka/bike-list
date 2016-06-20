@@ -1,0 +1,24 @@
+{
+  "name": "bike-scrape",
+  "authors": [
+    "zvakanaka <quintonish@gmail.com>"
+  ],
+  "description": "Check Craigslist for new bikes",
+  "main": "/",
+  "keywords": [
+    "scrape"
+  ],
+  "license": "MIT",
+  "homepage": "howtoterminal.com",
+  "private": true,
+  "ignore": [
+    "**/.*",
+    "node_modules",
+    "bower_components",
+    "test",
+    "tests"
+  ],
+  "dependencies": {
+
+  }
+}
