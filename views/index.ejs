@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html>
+  <head>
+     <% include partials/head %>
+  </head>
+  <body>
+    <div class="container-fluid">
+    <h1><%= itemType %> <small>Scrape</small></h1>
+
+    <table class="table table-striped">
+      <thead>
+				<tr><th>Item</th><th>Price</th><th>Place</th><th>Link</th></tr>
+      </thead>
+      <tbody>
+            <% listingData.forEach(function(data) { %>
+              <% //var formattedDate = data.date.toString().substring(0, 10); %>
+                <tr>
+              <td><%= data.item %></td><td><%= data.price %></td><td><%= data.place %></td><td><a href='<%= data.url %>'><%= data.url %></a></td></tr>
+          <% }); %>
+          </ul>
+        </div>
+      </tbody>
+      </table>
+    </div>
+  </body>
+</html>
