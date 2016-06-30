@@ -15,9 +15,13 @@
   "license": "MIT",
   "dependencies": {
     "body-parser": "^1.15.1",
+    "cheerio": "^0.20.0",
     "ejs": "^2.4.2",
     "express": "^4.13.4",
-    "mongoose": ">=4.1.11"
+    "mongoose": ">=4.1.11",
+    "request": "^2.72.0",
+    "require": "^2.4.20",
+    "sync-request": "^3.0.1"
   },
   "changelog": [
     {
