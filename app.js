@@ -49,16 +49,30 @@ app.get('/', function(req, res) {
       });
 
   //todo: scrape for thumbs
-
-      scrapeThumbs(list).then(function(newList) {
+console.log('list ', list);
+      scrapeThumbs(list).then(function(thumbUrls) {
         //add prop to list
-        console.log('NEW LIST!!! ', newList);
+        console.log('NEW LIST!!! ', thumbUrls);
+        console.log('Attempting to combine ', list);
+        var i = 0;
+        var table = list.reduce((table, row) => {
+          table.push({
+            item: row.item,
+            price: row.price,
+            place: row.place,
+            url: row.url,
+            thumb: thumbUrls[i].thumb
+          });
+          i++;
 
-        console.log('RENDERING...');
+          return table;
+        }, []);
+
+        console.log('RENDERING...', table);
+
         res.render('index', {
           itemType: process.env.ITEM_TYPE || 'Item',
-          listingData: list,
-          imgData: newList
+          listingData: table
         });
       });
     });
@@ -80,7 +94,9 @@ var scrapeThumbs = function(urlArr) {
       var thumbnail = $('.swipe-wrap').find('div').children('img')[0].attribs.src;
 
       console.log('thumbnail ',thumbnail);
-      list.push(thumbnail);
+      var temp = [];
+      temp.thumb = thumbnail;
+      list.push(temp);
     });
     if (true) {
       resolve(list);
