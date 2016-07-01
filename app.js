@@ -21,13 +21,28 @@ app.use(bodyParser.urlencoded({ extended: true })); // support encoded bodies
 
 // The http server will listen to an appropriate port, or default to
 // port 5000.
-var PORTNO = process.env.PORT || 4000;
+var PORTNO = process.env.PORT || 5000;
 app.listen(PORTNO);
 console.log(PORTNO+' is the magic port');
 
 // index page
 app.get('/', function(req, res) {
-  //var arr = loadCsv('listing.csv');
+  fs.readFile('stuff.json', 'utf8', function (err,data) {
+    if (err) {
+      return console.log(err);
+    }
+    var table = JSON.parse(data);
+
+    console.log(table);
+
+    res.render('index', {
+      itemType: process.env.ITEM_TYPE || 'Item',
+      listingData: table
+    });
+  });
+});
+
+app.get('/item-thumb', function(req, res) {
   download('http://howtoterminal.com/listing.csv', 'listing.csv', function() {
     var arr = [];
     var filename = 'listing.csv'
@@ -52,8 +67,7 @@ app.get('/', function(req, res) {
         list.push(listItem);
       });
 
-  //todo: scrape for thumbs
-console.log('list ', list);
+      console.log('list ', list);
       scrapeThumbs(list).then(function(thumbUrls) {
         //add prop to list
         console.log('NEW LIST!!! ', thumbUrls);
@@ -74,14 +88,17 @@ console.log('list ', list);
 
         console.log('RENDERING...', table);
 
-        res.render('index', {
-          itemType: process.env.ITEM_TYPE || 'Item',
-          listingData: table
+        fs.writeFile("stuff.json", JSON.stringify(table), function(err) {
+            if(err) {
+                return console.log(err);
+            }
+            console.log("The file was saved!");
         });
       });
     });
   });
 });
+
 //return a list of thumb urls
 var scrapeThumbs = function(urlArr) {
 
