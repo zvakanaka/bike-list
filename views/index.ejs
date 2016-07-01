@@ -12,11 +12,11 @@
 				<tr><th>Item</th><th>Price</th><th>Place</th><th>Link</th><th>Image</th></tr>
       </thead>
       <tbody>
-            <% for(var i = 0; i<listingData.length; i++) { %>
+            <% listingData.forEach(function(data) { %>
               <% //var formattedDate = data.date.toString().substring(0, 10); %>
                 <tr>
-              <td><%= listingData[i].item %></td><td><%= listingData[i].price %></td><td><%= listingData[i].place %></td><td><a href='<%= listingData[i].url %>'><%= listingData[i].url %></a></td><td><img src='<%= imgData[i] %>'width="150px"> </td></tr>
-          <% } %>
+              <td><%= data.item %></td><td><%= data.price %></td><td><%= data.place %></td><td><a href='<%= data.url %>'><%= data.url %></a></td><td><img src='<%= data.thumb %>' width="100px"></td></tr>
+          <% }); %>
           </ul>
         </div>
       </tbody>
