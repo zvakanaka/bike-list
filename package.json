@@ -19,6 +19,7 @@
     "ejs": "^2.4.2",
     "express": "^4.13.4",
     "mongoose": ">=4.1.11",
+    "node-env-file": "^0.1.8",
     "request": "^2.72.0",
     "require": "^2.4.20",
     "sync-request": "^3.0.1"

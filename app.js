@@ -1,3 +1,4 @@
+var env = require('node-env-file');
 var express = require ('express');
 var app = express();
 var fs = require('fs');
@@ -6,6 +7,9 @@ var cheerio = require('cheerio');
 var http = require('http');
 app.set('view engine', 'ejs');
 var path = require('path');
+
+env(__dirname+'/.env');
+
 app.use(express.static(path.join(__dirname, 'public')));
 
 //app.use(express.static(__dirname + '/public'));
