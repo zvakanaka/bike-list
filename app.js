@@ -8,6 +8,8 @@ var http = require('http');
 app.set('view engine', 'ejs');
 var path = require('path');
 
+var middleware = require('./middleware.js');
+
 env(__dirname+'/.env');
 
 app.use(express.static(path.join(__dirname, 'public')));
@@ -24,6 +26,8 @@ app.use(bodyParser.urlencoded({ extended: true })); // support encoded bodies
 var PORTNO = process.env.PORT || 5000;
 app.listen(PORTNO);
 console.log(PORTNO+' is the magic port');
+
+app.use(middleware);
 
 // index page
 app.get('/', function(req, res) {
@@ -42,7 +46,7 @@ app.get('/', function(req, res) {
   });
 });
 
-app.get('/item-thumb', function(req, res) {
+app.get('/thumbs', function(req, res) {
   download('http://howtoterminal.com/listing.csv', 'listing.csv', function() {
     var arr = [];
     var filename = 'listing.csv'
@@ -92,8 +96,10 @@ app.get('/item-thumb', function(req, res) {
             if(err) {
                 return console.log(err);
             }
-            console.log("The file was saved!");
+            console.log("The file was saved and is now being sent...");
         });
+        res.setHeader('Content-Type', 'application/json');
+        res.send(JSON.stringify({ table: table }, null, 2));
       });
     });
   });
@@ -103,26 +109,31 @@ app.get('/item-thumb', function(req, res) {
 var scrapeThumbs = function(urlArr) {
 
   var promise = new Promise(function(resolve, reject) {
+    var thumbNotFound = [{thumb: '/images/not-found.png'}];
     var list = [];
     urlArr.forEach(url => {
-      console.log('MAKING REQUEST ', url.url);
+      if (url.url.startsWith('http://') && !url.url.includes('//', 6)) {
+        console.log('MAKING REQUEST ', url.url);
+        var res = request('GET', url.url);
+        console.log('DONE...');
 
-      var res = request('GET', url.url);
-      console.log('DONE...');
+        var $ = cheerio.load(res.getBody());
+        var thumbnail = $('.swipe-wrap').find('div').children('img')[0].attribs.src;
 
-      var $ = cheerio.load(res.getBody());
-      //var thumbnail = $('.swipe-wrap').find('div').children('img')[0].src;
-      var thumbnail = $('.swipe-wrap').find('div').children('img')[0].attribs.src;
-
-      console.log('thumbnail ',thumbnail);
-      var temp = [];
-      temp.thumb = thumbnail;
+        console.log('thumbnail ',thumbnail);
+        var temp = [];
+        temp.thumb = thumbnail;
+      } else {
+        console.log('NOT REALLY A URL ', url);
+        temp = thumbNotFound;
+      }
       list.push(temp);
     });
     if (true) {
+      console.log('RESOLVING');
       resolve(list);
     } else
-        reject(Error("Broked shoot dangit"))
+      reject(Error("Broked shoot dangit"))
     });
     return promise;
 };
