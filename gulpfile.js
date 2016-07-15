@@ -6,7 +6,13 @@ var gulp = require('gulp'),
     pump = require('pump'),
     del = require('del'),
     runSequence = require('run-sequence'),
+    env = require('node-env-file'),
+    screenshot = require('url-to-screenshot'),
+    fs = require('fs'),
     imagemin = require('gulp-imagemin');
+
+env(__dirname+'/.env');
+var PORTNO = process.env.PORT || 5000;
 
 gulp.task('default', function() {
   console.log('In Default');
@@ -51,7 +57,23 @@ gulp.task('lint', function () {
     .pipe(jshint());
 });
 
+gulp.task('screenshot', function () {
+  screenshot('http://localhost:' + PORTNO)
+  .width(900)
+  .height(600)
+  .clip()
+  .format('jpg')
+  .capture(function(err, img) {
+    if (err) throw err;
+    fs.writeFileSync(__dirname + '/screenshot/screenshot.jpg', img);
+    console.log('open /screenshot/screenshot.jpg');
+  });
+});
 
+gulp.task('start-no-watch', function () {
+  var spawn = require('child_process').spawn;
+  var startNode = spawn('node', ['app.js']);
+});
 
 gulp.task('start', function () {
   nodemon({
