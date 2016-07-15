@@ -16,7 +16,7 @@ var PORTNO = process.env.PORT || 5000;
 
 gulp.task('default', function() {
   console.log('In Default');
-  runSequence('clean', ['img', 'uglify', 'lint', 'minify-css', 'start']);
+  runSequence('clean', ['copy-vendors', 'copy-configs', 'img', 'uglify', 'lint', 'minify-css', 'start']);
 });
 
 gulp.task('clean', function() {
@@ -41,6 +41,19 @@ gulp.task('uglify', function (cb) {
     ],
     cb
   );
+});
+
+gulp.task('copy-vendors', function() {
+   gulp.src('./assets/vendors/js/**/*.min.js')
+   .pipe(gulp.dest('./dist/vendors/js'));
+
+   gulp.src('./assets/vendors/css/**/*.min.css')
+   .pipe(gulp.dest('./dist/vendors/css'));
+});
+
+gulp.task('copy-configs', function() {
+   gulp.src('./assets/manifest.json')
+   .pipe(gulp.dest('./dist/vendors/manifest.json'));
 });
 
 gulp.task('minify-css', function() {
@@ -80,6 +93,13 @@ gulp.task('start', function () {
     script: 'app.js',
     tasks: ['uglify', 'minify-css'],
     ext: 'js css',
+    ignore: [
+      'dist/',
+      'node_modules/',
+      'bower_components/',
+      '.git/',
+      'screenshot/'
+    ],
     env: { 'NODE_ENV': 'dev' }
   })
   .on('restart', function () {
