@@ -1,22 +1,20 @@
 {
-  "name": "hello-mongoose",
-  "version": "0.3.0",
-  "description": "MongoDB with Mongoose on Node.js example",
+  "name": "bike-list",
+  "version": "0.0.0",
+  "description": "Node.js Express app to display a list of the items scraped from bike-scrape",
   "main": "app.js",
   "engines": {
     "node": ">=4.1.1",
     "npm": ">=2.1.x"
   },
-  "repository": "https://github.com/mongolab/hello-mongoose.git",
+  "repository": "https://github.com/zvakanaka/bike-list.git",
   "authors": [
-    "Ben Wen",
-    "Chris Chang"
+    "Adam Quinton"
   ],
   "license": "MIT",
   "dependencies": {
     "body-parser": "^1.15.1",
     "cheerio": "^0.20.0",
-    "dateformat": "^1.0.12",
     "ejs": "^2.4.2",
     "express": "^4.13.4",
     "mongoose": ">=4.1.11",
@@ -30,19 +28,12 @@
       "0.0.0": "Initial release"
     },
     {
-      "0.1.0": "Update to Mongoose 3.5.7; new MongoClient semantics"
-    },
-    {
-      "0.2.0": "Update to Mongoose 3.8.15; updated Node engine to 0.10.31; updated npm engine to >=1.4"
-    },
-    {
-      "0.3.0": "Update to Mongoose >=4.1.11; updated Node engine to >=4.1.1; updated npm engine to >=2.1.x"
+      "0.1.0": "Put next release here"
     }
   ],
-  "homepage": "http://hello-mongoose.herokuapp.com",
+  "homepage": "http://howtoterminal.com/bike-list",
   "devDependencies": {
     "del": "^2.2.1",
-    "express-livereload": "0.0.24",
     "gulp": "^3.9.1",
     "gulp-clean-css": "^2.0.11",
     "gulp-cli": "gulpjs/gulp-cli#4.0",
@@ -52,6 +43,5 @@
     "jshint": "^2.9.2",
     "pump": "^1.0.1",
     "run-sequence": "^1.2.2",
-    "uglify": "^0.1.5"
   }
 }
