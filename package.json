@@ -34,6 +34,7 @@
   "homepage": "http://howtoterminal.com/bike-list",
   "devDependencies": {
     "del": "^2.2.1",
+    "fs": "0.0.2",
     "gulp": "^3.9.1",
     "gulp-clean-css": "^2.0.11",
     "gulp-cli": "gulpjs/gulp-cli#4.0",
@@ -43,5 +44,6 @@
     "jshint": "^2.9.2",
     "pump": "^1.0.1",
     "run-sequence": "^1.2.2",
+    "url-to-screenshot": "^0.6.1"
   }
 }
