@@ -1,0 +1,19 @@
+.navbar-inverse {
+  background-color: #0c2e28;
+}
+.navbar-inverse a img {
+  height: inherit;
+  -webkit-filter: contrast(106%);
+  filter: contrast(106%);
+  -webkit-filter: hue-rotate(-38deg);
+  filter: hue-rotate(-38deg);
+}
+.navbar-brand {
+  overflow: overlay;
+  padding-top: 0px;
+}
+@media (min-width: 768px) {}
+  .navbar-right {
+    margin-right: 15px;
+  }
+}

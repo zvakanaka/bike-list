@@ -7,14 +7,11 @@ var cheerio = require('cheerio');
 var http = require('http');
 app.set('view engine', 'ejs');
 var path = require('path');
-
-var middleware = require('./middleware.js');
+var middleware = require('./dist/js/middleware/middleware.js');
 
 env(__dirname+'/.env');
 
-app.use(express.static(path.join(__dirname, 'public')));
-
-//app.use(express.static(__dirname + '/public'));
+app.use(express.static(path.join(__dirname, 'dist')));
 app.use('/bower_components', express.static(__dirname + '/bower_components'));
 
 var bodyParser = require('body-parser');
@@ -24,6 +21,7 @@ app.use(bodyParser.urlencoded({ extended: true })); // support encoded bodies
 // The http server will listen to an appropriate port, or default to
 // port 5000.
 var PORTNO = process.env.PORT || 5000;
+
 app.listen(PORTNO);
 console.log(PORTNO+' is the magic port');
 
@@ -37,7 +35,7 @@ app.get('/', function(req, res) {
     }
     var table = JSON.parse(data);
 
-    console.log(table);
+    //console.log(table);
 
     res.render('index', {
       itemType: process.env.ITEM_TYPE || 'Item',
@@ -57,7 +55,7 @@ app.get('/thumbs', function(req, res) {
       arr = data.split('\n')
       arr.pop();
 
-      console.log(arr);
+      //console.log(arr);
 
       var list = [];
       arr.forEach(function (line) {
@@ -74,8 +72,8 @@ app.get('/thumbs', function(req, res) {
       console.log('list ', list);
       scrapeThumbs(list).then(function(thumbUrls) {
         //add prop to list
-        console.log('NEW LIST!!! ', thumbUrls);
-        console.log('Attempting to combine ', list);
+        //console.log('NEW LIST!!! ', thumbUrls);
+        //console.log('Attempting to combine ', list);
         var i = 0;
         var table = list.reduce((table, row) => {
           table.push({
@@ -120,7 +118,7 @@ var scrapeThumbs = function(urlArr) {
         var $ = cheerio.load(res.getBody());
         var thumbnail = $('.swipe-wrap').find('div').children('img')[0].attribs.src;
 
-        console.log('thumbnail ',thumbnail);
+        //console.log('thumbnail ',thumbnail);
         var temp = [];
         temp.thumb = thumbnail;
       } else {
