@@ -4,9 +4,8 @@
      <% include partials/head %>
   </head>
   <body>
-    <div class="container-fluid">
       <nav class="navbar navbar-inverse">
-        <a class="navbar-brand" href="#">
+        <a class="navbar-brand custom-header-logo" href="#">
           <img alt="Brand" src="images/howtoterm.gif">
         </a>
         <ul class="nav navbar-nav">
@@ -16,20 +15,34 @@
         <p class="navbar-text navbar-right">Signed in as <a href="#" class="navbar-link">Mark Otto</a></p>
       </nav>
 
-    <table class="table table-striped">
-      <thead>
-				<tr><th>Item</th><th>Price</th><th>Place</th><th>Link</th><th>Image</th></tr>
-      </thead>
-      <tbody>
-            <% listingData.forEach(function(data) { %>
-              <% //var formattedDate = data.date.toString().substring(0, 10); %>
-                <tr>
-              <td><%= data.item %></td><td><%= data.price %></td><td><%= data.place %></td><td><a href='<%= data.url %>'><%= data.url %></a></td><td><img src='<%= data.thumb %>' width="100px"></td></tr>
-          <% }); %>
-          </ul>
-        </div>
-      </tbody>
-      </table>
+    <div class="container-fluid">
+
+      <% var i = -1; %>
+      <% var itemsPerRow = 4; %>
+      <% listingData.forEach(function(data) { %>
+        <% i++; %>
+        <% if (i%itemsPerRow == 0) { %>
+            <div class="row">
+        <% } %>
+              <div class="craigs-box col-md-<%= 12/itemsPerRow %>">
+                <img src="<%= data.thumb %>" alt="<%= data.item %>" onError="this.onerror=null;this.src='images/not-found.png';">
+                <div class="caption">
+                  <h4><%= data.item %></h4>
+                  <p><%= data.price %></p>
+                  <p><a href="<%= data.url %>" class="btn btn-primary" role="button">Craigslist</a> <a href="<%= data.thumb %>" class="btn btn-default" role="button">Image</a></p>
+                </div>
+              </div>
+        <% if (i%itemsPerRow == itemsPerRow-1) { %>
+          </div>
+        <% } %>
+      <% }); %>
+
     </div>
+
+    <footer class="footer">
+      <a class="navbar-brand navbar-right" href="https://github.com/zvakanaka">
+        <img class="custom-footer-logo" alt="Github Logo" src="images/github.gif">
+      </a>
+    </footer>
   </body>
 </html>
