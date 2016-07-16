@@ -17,11 +17,23 @@
     "cheerio": "^0.20.0",
     "ejs": "^2.4.2",
     "express": "^4.13.4",
-    "mongoose": ">=4.1.11",
-    "node-env-file": "^0.1.8",
-    "request": "^2.72.0",
     "require": "^2.4.20",
     "sync-request": "^3.0.1"
+  },
+  "devDependencies": {
+    "del": "^2.2.1",
+    "fs": "0.0.2",
+    "gulp": "^3.9.1",
+    "gulp-clean-css": "^2.0.11",
+    "gulp-cli": "gulpjs/gulp-cli",
+    "gulp-imagemin": "^3.0.1",
+    "gulp-jshint": "^2.0.1",
+    "gulp-nodemon": "^2.1.0",
+    "gulp-uglify": "^1.5.4",
+    "jshint": "^2.9.2",
+    "pump": "^1.0.1",
+    "run-sequence": "^1.2.2",
+    "url-to-screenshot": "^0.6.1"
   },
   "changelog": [
     {
@@ -31,19 +43,5 @@
       "0.1.0": "Put next release here"
     }
   ],
-  "homepage": "http://howtoterminal.com/bike-list",
-  "devDependencies": {
-    "del": "^2.2.1",
-    "fs": "0.0.2",
-    "gulp": "^3.9.1",
-    "gulp-clean-css": "^2.0.11",
-    "gulp-cli": "gulpjs/gulp-cli#4.0",
-    "gulp-jshint": "^2.0.1",
-    "gulp-nodemon": "^2.1.0",
-    "gulp-uglify": "^1.5.4",
-    "jshint": "^2.9.2",
-    "pump": "^1.0.1",
-    "run-sequence": "^1.2.2",
-    "url-to-screenshot": "^0.6.1"
-  }
+  "homepage": "http://howtoterminal.com/bike-list"
 }
