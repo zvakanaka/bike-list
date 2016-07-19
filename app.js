@@ -113,12 +113,18 @@ var scrapeThumbs = function(urlArr) {
       if (url.url.startsWith('http://') && !url.url.includes('//', 6)) {
         console.log('MAKING REQUEST ', url.url);
         var res = request('GET', url.url);
-        console.log('DONE...');
+        console.log('Getting '+url.url+' ...');
 
         var $ = cheerio.load(res.getBody());
-        var thumbnail = $('.swipe-wrap').find('div').children('img')[0].attribs.src;
+        var thumbnail;
 
-        //console.log('thumbnail ',thumbnail);
+        if ($('.swipe-wrap').find('div').children('img').length != 0) {
+          thumbnail = $('.swipe-wrap').find('div').children('img')[0].attribs.src;
+        } else {
+          thumbnail = 'images/not-found.png';
+        }
+
+        console.log('thumbnail ',thumbnail);
         var temp = [];
         temp.thumb = thumbnail;
       } else {
