@@ -17,6 +17,14 @@ filter-contrast()
   filter-contrast: 106%
   filter-hue-rotate: -38deg
 
+@media screen and (max-width: 580px)
+  logo-cut-size = 298px
+  .navbar-inverse a img
+    -webkit-clip-path: inset(0px 0px 0px logo-cut-size);
+    transform: translateX(-298px);
+  .custom-header-logo
+    width: 80px;
+
 .custom-header-logo
   overflow: hidden
   padding-top: 0px
