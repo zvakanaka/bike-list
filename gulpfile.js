@@ -1,48 +1,53 @@
 var gulp = require('gulp'),
-    nodemon = require('gulp-nodemon'),
-    jshint = require('gulp-jshint'),
-    uglify = require('gulp-uglify'),
-    cleanCSS = require('gulp-clean-css'),
-    pump = require('pump'),
-    del = require('del'),
-    runSequence = require('run-sequence'),
-    env = require('node-env-file'),
-    screenshot = require('url-to-screenshot'),
-    fs = require('fs'),
+    babel = require('gulp-babel'),
     browserSync = require('browser-sync'),
+    cleanCSS = require('gulp-clean-css'),
+    del = require('del'),
+    env = require('node-env-file'),
+    fs = require('fs'),
+    imagemin = require('gulp-imagemin'),
+    jshint = require('gulp-jshint'),
+    nodemon = require('gulp-nodemon'),
+    pump = require('pump'),
+    runSequence = require('run-sequence'),
+    screenshot = require('url-to-screenshot'),
     stylus = require('gulp-stylus'),
-    imagemin = require('gulp-imagemin');
+    uglify = require('gulp-uglify');
 
 env(__dirname+'/.env');
 var PORTNO = process.env.PORT || 5000;
-
+var SCREENSHOT_FILE = process.env.SCREENSHOT_FILE || '/screenshot/screenshot.jpg';
 var BROWSER_SYNC_RELOAD_DELAY = 500;
 
-gulp.task('default', ['browser-sync'], function () {
-  gulp.watch("views/**/*.ejs").on('change', browserSync.reload);
-  gulp.watch('assets/js/**/*.js',   ['js', browserSync.reload]);
-  gulp.watch('assets/styles/**/*.styl',  ['css']);
-  //gulp.watch('views/**/*.ejs', ['bs-reload']);
+gulp.task('default', function() {
+  console.log('In Default');
+  runSequence(
+    'clean',
+   ['copy-vendors', 'copy-configs', 'img', 'js', 'lint', 'css', 'transpile'],
+   'browser-sync',
+   'watch-it');
 });
 
-gulp.task('browser-sync', ['nodemon'], function () {
+gulp.task('watch-it', function() {
+  gulp.watch("views/**/*.ejs").on('change', browserSync.reload);
+  gulp.watch('assets/js/**/*.js', ['js', browserSync.reload]);
+  gulp.watch('assets/styles/**/*.styl', ['css']);
+  gulp.watch('app.es6', ['transpile']);
+});
+
+gulp.task('browser-sync', ['nodemon'], function() {
   // for more browser-sync config options: http://www.browsersync.io/docs/options/
   browserSync({
-    // informs browser-sync to proxy our expressjs app which would run at the following location
-    proxy: 'http://localhost:4000',
-    // informs browser-sync to use the following port for the proxied app
-    // notice that the default port is 3000, which would clash with our expressjs
-    // files: ["views/**/*.*"],
-    // open the proxied app in chrome
+    proxy: 'http://localhost:' + PORTNO,
     browser: 'google-chrome'
   });
 });
 
-gulp.task('bs-reload', function () {
+gulp.task('bs-reload', function() {
   browserSync.reload();
 });
 
-gulp.task('nodemon', function (cb) {
+gulp.task('nodemon', function(cb) {
   var called = false;
   return nodemon({
     script: 'app.js',
@@ -77,11 +82,6 @@ gulp.task('css', function() {
     .pipe(gulp.dest('dist/styles'));
 });
 
-// gulp.task('default', function() {
-//   console.log('In Default');
-//   runSequence('clean', ['copy-vendors', 'copy-configs', 'img', 'uglify', 'lint', 'minify-css', 'start']);
-// });
-
 gulp.task('clean', function() {
   console.log('In Clean');
   return del(['dist']);
@@ -94,7 +94,7 @@ gulp.task('img', function() {
     .pipe(gulp.dest('dist/images'));
 });
 
-gulp.task('js', function (cb) {
+gulp.task('js', function(cb) {
   console.log('In js');
   //uglify and copy
   pump([
@@ -119,14 +119,24 @@ gulp.task('copy-configs', function() {
    .pipe(gulp.dest('./dist/vendors/manifest.json'));
 });
 
-gulp.task('lint', function () {
+gulp.task('lint', function() {
   console.log('In lint');
 
   gulp.src('./**/*.js')
     .pipe(jshint());
 });
 
-gulp.task('screenshot', function () {
+// babelize es6 in assets
+gulp.task('transpile', function() {
+  return gulp.src('assets/js/**/*.es6')
+    .pipe(babel({
+      presets: ['es2015']
+    }))
+    .pipe(gulp.dest('dist/js'));
+});
+
+// call via 'gulp screenshot'. App must be running
+gulp.task('screenshot', function() {
   screenshot('http://localhost:' + PORTNO)
   .width(900)
   .height(600)
@@ -134,42 +144,7 @@ gulp.task('screenshot', function () {
   .format('jpg')
   .capture(function(err, img) {
     if (err) throw err;
-    fs.writeFileSync(__dirname + '/screenshot/screenshot.jpg', img);
-    console.log('open /screenshot/screenshot.jpg');
+    fs.writeFileSync(__dirname + SCREENSHOT_FILE, img);
+    console.log('open ' + SCREENSHOT_FILE);
   });
-});
-
-gulp.task('start-no-watch', function () {
-  var spawn = require('child_process').spawn;
-  var startNode = spawn('node', ['app.js']);
-});
-
-gulp.task('start', function () {
-  nodemon({
-    script: 'app.js',
-    tasks: ['uglify', 'minify-css'],
-    ext: 'js css',
-    ignore: [
-      'dist/',
-      'node_modules/',
-      'bower_components/',
-      '.git/',
-      'screenshot/'
-    ],
-    env: { 'NODE_ENV': 'dev' }
-  })
-  .on('restart', function () {
-    console.log('Restarted')
-  });
-});
-
-// watch files for changes and reload
-gulp.task('serve', function() {
-  browserSync({
-    server: {
-      baseDir: ''
-    }
-  });
-
-  gulp.watch(['views/**/*.ejs', 'dist/styles/**/*.css', 'dist/js/**/*.js'], {cwd: ''}, reload);
 });
