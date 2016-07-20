@@ -1,0 +1,12 @@
+{
+  "directory": "components",
+  "color": true,
+  "timeout": 60000,
+  "save": true,
+  "save-exact": true,
+  "scripts": {
+    "preinstall": "",
+    "postinstall": "",
+    "preuninstall": ""
+  }
+}
