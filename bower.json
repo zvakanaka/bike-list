@@ -1,5 +1,5 @@
 {
-  "name": "bike-scrape",
+  "name": "bike-list",
   "authors": [
     "zvakanaka <quintonish@gmail.com>"
   ],
@@ -19,6 +19,6 @@
     "tests"
   ],
   "dependencies": {
-
+    "bootstrap": "3.3.6"
   }
 }

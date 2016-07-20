@@ -12,7 +12,7 @@ var middleware = require('./dist/js/middleware/middleware.js');
 env(__dirname+'/.env');
 
 app.use(express.static(path.join(__dirname, 'dist')));
-app.use('/bower_components', express.static(__dirname + '/bower_components'));
+app.use('/components', express.static(__dirname + '/components'));
 
 var bodyParser = require('body-parser');
 app.use(bodyParser.json()); // support json encoded bodies

@@ -23,7 +23,7 @@ gulp.task('default', function() {
   console.log('In Default');
   runSequence(
     'clean',
-   ['copy-vendors', 'copy-configs', 'img', 'js', 'lint', 'css', 'transpile'],
+   ['copy-configs', 'img', 'js', 'lint', 'css', 'transpile'],
    'browser-sync',
    'watch-it');
 });
@@ -104,14 +104,6 @@ gulp.task('js', function(cb) {
     ],
     cb
   );
-});
-
-gulp.task('copy-vendors', function() {
-   gulp.src('./assets/vendors/js/**/*.min.js')
-   .pipe(gulp.dest('./dist/vendors/js'));
-
-   gulp.src('./assets/vendors/css/**/*.min.css')
-   .pipe(gulp.dest('./dist/vendors/css'));
 });
 
 gulp.task('copy-configs', function() {
