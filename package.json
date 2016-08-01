@@ -41,6 +41,9 @@
     "stylus": "^0.54.5",
     "url-to-screenshot": "^0.6.1"
   },
+  "scripts": {
+    "start": "node app.js"
+  },
   "changelog": [
     {
       "0.0.0": "Initial release"
