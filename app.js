@@ -1,5 +1,6 @@
 var env = require('node-env-file');
 var express = require ('express');
+var debug = require('debug')('http');
 var app = express();
 var fs = require('fs');
 var request = require('sync-request');
@@ -29,6 +30,7 @@ app.use(middleware);
 
 // index page
 app.get('/', function(req, res) {
+  debug('GET /');
   fs.readFile('stuff.json', 'utf8', function (err,data) {
     if (err) {
       return console.log(err);
@@ -45,6 +47,7 @@ app.get('/', function(req, res) {
 });
 
 app.get('/thumbs', function(req, res) {
+  debug('GET /thumbs');
   download('http://howtoterminal.com/listing.csv', 'listing.csv', function() {
     var arr = [];
     var filename = 'listing.csv'
