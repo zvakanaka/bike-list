@@ -31,129 +31,80 @@ app.use(middleware);
 // index page
 app.get('/', function(req, res) {
   debug('GET /');
-  fs.readFile('stuff.json', 'utf8', function (err,data) {
-    if (err) {
-      return console.log(err);
-    }
-    var table = JSON.parse(data);
 
-    //console.log(table);
-
+  var siteUrl = 'https://www.ksl.com/';
+  scrapeKsl('bike',
+            { zip: 84606,
+              minPrice: 30,
+              maxPrice: 200,
+              resultsPerPage: 50,
+              sortType: 5 }
+            )
+  .then(function (listings) {
+    console.log(listings);
     res.render('index', {
       itemType: process.env.ITEM_TYPE || 'Item',
-      listingData: table
+      siteUrl: siteUrl,
+      listingData: listings
     });
   });
 });
 
-app.get('/thumbs', function(req, res) {
-  debug('GET /thumbs');
-  download('http://howtoterminal.com/listing.csv', 'listing.csv', function() {
-    var arr = [];
-    var filename = 'listing.csv'
-    fs.readFile(filename, 'utf8', function (err,data) {
-      if (err) {
-        return console.log(err);
-      }
-      arr = data.split('\n')
-      arr.pop();
-
-      //console.log(arr);
-
-      var list = [];
-      arr.forEach(function (line) {
-        var listItem = [];
-        var temp = line.split(',');
-        listItem.item = temp[0];
-        listItem.price = temp[1];
-        listItem.place = temp[2];
-        listItem.url = temp[3];
-        //TODO: add date
-        list.push(listItem);
-      });
-
-      console.log('list ', list);
-      scrapeThumbs(list).then(function(thumbUrls) {
-        //add prop to list
-        //console.log('NEW LIST!!! ', thumbUrls);
-        //console.log('Attempting to combine ', list);
-        var i = 0;
-        var table = list.reduce((table, row) => {
-          table.push({
-            item: row.item,
-            price: row.price,
-            place: row.place,
-            url: row.url,
-            thumb: thumbUrls[i].thumb
-          });
-          i++;
-
-          return table;
-        }, []);
-
-        console.log('RENDERING...', table);
-
-        fs.writeFile("stuff.json", JSON.stringify(table), function(err) {
-            if(err) {
-                return console.log(err);
-            }
-            console.log("The file was saved and is now being sent...");
-        });
-        res.setHeader('Content-Type', 'application/json');
-        res.send(JSON.stringify({ table: table }, null, 2));
-      });
-    });
-  });
-});
-
-//return a list of thumb urls
-var scrapeThumbs = function(urlArr) {
-
+var scrapeKsl = function (searchTerm, options) {
+  console.log('SCRAPING KSL...');
   var promise = new Promise(function(resolve, reject) {
-    var thumbNotFound = [{thumb: '/images/not-found.png'}];
-    var list = [];
-    urlArr.forEach(url => {
-      if (url.url.startsWith('http://') && !url.url.includes('//', 6)) {
-        console.log('MAKING REQUEST ', url.url);
-        var res = request('GET', url.url);
-        console.log('Getting '+url.url+' ...');
+    var siteUrl = 'http://www.ksl.com/',
+        zip = options.zip || 84606,
+        minPrice = options.minPrice || 30,
+        maxPrice = options.maxPrice || 200,
+        resultsPerPage = options.resultsPerPage || 50,
+        sortType = options.sortType || 5;
 
-        var $ = cheerio.load(res.getBody());
-        var thumbnail;
+    var url = siteUrl + '?nid=231&sid=74268&cat='
+                    + '&search=' + searchTerm
+                    + '&zip=' + zip
+                    + '&distance=&min_price=' + minPrice
+                    + '&max_price=' + maxPrice
+                    + '&type=&category=&subcat=&sold=&city=&addisplay=&userid=&markettype=sale&adsstate=&nocache=1&o_facetSelected=&o_facetKey=&o_facetVal=&viewSelect=list&viewNumResults='
+                    + resultsPerPage
+                    +'&sort=' + sortType;
+                    console.log('HEY');
 
-        if ($('.swipe-wrap').find('div').children('img').length != 0) {
-          thumbnail = $('.swipe-wrap').find('div').children('img')[0].attribs.src;
+    var response = request('GET', url);
+    console.log('Getting '+url+' ...');
+    var $ = cheerio.load(response.getBody());
+    var listings = [];
+
+    if ($('.listings .adBox').length != 0) {
+      $(".listings .adBox").each(function(index) {
+        console.log("**********************");
+        var img = $(this)['0'].children[0]['next'].children[0]['next'].children[0]['next']['data'];
+        if (img !== undefined) {
+          img = img.substring(img.indexOf("http://"), img.indexOf('?'));
         } else {
-          thumbnail = 'images/not-found.png';
+          img = 'images/not-found.png';
         }
+        console.log(img);
+        var title = $(this).find('.adTitle').text().trim()
+        console.log(title);
+        var itemUrl = siteUrl + $(this).find('.listlink')['0']['attribs']['href'];
+        console.log(url);
+        var price = $(this).find('.priceBox').text().trim();
+        price = price.substring(1, price.length-2);
+        console.log(price);
+        console.log("**********************");
 
-        console.log('thumbnail ',thumbnail);
-        var temp = [];
-        temp.thumb = thumbnail;
-      } else {
-        console.log('NOT REALLY A URL ', url);
-        temp = thumbNotFound;
-      }
-      list.push(temp);
-    });
-    if (true) {
-      console.log('RESOLVING');
-      resolve(list);
-    } else
-      reject(Error("Broked shoot dangit"))
-    });
-    return promise;
-};
-
-var download = function(url, dest, cb) {
-  var file = fs.createWriteStream(dest);
-  var request = http.get(url, function(response) {
-    response.pipe(file);
-    file.on('finish', function() {
-      file.close(cb);  // close() is async, call cb after close completes.
-    });
-  }).on('error', function(err) { // Handle errors
-    fs.unlink(dest); // Delete the file async. (But we don't check the result)
-    if (cb) cb(err.message);
+        // var img = $(this)[0].children[0].children[0].children[0].src;
+        // var title = $(this)[0].children[1].children[0].children[0].innerHTML;
+        // var url = $(this)[0].children[1].children[0].children[0].href;
+        // var unformattedPrice = $(this)[0].children[1].children[3].children[0].children[0].innerHTML;
+        // var price = unformattedPrice.split('<')[0].substr(1) || 0;
+        listings.push({img: img, title: title, itemUrl: itemUrl, price: price});
+      });
+      resolve(listings);
+    } else {
+      reject(Error('Error: no listings'));
+    }
   });
-};
+  return promise;
+}
