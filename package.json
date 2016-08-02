@@ -18,6 +18,7 @@
     "cheerio": "^0.20.0",
     "debug": "^2.2.0",
     "ejs": "^2.4.2",
+    "emailjs": "^1.0.5",
     "express": "^4.13.4",
     "require": "^2.4.20",
     "sync-request": "^3.0.1"

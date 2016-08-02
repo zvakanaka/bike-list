@@ -9,8 +9,16 @@ var http = require('http');
 app.set('view engine', 'ejs');
 var path = require('path');
 var middleware = require('./dist/js/middleware/middleware.js');
+var email 	= require("emailjs");
+
 
 env(__dirname+'/.env');
+var mailServer 	= email.server.connect({
+   user:    process.env.EMAIL_FROM || '',
+   password: process.env.EMAIL_PASSWORD || '',
+   host:    "smtp.gmail.com",
+   ssl:     true
+});
 
 app.use(express.static(path.join(__dirname, 'dist')));
 app.use('/components', express.static(__dirname + '/components'));
@@ -19,8 +27,6 @@ var bodyParser = require('body-parser');
 app.use(bodyParser.json()); // support json encoded bodies
 app.use(bodyParser.urlencoded({ extended: true })); // support encoded bodies
 
-// The http server will listen to an appropriate port, or default to
-// port 5000.
 var PORTNO = process.env.PORT || 5000;
 
 app.listen(PORTNO);
@@ -32,20 +38,26 @@ app.use(middleware);
 app.get('/', function(req, res) {
   debug('GET /');
 
-  var siteUrl = 'https://www.ksl.com/';
-  scrapeKsl('bike',
+  var siteUrl = 'https://www.ksl.com/auto/search/index';
+  scrapeKslCars('',
             { zip: 84606,
               minPrice: 30,
-              maxPrice: 200,
+              maxPrice: 2000,
               resultsPerPage: 50,
               sortType: 5 }
             )
   .then(function (listings) {
-    console.log(listings);
     res.render('index', {
       itemType: process.env.ITEM_TYPE || 'Item',
       siteUrl: siteUrl,
       listingData: listings
+    });
+  }).catch(function (listings) {
+    res.render('index', {
+      itemType: process.env.ITEM_TYPE || 'Item',
+      siteUrl: siteUrl,
+      listingData: [],
+      error: 'empty'
     });
   });
 });
@@ -65,10 +77,9 @@ var scrapeKsl = function (searchTerm, options) {
                     + '&zip=' + zip
                     + '&distance=&min_price=' + minPrice
                     + '&max_price=' + maxPrice
-                    + '&type=&category=&subcat=&sold=&city=&addisplay=&userid=&markettype=sale&adsstate=&nocache=1&o_facetSelected=&o_facetKey=&o_facetVal=&viewSelect=list&viewNumResults='
-                    + resultsPerPage
-                    +'&sort=' + sortType;
-                    console.log('HEY');
+                    + '&type=&category=&subcat=&sold=&city=&addisplay=&userid=&markettype=sale&adsstate=&nocache=1&o_facetSelected=&o_facetKey=&o_facetVal=&viewSelect=list'
+                    + '&viewNumResults=' + resultsPerPage
+                    + '&sort=' + sortType;
 
     var response = request('GET', url);
     console.log('Getting '+url+' ...');
@@ -93,12 +104,6 @@ var scrapeKsl = function (searchTerm, options) {
         price = price.substring(1, price.length-2);
         console.log(price);
         console.log("**********************");
-
-        // var img = $(this)[0].children[0].children[0].children[0].src;
-        // var title = $(this)[0].children[1].children[0].children[0].innerHTML;
-        // var url = $(this)[0].children[1].children[0].children[0].href;
-        // var unformattedPrice = $(this)[0].children[1].children[3].children[0].children[0].innerHTML;
-        // var price = unformattedPrice.split('<')[0].substr(1) || 0;
         listings.push({img: img, title: title, itemUrl: itemUrl, price: price});
       });
       resolve(listings);
@@ -107,4 +112,82 @@ var scrapeKsl = function (searchTerm, options) {
     }
   });
   return promise;
+}
+
+var scrapeKslCars = function (searchTerm, options) {
+  console.log('SCRAPING KSL AUTOS...');
+  var promise = new Promise(function(resolve, reject) {
+    var siteUrl = 'http://www.ksl.com/auto/search/index',
+        searchTerm = searchTerm || '',
+        zip = options.zip || 84606,
+        minPrice = options.minPrice || 1,
+        maxPrice = options.maxPrice || 2000;
+    var url = siteUrl + '?keyword=' + searchTerm
+                    + '&make%5B%5D=' + 'Honda'
+                    + '&yearFrom='+1995+'&yearTo='+2016
+                    + '&mileageFrom='+0+'&mileageTo='+200000
+                    + '&priceFrom=' + minPrice
+                    + '&priceTo=' + maxPrice
+                    + '&zip=' + zip
+                    + '&miles='+0
+                    +'&newUsed%5B%5D='+'Used'+'&newUsed%5B%5D='+'Certified'
+                    +'&page='+0
+                    +'&sellerType='+'For+Sale+By+Owner'
+                    +'&postedTime='+'7DAYS'
+                    +'&titleType='+'Clean+Title'
+                    +'&body=&transmission=&cylinders=&liters=&fuel=&drive=&numberDoors=&exteriorCondition=&interiorCondition=&cx_navSource=hp_search&search.x=65&search.y=7&search=Search+raquo%3B';
+    console.log(url);
+
+    var response = request('GET', url);
+    console.log('Getting '+url+' ...');
+    var $ = cheerio.load(response.getBody());
+    var listings = [];
+
+    if ($('.listing').length != 0) {
+      $(".listing").each(function(index) {
+        console.log("**********************");
+        var img = $(this).find('.photo')['0']['attribs']['style'];
+        if (img !== undefined) {
+          img = img.substring(img.indexOf("https://"), img.indexOf(')'));
+        } else {
+          img = 'images/not-found.png';
+        }
+        console.log(img);
+        var title = $(this).find('.title').text().trim();
+        console.log(title);
+        var itemUrl = 'http://www.ksl.com' + $(this).find('.title .link')['0']['attribs']['href'];
+        console.log(itemUrl);
+        var price = $(this).find('.price').text().trim().substr(1);
+        console.log(price);
+
+        console.log("**********************");
+        listings.push({img: img, title: title, itemUrl: itemUrl, price: price});
+      });
+      sendMail(listings);
+      resolve(listings);
+    } else {
+      console.log('ERROR: no listings');
+      reject(Error('Error: no listings'));
+    }
+  });
+  return promise;
+}
+
+function sendMail(listings){
+  var subject = listings.length;
+  if (listings.length == 1) text += ' new car\n';
+  else text += ' new cars\n';
+  var text = subject;
+
+  listings.forEach(function(car, index) {
+    text += car.title + ' $'+car.price + ' '
+          + car.itemUrl;
+    if (index != listings.length-1) text += '\n\n';
+  });
+  mailServer.send({
+     text:    text,
+     from:    process.env.EMAIL_FROM || '',
+     to: process.env.EMAIL_TO || '',
+     subject: subject
+  }, function(err, message) { console.log(err || message); });
 }
