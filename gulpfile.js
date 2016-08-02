@@ -32,7 +32,7 @@ gulp.task('watch-it', function() {
   gulp.watch("views/**/*.ejs").on('change', browserSync.reload);
   gulp.watch('assets/js/**/*.js', ['js', browserSync.reload]);
   gulp.watch('assets/styles/**/*.styl', ['css']);
-  gulp.watch('app.es6', ['transpile']);
+  gulp.watch('lib/**/*.es6', ['transpile']);
 });
 
 gulp.task('browser-sync', ['nodemon'], function() {
@@ -120,11 +120,11 @@ gulp.task('lint', function() {
 
 // babelize es6 in assets
 gulp.task('transpile', function() {
-  return gulp.src('assets/js/**/*.es6')
+  return gulp.src('lib/**/*.es6')
     .pipe(babel({
       presets: ['es2015']
     }))
-    .pipe(gulp.dest('dist/js'));
+    .pipe(gulp.dest('lib/js/'));
 });
 
 // call via 'gulp screenshot'. App must be running

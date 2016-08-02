@@ -8,17 +8,10 @@ var cheerio = require('cheerio');
 var http = require('http');
 app.set('view engine', 'ejs');
 var path = require('path');
-var middleware = require('./dist/js/middleware/middleware.js');
-var email 	= require("emailjs");
-
+var middleware = require('./lib/middleware/middleware.js');
+var sendMail = require('./lib/js/sendMail.js');
 
 env(__dirname+'/.env');
-var mailServer 	= email.server.connect({
-   user:    process.env.EMAIL_FROM || '',
-   password: process.env.EMAIL_PASSWORD || '',
-   host:    "smtp.gmail.com",
-   ssl:     true
-});
 
 app.use(express.static(path.join(__dirname, 'dist')));
 app.use('/components', express.static(__dirname + '/components'));
@@ -88,22 +81,16 @@ var scrapeKsl = function (searchTerm, options) {
 
     if ($('.listings .adBox').length != 0) {
       $(".listings .adBox").each(function(index) {
-        console.log("**********************");
         var img = $(this)['0'].children[0]['next'].children[0]['next'].children[0]['next']['data'];
         if (img !== undefined) {
           img = img.substring(img.indexOf("http://"), img.indexOf('?'));
         } else {
           img = 'images/not-found.png';
         }
-        console.log(img);
         var title = $(this).find('.adTitle').text().trim()
-        console.log(title);
         var itemUrl = siteUrl + $(this).find('.listlink')['0']['attribs']['href'];
-        console.log(url);
         var price = $(this).find('.priceBox').text().trim();
         price = price.substring(1, price.length-2);
-        console.log(price);
-        console.log("**********************");
         listings.push({img: img, title: title, itemUrl: itemUrl, price: price});
       });
       resolve(listings);
@@ -136,7 +123,6 @@ var scrapeKslCars = function (searchTerm, options) {
                     +'&postedTime='+'7DAYS'
                     +'&titleType='+'Clean+Title'
                     +'&body=&transmission=&cylinders=&liters=&fuel=&drive=&numberDoors=&exteriorCondition=&interiorCondition=&cx_navSource=hp_search&search.x=65&search.y=7&search=Search+raquo%3B';
-    console.log(url);
 
     var response = request('GET', url);
     console.log('Getting '+url+' ...');
@@ -159,11 +145,12 @@ var scrapeKslCars = function (searchTerm, options) {
         console.log(itemUrl);
         var price = $(this).find('.price').text().trim().substr(1);
         console.log(price);
-
+        //TODO: add miles
+        var info = '';
         console.log("**********************");
-        listings.push({img: img, title: title, itemUrl: itemUrl, price: price});
+        listings.push({img: img, title: title, itemUrl: itemUrl, price: price, info: info});
       });
-      sendMail(listings);
+      sendMail.sendText(listings);
       resolve(listings);
     } else {
       console.log('ERROR: no listings');
@@ -171,23 +158,4 @@ var scrapeKslCars = function (searchTerm, options) {
     }
   });
   return promise;
-}
-
-function sendMail(listings){
-  var subject = listings.length;
-  if (listings.length == 1) text += ' new car\n';
-  else text += ' new cars\n';
-  var text = subject;
-
-  listings.forEach(function(car, index) {
-    text += car.title + ' $'+car.price + ' '
-          + car.itemUrl;
-    if (index != listings.length-1) text += '\n\n';
-  });
-  mailServer.send({
-     text:    text,
-     from:    process.env.EMAIL_FROM || '',
-     to: process.env.EMAIL_TO || '',
-     subject: subject
-  }, function(err, message) { console.log(err || message); });
 }
