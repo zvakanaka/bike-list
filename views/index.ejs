@@ -19,6 +19,13 @@
 
       <% var i = -1; %>
       <% var itemsPerRow = 4; %>
+      <% if (listingData.length == 0) { %>
+        <p>
+          No Results:
+          <%= error %>
+        </p>
+      <% } %>
+
       <% listingData.forEach(function(data) { %>
         <% i++; %>
         <% if (i%itemsPerRow == 0) { %>
