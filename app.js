@@ -191,7 +191,6 @@ var scrapeKslCars = function (searchTerm, options) {
         var date = new Date(parseFloat(dateVal.substr(6)));
         //TODO: get real place
         var place = 'UT';
-        console.log("**********************");
 
         var item = {itemType: 'Car',
             img: img,
