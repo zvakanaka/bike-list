@@ -10,7 +10,8 @@ var mailServer 	= email.server.connect({
    user:    process.env.EMAIL_FROM || '',
    password: process.env.EMAIL_PASSWORD || '',
    host:    "smtp.gmail.com",
-   ssl:     true
+   ssl:     true,
+   port: 465
 });
 
 /******* @param listings
