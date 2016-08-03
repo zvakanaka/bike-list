@@ -20,6 +20,7 @@
     "ejs": "^2.4.2",
     "emailjs": "^1.0.5",
     "express": "^4.13.4",
+    "mongoose": "^4.5.8",
     "node-env-file": "^0.1.8",
     "require": "^2.4.20",
     "sync-request": "^3.0.1"
