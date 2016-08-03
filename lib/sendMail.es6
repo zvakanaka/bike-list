@@ -19,13 +19,13 @@ var mailServer 	= email.server.connect({
 module.exports.sendText = (listings) => {
   let subject = listings.length;
   let itemType = process.env.ITEM_TYPE || 'item'
-  if (listings.length == 1) subject += ' new '+itemType+'\n';
+  if (listings.length == 1) subject += ' new '+itemType+'s\n';
   else subject += ' new '+itemType+'\n';
   let text = subject;
 
   listings.forEach(function(item, index) {
     text += item.title + ' $'+item.price + ' '
-          + item.info + ' ' + item.itemUrl;
+          + item.info + ' ' + item.link;
     if (index != listings.length-1) text += '\n\n';//last line
   });
 
