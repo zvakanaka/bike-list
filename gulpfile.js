@@ -28,6 +28,10 @@ gulp.task('default', function() {
    'watch-it');
 });
 
+gulp.task('build', function() {
+  runSequence('clean', ['copy-configs', 'img', 'js', 'lint', 'css', 'transpile']);
+});
+
 gulp.task('watch-it', function() {
   gulp.watch("views/**/*.ejs").on('change', browserSync.reload);
   gulp.watch('assets/js/**/*.js', ['js', browserSync.reload]);
@@ -52,7 +56,7 @@ gulp.task('nodemon', function(cb) {
   return nodemon({
     script: 'app.js',
     // watch core server file(s) that require server restart on change
-    watch: ['app.js']
+    watch: ['app.js', 'lib/**/*.js']
   })
     .on('start', function onStart() {
       // ensure start only got called once

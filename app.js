@@ -10,52 +10,9 @@ app.set('view engine', 'ejs');
 var path = require('path');
 var middleware = require('./lib/middleware/middleware.js');
 var sendMail = require('./lib/js/sendMail.js');
-var mongoose = require ("mongoose");
+var mongoItem = require('./lib/js/mongoItem.js');
 
 env(__dirname+'/.env');
-
-var MONGO_URI = process.env.MONGO_URI || '';
-mongoose.connect(MONGO_URI, function (err, res) {
-  if (err) {
-    console.log ('ERROR connecting to: ' + MONGO_URI + '. ' + err);
-  } else {
-    console.log ('Yay connected to: ' + MONGO_URI);
-  }
-});
-//Item schema holds items and itemTypes
-var itemSchema = new mongoose.Schema({
-    //seq: { type: Number, unique:true, sparse:true },
-    itemType: { type: String, trim: true },
-    link: { type: String, trim: true, unique:true, sparse:true },
-    title: { type: String, trim: true },
-    price: { type: Number},
-    info: { type: String, trim: true },
-    place: { type: String, trim: true },
-    date: { type: Date},
-    creationDate: Date
-});
-var ItemModel = mongoose.model('Items', itemSchema);
-function saveItem(item) {
-  var status = { err: null };
-  item.save(function (err) {
-    if (err) status.err = err;
-  });
-  return status;
-}
-function insertItem(item) {
-  var itemToInsert = new ItemModel ({
-    itemType: item.itemType,
-    link: item.link,
-    title: item.title,
-    price: parseFloat(item.price.replace(',','')),
-    info: item.info,
-    place: item.place,
-    date: item.date,
-    creationDate: new Date()
-  });
-  var insertStatus = saveItem(itemToInsert);
-  return insertStatus;
-}
 
 app.use(express.static(path.join(__dirname, 'dist')));
 app.use('/components', express.static(__dirname + '/components'));
@@ -173,7 +130,7 @@ var scrapeKslCars = function (searchTerm, options) {
     var $ = cheerio.load(response.getBody());
     var listings = [];
 
-    if ($('.listing').length != 0) {
+    if ($('.listing').length !== 0) {
       $(".listing").each(function(index) {
         var img = $(this).find('.photo')['0']['attribs']['style'];
         if (img !== undefined) {
@@ -197,17 +154,18 @@ var scrapeKslCars = function (searchTerm, options) {
             title: title, link: link,
             price: price, info: mileage,
             place: place, date: date};
-          console.log(item);
-        //TODO: insert in mongodb
-        var query = ItemModel.find({ link: link });
-        query.exec(function(err, result) {
+
+        var result = mongoItem.findByLink(link);
+        result.exec(function(err, result) {
           if (!err) {
-              if (result.length == 0) {
-                insertItem(item);
-                sendMail.sendText([ item ]);
-              }
-          } else {
-            console.log(err);
+            console.log('LINK FOUND', result)
+            if (result && result.length === 0) {
+              mongoItem.insert(item);
+              sendMail.sendText([item]);
+            }
+          }
+          else {
+            console.log('Error');
           }
         });
         listings.push(item);
@@ -221,22 +179,20 @@ var scrapeKslCars = function (searchTerm, options) {
 }
 
 app.get('/db/all', function(req, res) {
-  var query = ItemModel.find();
-  query.exec(function(err, result) {
+  var results = mongoItem.getAll();
+  results.exec(function(err, result) {
     if (!err) {
-        res.send(result);
-    } else {
+      console.log('RESULT', result)
+      res.send(result);
+    }
+    else {
       res.send(err);
     }
   });
+
 });
 
 app.get('/db/reset', function(req, res) {
-  ItemModel.remove({}, function(err) {
-    if (err) {
-      res.send('ERROR: resetting all entries failed');
-    } else {
-      res.send('Success: Reset all entries');
-    }
-  });
+  var status = mongoItem.deleteAll();
+  res.redirect('/db/all');
 });
