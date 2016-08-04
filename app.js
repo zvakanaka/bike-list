@@ -1,12 +1,11 @@
+//TODO: move routes
 var env = require('node-env-file');
 var express = require ('express');
 var debug = require('debug')('http');
-var app = express();
 var fs = require('fs');
 var request = require('sync-request');
 var cheerio = require('cheerio');
 var http = require('http');
-app.set('view engine', 'ejs');
 var path = require('path');
 var middleware = require('./lib/middleware/middleware.js');
 var sendMail = require('./lib/js/sendMail.js');
@@ -14,6 +13,8 @@ var mongoItem = require('./lib/js/mongoItem.js');
 
 env(__dirname+'/.env');
 
+var app = express();
+app.set('view engine', 'ejs');
 app.use(express.static(path.join(__dirname, 'dist')));
 app.use('/components', express.static(__dirname + '/components'));
 
@@ -23,8 +24,10 @@ app.use(bodyParser.urlencoded({ extended: true })); // support encoded bodies
 
 var PORTNO = process.env.PORT || 5000;
 
-app.listen(PORTNO);
-console.log(PORTNO+' is the magic port');
+if (!process.env.SUB_APP) {
+  app.listen(PORTNO);
+  console.log(PORTNO+' is the magic port');
+}
 
 app.use(middleware);
 
@@ -121,7 +124,7 @@ var scrapeKslCars = function (searchTerm, options) {
                     +'&newUsed%5B%5D='+'Used'+'&newUsed%5B%5D='+'Certified'
                     +'&page='+0
                     +'&sellerType='+'For+Sale+By+Owner'
-                    +'&postedTime='+'7DAYS'
+                    +'&postedTime='+'15DAYS'
                     +'&titleType='+'Clean+Title'
                     +'&body=&transmission=&cylinders=&liters=&fuel=&drive=&numberDoors=&exteriorCondition=&interiorCondition=&cx_navSource=hp_search&search.x=65&search.y=7&search=Search+raquo%3B';
 
@@ -159,7 +162,7 @@ var scrapeKslCars = function (searchTerm, options) {
         result.exec(function(err, result) {
           if (!err) {
             console.log('LINK FOUND', result)
-            if (result && result.length === 0) {
+            if (result && result.length === 0) {//NEW! if not found
               mongoItem.insert(item);
               sendMail.sendText([item]);
             }

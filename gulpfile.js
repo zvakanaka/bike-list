@@ -1,16 +1,13 @@
 var gulp = require('gulp'),
     babel = require('gulp-babel'),
-    browserSync = require('browser-sync'),
     cleanCSS = require('gulp-clean-css'),
     del = require('del'),
     env = require('node-env-file'),
     fs = require('fs'),
     imagemin = require('gulp-imagemin'),
     jshint = require('gulp-jshint'),
-    nodemon = require('gulp-nodemon'),
     pump = require('pump'),
     runSequence = require('run-sequence'),
-    screenshot = require('url-to-screenshot'),
     stylus = require('gulp-stylus'),
     uglify = require('gulp-uglify');
 
@@ -18,6 +15,14 @@ env(__dirname+'/.env');
 var PORTNO = process.env.PORT || 5000;
 var SCREENSHOT_FILE = process.env.SCREENSHOT_FILE || '/screenshot/screenshot.jpg';
 var BROWSER_SYNC_RELOAD_DELAY = 500;
+
+//Only devs should need these
+var screenshot, browserSync, nodemon;
+if (process.env.NODE_ENV == 'dev') {
+  screenshot = require('url-to-screenshot');
+  browserSync = require('browser-sync');
+  nodemon = require('gulp-nodemon');
+}
 
 gulp.task('default', function() {
   console.log('In Default');
@@ -29,7 +34,11 @@ gulp.task('default', function() {
 });
 
 gulp.task('build', function() {
-  runSequence('clean', ['copy-configs', 'img', 'js', 'lint', 'css', 'transpile']);
+  runSequence('clean', ['copy-configs', 'img', 'js', 'lint', 'css', 'transpile'], 'exit');
+});
+
+gulp.task('exit', function() {
+  process.exit();
 });
 
 gulp.task('watch-it', function() {
@@ -76,8 +85,6 @@ gulp.task('nodemon', function(cb) {
 // Include css
 // Stylus has an awkward and perplexing 'include css' option
 gulp.task('css', function() {
-  console.log('In css');
-
   return gulp.src('assets/styles/*.{styl, css}')
     .pipe(stylus({
       'include css': true
@@ -87,19 +94,16 @@ gulp.task('css', function() {
 });
 
 gulp.task('clean', function() {
-  console.log('In Clean');
   return del(['dist']);
 });
 
 gulp.task('img', function() {
-  console.log('In img');
   gulp.src('assets/images/*')
     .pipe(imagemin())
     .pipe(gulp.dest('dist/images'));
 });
 
 gulp.task('js', function(cb) {
-  console.log('In js');
   //uglify and copy
   pump([
       gulp.src('assets/js/**/*.js'),
@@ -116,8 +120,6 @@ gulp.task('copy-configs', function() {
 });
 
 gulp.task('lint', function() {
-  console.log('In lint');
-
   gulp.src('./**/*.js')
     .pipe(jshint());
 });
