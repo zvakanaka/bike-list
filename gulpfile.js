@@ -49,37 +49,50 @@ gulp.task('watch-it', function() {
 });
 
 gulp.task('browser-sync', ['nodemon'], function() {
-  // for more browser-sync config options: http://www.browsersync.io/docs/options/
-  browserSync({
-    proxy: 'http://localhost:' + PORTNO,
-    browser: 'google-chrome'
-  });
+  if (process.env.NODE_ENV != 'dev') {
+    // for more browser-sync config options: http://www.browsersync.io/docs/options/
+    browserSync({
+      proxy: 'http://localhost:' + PORTNO,
+      browser: 'google-chrome'
+    });
+  } else {
+    console.log('ERROR: Must set NODE_ENV=dev in .env for browserSync');
+  }
 });
 
 gulp.task('bs-reload', function() {
-  browserSync.reload();
+  if (process.env.NODE_ENV != 'dev') {
+    browserSync.reload();
+  } else {
+    console.log('ERROR: Must set NODE_ENV=dev in .env for browserSync');
+  }
+
 });
 
 gulp.task('nodemon', function(cb) {
-  var called = false;
-  return nodemon({
-    script: 'app.js',
-    // watch core server file(s) that require server restart on change
-    watch: ['app.js', 'lib/**/*.js']
-  })
-    .on('start', function onStart() {
-      // ensure start only got called once
-      if (!called) { cb(); }
-      called = true;
+  if (process.env.NODE_ENV != 'dev') {
+    var called = false;
+    return nodemon({
+      script: 'app.js',
+      // watch core server file(s) that require server restart on change
+      watch: ['app.js', 'lib/**/*.js']
     })
-    .on('restart', function onRestart() {
-      // reload connected browsers after a slight delay
-      setTimeout(function reload() {
-        browserSync.reload({
-          stream: false
-        });
-      }, BROWSER_SYNC_RELOAD_DELAY);
-    });
+      .on('start', function onStart() {
+        // ensure start only got called once
+        if (!called) { cb(); }
+        called = true;
+      })
+      .on('restart', function onRestart() {
+        // reload connected browsers after a slight delay
+        setTimeout(function reload() {
+          browserSync.reload({
+            stream: false
+          });
+        }, BROWSER_SYNC_RELOAD_DELAY);
+      });
+  } else {
+    console.log('ERROR: Must set NODE_ENV=dev in .env for nodemon');
+  }
 });
 
 // Include css
@@ -135,14 +148,18 @@ gulp.task('transpile', function() {
 
 // call via 'gulp screenshot'. App must be running
 gulp.task('screenshot', function() {
-  screenshot('http://localhost:' + PORTNO)
-  .width(900)
-  .height(600)
-  .clip()
-  .format('jpg')
-  .capture(function(err, img) {
-    if (err) throw err;
-    fs.writeFileSync(__dirname + SCREENSHOT_FILE, img);
-    console.log('open ' + SCREENSHOT_FILE);
-  });
+  if (process.env.NODE_ENV != 'dev') {
+    screenshot('http://localhost:' + PORTNO)
+    .width(900)
+    .height(600)
+    .clip()
+    .format('jpg')
+    .capture(function(err, img) {
+      if (err) throw err;
+      fs.writeFileSync(__dirname + SCREENSHOT_FILE, img);
+      console.log('open ' + SCREENSHOT_FILE);
+    });
+  } else {
+    console.log('ERROR: Must set NODE_ENV=dev in .env for screenshot');
+  }
 });
