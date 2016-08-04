@@ -46,7 +46,7 @@
   },
   "scripts": {
     "start": "node app.js",
-    "postinstall": "echo -e \"PORT=4000\nITEM_TYPE=Car\nNODE_ENV=dev\nEMAIL_FROM=''\nEMAIL_PASSWORD=''\nEMAIL_TO='Jon <5@text.republicwireless.com>, Gus <5@tmomail.net>'\nMONGO_URI=''\n#SUB_APP=true\n\" >> .env; gulp build; bower install"
+    "postinstall": "echo -e \"PORT=4000\nITEM_TYPE=Car\n#NODE_ENV=dev\nEMAIL_FROM=''\nEMAIL_PASSWORD=''\nEMAIL_TO='Jon <5@text.republicwireless.com>, Gus <5@tmomail.net>'\nMONGO_URI=''\n#SUB_APP=true\n\" >> .env; gulp build; bower install"
   },
   "homepage": "http://howtoterminal.com/bike-list"
 }
