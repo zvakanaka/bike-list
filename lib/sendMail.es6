@@ -1,20 +1,22 @@
-var env = require('node-env-file');
-var email 	= require("emailjs");
+// Send new item reports through email
+const env = require('node-env-file'),
+      email = require("emailjs");
 //Put the following in .env:
 //EMAIL_FROM='example@gmail.com'
 //EMAIL_PASSWORD='pass'
 //EMAIL_TO='Jon 5555555555@text.republicwireless.com'
 env(__dirname+'/../../.env');
 
-var mailServer 	= email.server.connect({
-   user:    process.env.EMAIL_FROM || '',
-   password: process.env.EMAIL_PASSWORD || '',
-   host:    "smtp.gmail.com",
-   ssl:     true,
-   port: 465
+const mailServer = email.server.connect({
+    user:     process.env.EMAIL_FROM || '',
+    password: process.env.EMAIL_PASSWORD || '',
+    host:     "smtp.gmail.com",
+    ssl:      true,
+    port:     465
 });
 
-/******* @param listings
+/*******
+ @param listings
  array of results to send
  ********/
 module.exports.sendText = (listings) => {
