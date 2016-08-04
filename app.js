@@ -161,10 +161,11 @@ var scrapeKslCars = function (searchTerm, options) {
         var result = mongoItem.findByLink(link);
         result.exec(function(err, result) {
           if (!err) {
-            console.log('LINK FOUND', result)
             if (result && result.length === 0) {//NEW! if not found
               mongoItem.insert(item);
               sendMail.sendText([item]);
+            } else {
+              console.log('LINK FOUND', result)
             }
           }
           else {
