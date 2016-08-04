@@ -23,10 +23,7 @@
     "mongoose": "^4.5.8",
     "node-env-file": "^0.1.8",
     "require": "^2.4.20",
-    "sync-request": "^3.0.1"
-  },
-  "devDependencies": {
-    "browser-sync": "^2.13.0",
+    "sync-request": "^3.0.1",
     "del": "^2.2.1",
     "fs": "0.0.2",
     "gulp": "^3.9.1",
@@ -35,25 +32,21 @@
     "gulp-cli": "gulpjs/gulp-cli",
     "gulp-imagemin": "^3.0.1",
     "gulp-jshint": "^2.0.1",
-    "gulp-nodemon": "^2.1.0",
     "gulp-stylus": "^2.5.0",
     "gulp-uglify": "^1.5.4",
     "jshint": "^2.9.2",
     "pump": "^1.0.1",
     "run-sequence": "^1.2.2",
-    "stylus": "^0.54.5",
+    "stylus": "^0.54.5"
+  },
+  "devDependencies": {
+    "browser-sync": "^2.13.0",
+    "gulp-nodemon": "^2.1.0",
     "url-to-screenshot": "^0.6.1"
   },
   "scripts": {
-    "start": "node app.js"
+    "start": "node app.js",
+    "postinstall": "gulp build; bower install"
   },
-  "changelog": [
-    {
-      "0.0.0": "Initial release"
-    },
-    {
-      "0.1.0": "Put next release here"
-    }
-  ],
   "homepage": "http://howtoterminal.com/bike-list"
 }
