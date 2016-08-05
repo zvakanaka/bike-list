@@ -198,3 +198,7 @@ app.get('/db/reset', function(req, res) {
   var status = mongoItem.deleteAll();
   res.redirect('/db/all');
 });
+
+if (process.env.SUB_APP) {
+  module.exports = app;
+}
