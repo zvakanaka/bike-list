@@ -110,10 +110,12 @@ gulp.task('clean', function() {
   return del(['dist']);
 });
 
-gulp.task('img', function() {
-  gulp.src('assets/images/*')
-    .pipe(imagemin())
-    .pipe(gulp.dest('dist/images'));
+gulp.task('img', function () {
+    return gulp.src('assets/images/*')
+        .pipe(imagemin({
+            progressive: true
+        }))
+        .pipe(gulp.dest('dist/images'));
 });
 
 gulp.task('js', function(cb) {

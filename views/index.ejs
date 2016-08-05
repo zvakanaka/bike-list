@@ -4,17 +4,7 @@
      <% include partials/head %>
   </head>
   <body>
-      <nav class="navbar navbar-inverse">
-        <a class="navbar-brand custom-header-logo" href="#">
-          <img alt="Brand" src="images/howtoterm.gif">
-        </a>
-        <ul class="nav navbar-nav">
-         <li><a href="http://howtoterminal.com">Home</a></li>
-         <li class="active"><a href="#"><%= itemType %> Scrape</a></li>
-       </ul>
-        <p class="navbar-text navbar-right">Signed in as <a href="#" class="navbar-link">Mark Otto</a></p>
-      </nav>
-
+    <% include partials/nav %>
     <div class="container-fluid">
 
       <% var i = -1; %>
@@ -39,16 +29,11 @@
                   <p><a href="<%= data.link %>" class="btn btn-primary" role="button">Source</a> <a href="<%= data.img %>" class="btn btn-default" role="button">Image</a></p>
                 </div>
               </div>
-        <% if (i%itemsPerRow == itemsPerRow-1) { %>
+        <% if (i%itemsPerRow == 0) { %>
           </div>
         <% } %>
       <% }); %>
     </div>
-
-    <footer class="footer">
-      <a class="navbar-brand navbar-right" href="https://github.com/zvakanaka">
-        <img class="custom-footer-logo" alt="Github Logo" src="images/github.gif">
-      </a>
-    </footer>
+    <% include partials/footer %>
   </body>
 </html>
