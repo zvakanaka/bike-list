@@ -2,10 +2,8 @@
 var env = require('node-env-file');
 var express = require ('express');
 var debug = require('debug')('http');
-var fs = require('fs');
 var request = require('sync-request');
 var cheerio = require('cheerio');
-var http = require('http');
 var path = require('path');
 var middleware = require('./lib/middleware/middleware.js');
 var sendMail = require('./lib/js/sendMail.js');
