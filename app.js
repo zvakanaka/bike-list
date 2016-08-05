@@ -12,6 +12,7 @@ var mongoItem = require('./lib/js/mongoItem.js');
 env(__dirname+'/.env');
 
 var app = express();
+app.set("views", path.join(__dirname, "views"));
 app.set('view engine', 'ejs');
 app.use(express.static(path.join(__dirname, 'dist')));
 app.use('/components', express.static(__dirname + '/components'));
@@ -56,52 +57,6 @@ app.get('/', function(req, res) {
     });
   });
 });
-
-var scrapeKsl = function (searchTerm, options) {
-  console.log('SCRAPING KSL...');
-  var promise = new Promise(function(resolve, reject) {
-    var siteUrl = 'http://www.ksl.com/',
-        zip = options.zip || 84606,
-        minPrice = options.minPrice || 30,
-        maxPrice = options.maxPrice || 200,
-        resultsPerPage = options.resultsPerPage || 50,
-        sortType = options.sortType || 5;
-
-    var url = siteUrl + '?nid=231&sid=74268&cat='
-                    + '&search=' + searchTerm
-                    + '&zip=' + zip
-                    + '&distance=&min_price=' + minPrice
-                    + '&max_price=' + maxPrice
-                    + '&type=&category=&subcat=&sold=&city=&addisplay=&userid=&markettype=sale&adsstate=&nocache=1&o_facetSelected=&o_facetKey=&o_facetVal=&viewSelect=list'
-                    + '&viewNumResults=' + resultsPerPage
-                    + '&sort=' + sortType;
-
-    var response = request('GET', url);
-    console.log('Getting '+url+' ...');
-    var $ = cheerio.load(response.getBody());
-    var listings = [];
-
-    if ($('.listings .adBox').length != 0) {
-      $(".listings .adBox").each(function(index) {
-        var img = $(this)['0'].children[0]['next'].children[0]['next'].children[0]['next']['data'];
-        if (img !== undefined) {
-          img = img.substring(img.indexOf("http://"), img.indexOf('?'));
-        } else {
-          img = 'images/not-found.png';
-        }
-        var title = $(this).find('.adTitle').text().trim()
-        var link = siteUrl + $(this).find('.listlink')['0']['attribs']['href'];
-        var price = $(this).find('.priceBox').text().trim();
-        price = price.substring(1, price.length-2);
-        listings.push({img: img, title: title, link: link, price: price});
-      });
-      resolve(listings);
-    } else {
-      reject(Error('Error: no listings'));
-    }
-  });
-  return promise;
-}
 
 var scrapeKslCars = function (searchTerm, options) {
   console.log('SCRAPING KSL AUTOS...');
@@ -163,14 +118,60 @@ var scrapeKslCars = function (searchTerm, options) {
               mongoItem.insert(item);
               sendMail.sendText([item]);
             } else {
-              console.log('LINK FOUND', result)
+              console.log('EXISTING LINK FOUND', result)
             }
           }
           else {
             console.log('Error');
           }
+          listings.push(item);
+          resolve(listings);
         });
-        listings.push(item);
+      });
+    } else {
+      reject(Error('Error: no listings'));
+    }
+  });
+  return promise;
+}
+
+var scrapeKsl = function (searchTerm, options) {
+  console.log('SCRAPING KSL...');
+  var promise = new Promise(function(resolve, reject) {
+    var siteUrl = 'http://www.ksl.com/',
+        zip = options.zip || 84606,
+        minPrice = options.minPrice || 30,
+        maxPrice = options.maxPrice || 200,
+        resultsPerPage = options.resultsPerPage || 50,
+        sortType = options.sortType || 5;
+
+    var url = siteUrl + '?nid=231&sid=74268&cat='
+                    + '&search=' + searchTerm
+                    + '&zip=' + zip
+                    + '&distance=&min_price=' + minPrice
+                    + '&max_price=' + maxPrice
+                    + '&type=&category=&subcat=&sold=&city=&addisplay=&userid=&markettype=sale&adsstate=&nocache=1&o_facetSelected=&o_facetKey=&o_facetVal=&viewSelect=list'
+                    + '&viewNumResults=' + resultsPerPage
+                    + '&sort=' + sortType;
+
+    var response = request('GET', url);
+    console.log('Getting '+url+' ...');
+    var $ = cheerio.load(response.getBody());
+    var listings = [];
+
+    if ($('.listings .adBox').length != 0) {
+      $(".listings .adBox").each(function(index) {
+        var img = $(this)['0'].children[0]['next'].children[0]['next'].children[0]['next']['data'];
+        if (img !== undefined) {
+          img = img.substring(img.indexOf("http://"), img.indexOf('?'));
+        } else {
+          img = 'images/not-found.png';
+        }
+        var title = $(this).find('.adTitle').text().trim()
+        var link = siteUrl + $(this).find('.listlink')['0']['attribs']['href'];
+        var price = $(this).find('.priceBox').text().trim();
+        price = price.substring(1, price.length-2);
+        listings.push({img: img, title: title, link: link, price: price});
       });
       resolve(listings);
     } else {
@@ -191,7 +192,6 @@ app.get('/db/all', function(req, res) {
       res.send(err);
     }
   });
-
 });
 
 app.get('/db/reset', function(req, res) {
@@ -200,5 +200,6 @@ app.get('/db/reset', function(req, res) {
 });
 
 if (process.env.SUB_APP) {
+  console.log('Exporting as sub-app');
   module.exports = app;
 }
