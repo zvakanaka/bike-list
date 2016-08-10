@@ -28,7 +28,7 @@ gulp.task('default', function() {
   console.log('In Default');
   runSequence(
     'clean',
-   ['copy-configs', 'img', 'js', 'lint', 'css', 'transpile'],
+   ['copy-configs', 'img', 'js', 'css', 'transpile', 'lint'],
    'browser-sync',
    'watch-it');
 });

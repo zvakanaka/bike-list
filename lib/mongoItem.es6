@@ -2,7 +2,7 @@ const mongoose = require ("mongoose"),
       env = require('node-env-file');
 env(__dirname+'/../../.env');
 
-var MONGO_URI = process.env.MONGO_URI || '';
+const MONGO_URI = process.env.MONGO_URI || '';
 mongoose.connect(MONGO_URI, function (err, res) {
   if (err) {
     console.log ('ERROR connecting to: ' + MONGO_URI + '. ' + err);
@@ -11,7 +11,7 @@ mongoose.connect(MONGO_URI, function (err, res) {
   }
 });
 //Item schema holds items and itemTypes
-var itemSchema = new mongoose.Schema({
+let itemSchema = new mongoose.Schema({
     //seq: { type: Number, unique:true, sparse:true },
     itemType: { type: String, trim: true },
     link: { type: String, trim: true, unique:true, sparse:true },
@@ -20,12 +20,13 @@ var itemSchema = new mongoose.Schema({
     info: { type: String, trim: true },
     place: { type: String, trim: true },
     date: { type: Date},
-    creationDate: Date
+    creationDate: Date,
+    deleted: { type: Boolean, default: false }
 });
-var ItemModel = mongoose.model('Items', itemSchema);
+let ItemModel = mongoose.model('Items', itemSchema);
 
 function saveItem(item) {
-  var status = { err: null };
+  let status = { err: null };
   item.save(function (err) {
     if (err) status.err = err;
   });
@@ -33,7 +34,7 @@ function saveItem(item) {
 }
 
 module.exports.insert = (item) => {
-  var itemToInsert = new ItemModel ({
+  const itemToInsert = new ItemModel ({
     itemType: item.itemType,
     link: item.link,
     title: item.title,
@@ -43,7 +44,7 @@ module.exports.insert = (item) => {
     date: item.date,
     creationDate: new Date()
   });
-  var insertStatus = saveItem(itemToInsert);
+  const insertStatus = saveItem(itemToInsert);
   return insertStatus;
 }
 
