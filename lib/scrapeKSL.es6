@@ -19,6 +19,8 @@ module.exports.cars = function (options) {
 
     const url = siteUrl + '?keyword=' + searchTerm
                     + '&make%5B%5D=' + 'Honda'
+                    + '&make%5B%5D=' + 'Toyota'
+                    + '&make%5B%5D=' + 'Nissan'
                     + '&yearFrom='+minYear+'&yearTo='+maxYear
                     + '&mileageFrom='+minMiles+'&mileageTo='+maxMiles
                     + '&priceFrom=' + minPrice
@@ -44,11 +46,13 @@ module.exports.cars = function (options) {
         let img = $(this).find('.photo')['0']['attribs']['style'];
         if (img !== undefined) {
           img = img.substring(img.indexOf("url(")+4, img.indexOf(')'));
+          img = img.substr(0, img.indexOf('?'));//remove query params
         } else {
           img = 'images/not-found.png';
         }
         const title = $(this).find('.title').text().trim();
-        const link = 'http://www.ksl.com' + $(this).find('.title .link')['0']['attribs']['href'];
+        let link = 'http://www.ksl.com' + $(this).find('.title .link')['0']['attribs']['href'];
+        link = link.substr(0, link.indexOf('?'));//remove query params
         const price = $(this).find('.price').text().trim().substr(1);
         const mileage = $(this).find('.mileage').text().trim();
         let dateTemp = $(this).find('.nowrap').text().trim();
@@ -78,7 +82,7 @@ module.exports.cars = function (options) {
             console.log('Error');
           }
           if (index === listingLength-1) {
-            resolve(listings);
+            resolve(listings);//done checking duplicates in $list
           }
           listings.push(item);
         });
