@@ -13,7 +13,7 @@ var gulp = require('gulp'),
 
 env(__dirname+'/.env');
 var PORTNO = process.env.PORT || 5000;
-var SCREENSHOT_FILE = process.env.SCREENSHOT_FILE || '/screenshot/screenshot.jpg';
+var SCREENSHOT_FILE = process.env.SCREENSHOT_FILE || '/screenshot/screenshot2.jpg';
 var BROWSER_SYNC_RELOAD_DELAY = 500;
 
 //Only devs should need these
@@ -150,7 +150,7 @@ gulp.task('transpile', function() {
 
 // call via 'gulp screenshot'. App must be running
 gulp.task('screenshot', function() {
-  if (process.env.NODE_ENV != 'dev') {
+  if (process.env.NODE_ENV === 'dev') {
     screenshot('http://localhost:' + PORTNO)
     .width(900)
     .height(600)
