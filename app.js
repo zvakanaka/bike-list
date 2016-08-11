@@ -56,8 +56,26 @@ app.get('/', function(req, res) {
   });
 });
 
+// index page
+app.get('/scrape', function(req, res) {
+  debug('GET /scrape');
+  res.type('json');
+  var siteUrl = 'https://www.ksl.com/auto/search/index';
+  scrapeKSL.cars({ zip: 84606,
+              minPrice: 30,
+              maxPrice: 4000,
+              resultsPerPage: 50,
+              sortType: 5 })
+  .then(function (listings) {
+    res.send(listings);
+  }).catch(function (listings) {
+    res.send(err);
+  });
+});
+
 app.get('/db/all', function(req, res) {
   var results = mongoItem.getAll();
+  res.type('json');
   results.exec(function(err, result) {
     if (!err) {
       console.log('RESULT', result)
