@@ -33,26 +33,27 @@ app.get('/', function(req, res) {
   debug('GET /');
 
   var siteUrl = 'https://www.ksl.com/auto/search/index';
-  scrapeKSL.cars({ zip: 84606,
-              minPrice: 30,
-              maxPrice: 4000,
-              resultsPerPage: 50,
-              sortType: 5 })
-  .then(function (listings) {
-    console.log('Rendering');
-    res.render('index', {
-      itemType: process.env.ITEM_TYPE || 'Item',
-      siteUrl: siteUrl,
-      listingData: listings
-    });
-  }).catch(function (listings) {
-    console.log('Rendering');
-    res.render('index', {
-      itemType: process.env.ITEM_TYPE || 'Item',
-      siteUrl: siteUrl,
-      listingData: [],
-      error: 'empty'
-    });
+  var results = mongoItem.getAll();
+  results.exec(function(err, result) {
+    if (!err) {
+      console.log('Rendering');
+      res.render('index', {
+        page: process.env.SUB_APP ? req.url+'scrape' : req.url,//url
+        itemType: process.env.ITEM_TYPE || 'Item',
+        siteUrl: siteUrl,
+        listingData: result
+      });
+    }
+    else {
+      console.log('Rendering');
+      res.render('index', {
+        page: process.env.SUB_APP ? req.url+'scrape' : req.url,//url
+        itemType: process.env.ITEM_TYPE || 'Item',
+        siteUrl: siteUrl,
+        listingData: [],
+        error: 'empty'
+      });
+    }
   });
 });
 
@@ -89,7 +90,11 @@ app.get('/db/all', function(req, res) {
 
 app.get('/db/reset', function(req, res) {
   var status = mongoItem.deleteAll();
-  res.redirect('/db/all');
+  if (process.env.SUB_APP) {
+    res.redirect('/scrape/db/all');
+  } else {
+    res.redirect('/db/all');
+  }
 });
 
 if (process.env.SUB_APP) {

@@ -15,6 +15,7 @@ let itemSchema = new mongoose.Schema({
     //seq: { type: Number, unique:true, sparse:true },
     itemType: { type: String, trim: true },
     link: { type: String, trim: true, unique:true, sparse:true },
+    img: { type: String, trim: true, unique:true, sparse:true },
     title: { type: String, trim: true },
     price: { type: Number},
     info: { type: String, trim: true },
@@ -37,6 +38,7 @@ module.exports.insert = (item) => {
   const itemToInsert = new ItemModel ({
     itemType: item.itemType,
     link: item.link,
+    img: item.img,
     title: item.title,
     price: parseFloat(item.price.replace(',','')),
     info: item.info,

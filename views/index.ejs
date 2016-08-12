@@ -1,18 +1,27 @@
 <!DOCTYPE html>
 <html>
   <head>
-     <% include partials/head %>
+    <title><%= itemType %> Scrape</title>
+    <% if (process.env.SUB_APP && process.env.OUTER_APP_DIR) {%>
+      <%- include(process.env.OUTER_APP_DIR+'/views/partials/head') %>
+    <% } else { %>
+      <% include partials/head %>
+    <% } %>
   </head>
   <body>
-    <% include partials/nav %>
+    <% if (process.env.SUB_APP && process.env.OUTER_APP_DIR) {%>
+      <%- include(process.env.OUTER_APP_DIR+'/views/partials/nav') %>
+    <% } else { %>
+      <% include partials/nav %>
+    <% } %>
+
     <div class="container-fluid">
 
       <% var i = -1; %>
       <% var itemsPerRow = 4; %>
-      <% if (listingData.length == 0) { %>
+      <% if (listingData.length === 0) { %>
         <p>
-          No Results:
-          <%= error %>
+          No Results
         </p>
       <% } %>
 
@@ -29,6 +38,10 @@
       <% }); %>
       </div>
     </div>
-    <% include partials/footer %>
+    <% if (process.env.SUB_APP && process.env.OUTER_APP_DIR) {%>
+      <%- include(process.env.OUTER_APP_DIR+'/views/partials/footer') %>
+    <% } else { %>
+      <% include partials/footer %>
+    <% } %>
   </body>
 </html>
