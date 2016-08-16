@@ -3,6 +3,8 @@ const request = require('sync-request');
 const sendMail = require('./sendMail.js');
 const mongoItem = require('./mongoItem.js');
 
+//http://www.shopgoodwill.com/search/SearchKey.asp?itemTitle=bow&catid=279&sellerID=all&closed=no&minPrice=0&maxPrice=200&sortBy=itemEndTime&SortOrder=a&showthumbs=on
+
 //options: searchTerm, zip, minPrice, maxPrice, minYear, maxYear, minMiles, maxMiles
 module.exports.cars = function (options) {
   console.log('SCRAPING KSL AUTOS...');
@@ -38,10 +40,9 @@ module.exports.cars = function (options) {
     console.log('Getting\n'+url+' ...');
     const $ = cheerio.load(response.getBody());
     let listings = [];
-    let listingLength = $('.listing').length;
+    let listingLength = $('.listing').length;//to know when to resolve
 
     if (listingLength !== 0) {
-      // for (let i = 0; i < listingLength; i++) {
       $(".listing").each(function(index) {
         let img = $(this).find('.photo')['0']['attribs']['style'];
         if (img !== undefined) {
@@ -115,11 +116,15 @@ module.exports.scrapeKsl = function (searchTerm, options) {
                     + '&sort=' + sortType;
 
     const response = request('GET', url);
-    console.log('Getting '+url+' ...');
+    console.log('Getting\n'+url+' ...');
     const $ = cheerio.load(response.getBody());
-    let listings = [];
+    console.log('Got Body');
 
-    if ($('.listings .adBox').length != 0) {
+    let listings = [];
+    let listingLength = $('.listings .adBox').length;//to know when to resolve
+
+    console.log(listingLength, ' items found');
+    if (listingLength !== 0) {
       $(".listings .adBox").each(function(index) {
         let img = $(this)['0'].children[0]['next'].children[0]['next'].children[0]['next']['data'];
         if (img !== undefined) {
@@ -131,9 +136,40 @@ module.exports.scrapeKsl = function (searchTerm, options) {
         const link = siteUrl + $(this).find('.listlink')['0']['attribs']['href'];
         let price = $(this).find('.priceBox').text().trim();
         price = price.substring(1, price.length-2);
-        listings.push({img: img, title: title, link: link, price: price});
+
+        //date
+        let date = new Date()
+        //description
+        let description = 'TODO: implement description'
+        //TODO: get real place
+        const place = 'UT';
+
+        const item = {itemType: searchTerm,
+            img: img,
+            title: title, link: link,
+            price: price, info: description,
+            place: place, date: date};
+
+        const result = mongoItem.findByLink(link);
+        result.exec(function(err, result) {
+          if (!err) {
+            if (result && result.length === 0) {//NEW! if not found
+              mongoItem.insert(item);
+              //sendMail.sendText([item]);
+              console.log('NEW ITEM FOUND');
+            } else {
+              console.log('EXISTING LINK FOUND', result[0].link)
+            }
+          }
+          else {
+            console.log('Error');
+          }
+          if (index === listingLength-1) {
+            resolve(listings);//done checking duplicates in $list
+          }
+          listings.push(item);
+        });
       });
-      resolve(listings);
     } else {
       reject(Error('Error: no listings'));
     }
