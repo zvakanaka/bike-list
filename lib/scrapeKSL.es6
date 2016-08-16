@@ -155,7 +155,7 @@ module.exports.scrapeKsl = function (searchTerm, options) {
           if (!err) {
             if (result && result.length === 0) {//NEW! if not found
               mongoItem.insert(item);
-              //sendMail.sendText([item]);
+              sendMail.sendText([item]);
               console.log('NEW ITEM FOUND');
             } else {
               console.log('EXISTING LINK FOUND', result[0].link)

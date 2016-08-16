@@ -103,20 +103,6 @@ app.get('/item', function(req, res) {
   });
 });
 
-app.get('/db/all', function(req, res) {
-  var results = mongoItem.getAll();
-  res.type('json');
-  results.exec(function(err, result) {
-    if (!err) {
-      console.log('RESULT', result)
-      res.send(result);
-    }
-    else {
-      res.send(err);
-    }
-  });
-});
-
 app.get('/db/reset', function(req, res) {
   var status = mongoItem.deleteAll();
   if (process.env.SUB_APP) {
