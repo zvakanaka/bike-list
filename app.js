@@ -88,6 +88,35 @@ app.get('/db/all', function(req, res) {
   });
 });
 
+app.get('/item', function(req, res) {
+  debug('GET /item');
+  res.type('json');
+  scrapeKSL.scrapeKsl('canon', { zip: 84606,
+              minPrice: 30,
+              maxPrice: 200,
+              resultsPerPage: 50,
+              sortType: 5 })
+  .then(function (listings) {
+    res.send(listings);
+  }).catch(function (listings) {
+    res.send(err);
+  });
+});
+
+app.get('/db/all', function(req, res) {
+  var results = mongoItem.getAll();
+  res.type('json');
+  results.exec(function(err, result) {
+    if (!err) {
+      console.log('RESULT', result)
+      res.send(result);
+    }
+    else {
+      res.send(err);
+    }
+  });
+});
+
 app.get('/db/reset', function(req, res) {
   var status = mongoItem.deleteAll();
   if (process.env.SUB_APP) {
