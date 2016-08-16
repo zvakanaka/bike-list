@@ -15,7 +15,7 @@ let itemSchema = new mongoose.Schema({
     //seq: { type: Number, unique:true, sparse:true },
     itemType: { type: String, trim: true },
     link: { type: String, trim: true, unique:true, sparse:true },
-    img: { type: String, trim: true, unique:true, sparse:true },
+    img: { type: String, trim: true },
     title: { type: String, trim: true },
     price: { type: Number},
     info: { type: String, trim: true },
@@ -29,9 +29,12 @@ let ItemModel = mongoose.model('Items', itemSchema);
 function saveItem(item) {
   let status = { err: null };
   item.save(function (err) {
-    if (err) status.err = err;
+    if (err) {
+      status.err = err;
+      console.log(item, status);
+    }
+    return status;
   });
-  return status;
 }
 
 module.exports.insert = (item) => {
