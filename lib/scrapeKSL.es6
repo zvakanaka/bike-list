@@ -133,7 +133,8 @@ module.exports.scrapeKsl = function (searchTerm, options) {
           img = 'images/not-found.png';
         }
         const title = $(this).find('.adTitle').text().trim()
-        const link = siteUrl + $(this).find('.listlink')['0']['attribs']['href'];
+        let link = siteUrl + $(this).find('.listlink')['0']['attribs']['href'];
+        link = link.substr(0, link.indexOf('&cat='));//remove query params
         let price = $(this).find('.priceBox').text().trim();
         price = price.substring(1, price.length-2);
 
@@ -156,9 +157,9 @@ module.exports.scrapeKsl = function (searchTerm, options) {
             if (result && result.length === 0) {//NEW! if not found
               mongoItem.insert(item);
               sendMail.sendText([item]);
-              console.log('NEW ITEM FOUND');
+              console.log('NEW ITEM FOUND     ', item.title, item.link);
             } else {
-              console.log('EXISTING LINK FOUND', result[0].link)
+              console.log('EXISTING LINK FOUND', item.title, result[0].link)
             }
           }
           else {
