@@ -1,34 +1,37 @@
-const mongoose = require ("mongoose"),
-      env = require('node-env-file');
-env(__dirname+'/../../.env');
+const mongoose = require('mongoose');
+const env = require('node-env-file');
+const path = require('path');
+
+env(path.join(__dirname, '/../../.env'));
 
 const MONGO_URI = process.env.MONGO_URI || '';
-mongoose.connect(MONGO_URI, function (err, res) {
+mongoose.connect(MONGO_URI, (err, res) => {
   if (err) {
-    console.log ('ERROR connecting to: ' + MONGO_URI + '. ' + err);
+    console.log('ERROR connecting to: ' + MONGO_URI + '. ' + err + res);
   } else {
-    console.log ('Yay connected to: ' + MONGO_URI);
+    console.log('Yay connected to: ' + MONGO_URI);
   }
 });
-//Item schema holds items and itemTypes
-let itemSchema = new mongoose.Schema({
-    //seq: { type: Number, unique:true, sparse:true },
-    itemType: { type: String, trim: true },
-    link: { type: String, trim: true, unique:true, sparse:true },
-    img: { type: String, trim: true },
-    title: { type: String, trim: true },
-    price: { type: Number},
-    info: { type: String, trim: true },
-    place: { type: String, trim: true },
-    date: { type: Date},
-    creationDate: Date,
-    deleted: { type: Boolean, default: false }
+
+// Item schema holds items and itemTypes
+const itemSchema = new mongoose.Schema({
+    // seq: { type: Number, unique:true, sparse:true },
+  itemType: { type: String, trim: true },
+  link: { type: String, trim: true, unique: true, sparse: true },
+  img: { type: String, trim: true },
+  title: { type: String, trim: true },
+  price: { type: Number },
+  info: { type: String, trim: true },
+  place: { type: String, trim: true },
+  date: { type: Date },
+  creationDate: Date,
+  deleted: { type: Boolean, default: false },
 });
-let ItemModel = mongoose.model('Items', itemSchema);
+const ItemModel = mongoose.model('Items', itemSchema);
 
 function saveItem(item) {
-  let status = { err: null };
-  item.save(function (err) {
+  const status = { err: null };
+  item.save((err) => {
     if (err) {
       status.err = err;
       console.log(item, status);
@@ -38,35 +41,30 @@ function saveItem(item) {
 }
 
 module.exports.insert = (item) => {
-  const itemToInsert = new ItemModel ({
+  const itemToInsert = new ItemModel({
     itemType: item.itemType,
     link: item.link,
     img: item.img,
     title: item.title,
-    price: parseFloat(item.price.replace(',','')),
+    price: parseFloat(item.price.replace(',', '')),
     info: item.info,
     place: item.place,
     date: item.date,
-    creationDate: new Date()
+    creationDate: new Date(),
   });
   const insertStatus = saveItem(itemToInsert);
   return insertStatus;
-}
+};
 
-module.exports.getAll = () => {
-  return ItemModel.find();
-}
+module.exports.getAll = () => ItemModel.find();
 
 module.exports.deleteAll = () => {
-  ItemModel.remove({}, function(err) {
-    if (err) {
-      return err
-    } else {
-      return 'success: deleted all items'
-    }
+  ItemModel.remove({}, (err) => {
+    if (err) return err;
+    return 'success: deleted all items';
   });
-}
+};
 
-module.exports.findByLink = (link) => {
-  return ItemModel.find({link: link});
-}
+module.exports.findByLink = (l) => ItemModel.find({
+  link: l,
+});

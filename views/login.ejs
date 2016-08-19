@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Login</title>
+    <% if (process.env.SUB_APP && process.env.OUTER_APP_DIR) {%>
+      <%- include(process.env.OUTER_APP_DIR+'/views/partials/head') %>
+    <% } else { %>
+      <% include partials/head %>
+    <% } %>
+  </head>
+  <body>
+    <% if (process.env.SUB_APP && process.env.OUTER_APP_DIR) {%>
+      <%- include(process.env.OUTER_APP_DIR+'/views/partials/nav') %>
+    <% } else { %>
+      <% include partials/nav %>
+    <% } %>
+
+    <div class="container-fluid">
+      <a href="/auth/google">Login</a>
+    </div>
+    <% if (process.env.SUB_APP && process.env.OUTER_APP_DIR) {%>
+      <%- include(process.env.OUTER_APP_DIR+'/views/partials/footer') %>
+    <% } else { %>
+      <% include partials/footer %>
+    <% } %>
+  </body>
+</html>

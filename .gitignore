@@ -6,3 +6,4 @@ dist/
 lib/js/
 .env
 npm-debug.log
+private-auth.js
