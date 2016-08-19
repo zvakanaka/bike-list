@@ -49,7 +49,7 @@ gulp.task('watch-it', function() {
 });
 
 gulp.task('browser-sync', ['nodemon'], function() {
-  if (process.env.NODE_ENV != 'dev') {
+  if (process.env.NODE_ENV === 'dev') {
     // for more browser-sync config options: http://www.browsersync.io/docs/options/
     browserSync({
       proxy: 'http://localhost:' + PORTNO,
@@ -61,7 +61,7 @@ gulp.task('browser-sync', ['nodemon'], function() {
 });
 
 gulp.task('bs-reload', function() {
-  if (process.env.NODE_ENV != 'dev') {
+  if (process.env.NODE_ENV !== 'dev') {
     browserSync.reload();
   } else {
     console.log('ERROR: Must set NODE_ENV=dev in .env for browserSync');
@@ -70,7 +70,7 @@ gulp.task('bs-reload', function() {
 });
 
 gulp.task('nodemon', function(cb) {
-  if (process.env.NODE_ENV != 'dev') {
+  if (process.env.NODE_ENV === 'dev') {
     var called = false;
     return nodemon({
       script: 'app.js',
