@@ -29,16 +29,17 @@ module.exports.craigslist = (options) => {
 console.log(listingLength, 'rows found');
       if (listingLength !== 0) {
         $(".row").each(function(index) {
-          let img = $(this).find('img')['0']['attribs']['src'];
-          if (img !== undefined) {
+//	console.log('img find:', 
+  //        let img = $(this).find('img')['0']['attribs']['src'];
+    //      if (img !== undefined) {
             // img = img.substring(img.indexOf("reuestUrl(")+4, img.indexOf(')'));
             // img = img.substr(0, img.indexOf('?'));//remove query params
-          } else {
-            img = 'images/not-found.png';
-          }
+      //    } else {
+          const  img = 'images/not-found.png';
+        //  }
           console.log(img);
           const title = $(this).find('#titletextonly').text().trim();
-          let link = siteUrl + $(this).find('hdrlnk')['attribs']['href'];
+          let link = siteUrl + $(this).find('.pl a')['0']['attribs']['href'];
           // link = link.substr(0, link.indexOf('?'));//remove query params
           const price = $(this).find('.price').text().trim().substr(1);
           // const mileage = $(this).find('.mileage').text().trim();
