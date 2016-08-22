@@ -199,7 +199,7 @@ app.get('/db/reset', function(req, res) {
 function ensureAuthenticated(req, res, next) {
   if (req.isAuthenticated()) { return next(); }
   console.log('Not authenticated - redirecting');
-  res.redirect('/login');
+  res.redirect('/auth/google');
 }
 
 if (process.env.SUB_APP) {
