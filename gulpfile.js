@@ -150,9 +150,10 @@ gulp.task('transpile', function() {
 
 // call via 'gulp screenshot'. App must be running
 gulp.task('screenshot', function() {
+  console.log('Saving screenshot to', __dirname + SCREENSHOT_FILE);
   if (process.env.NODE_ENV === 'dev') {
     screenshot('http://localhost:' + PORTNO)
-    .width(900)
+    .width(950)
     .height(600)
     .clip()
     .format('jpg')
