@@ -9,7 +9,6 @@ var mongoItem = require('./lib/js/mongoItem.js');
 var passport = require('passport');
 var config = require('./private-auth.js');
 var GoogleStrategy = require('passport-google-oauth2').Strategy;
-// var methodOverride = require('method-override');
 
 env(__dirname+'/.env');
 
@@ -47,7 +46,6 @@ app.set('view engine', 'ejs');
 app.use(express.static(path.join(__dirname, 'dist')));
 app.use('/components', express.static(__dirname + '/components'));
 
-// app.use(express.methodOverride());
 app.use(require('express-session')({
     secret: 'keyboard cat',
     resave: false,
