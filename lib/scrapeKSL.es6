@@ -1,7 +1,7 @@
 const cheerio = require('cheerio');
 const request = require('sync-request');
 const sendMail = require('./sendMail.js');
-const mongoItem = require('./mongoItem.js');
+const mongoService = require('./mongoService.js');
 
 // http://www.shopgoodwill.com/search/SearchKey.asp?itemTitle=bow&catid=279&sellerID=all&closed=no&minPrice=0&maxPrice=200&sortBy=itemEndTime&SortOrder=a&showthumbs=on
 // https://losangeles.craigslist.org/search/sga?max_price=200&sort=rel&query=bow&postal=90620&search_distance=30
@@ -57,11 +57,11 @@ console.log(listingLength, 'rows found');
               price: price, info: info,
               place: place, date: new Date() };
 
-          const result = mongoItem.findByLink(link);
+          const result = mongoService.findByLink(link);
           result.exec(function(err, result) {
             if (!err) {
               if (result && result.length === 0) {//NEW! if not found
-                mongoItem.insert(item);
+                mongoService.insert(item);
                 sendMail.sendText([item]);
               } else {
                 console.log('EXISTING LINK FOUND', result[0].link)
@@ -133,11 +133,11 @@ module.exports.cars = (options) => {
             price: price, info: mileage,
             place: place, date: date};
 
-        const result = mongoItem.findByLink(link);
+        const result = mongoService.findByLink(link);
         result.exec(function(err, result) {
           if (!err) {
             if (result && result.length === 0) {//NEW! if not found
-              mongoItem.insert(item);
+              mongoService.insert(item);
               sendMail.sendText([item]);
             } else {
               console.log('EXISTING LINK FOUND', result[0].link)
@@ -208,11 +208,11 @@ module.exports.scrapeKsl = function (searchTerm, options) {
             price: price, info: description,
             place: place, date: date};
 
-        const result = mongoItem.findByLink(link);
+        const result = mongoService.findByLink(link);
         result.exec(function(err, result) {
           if (!err) {
             if (result && result.length === 0) {//NEW! if not found
-              mongoItem.insert(item);
+              mongoService.insert(item);
               sendMail.sendText([item]);
               console.log('NEW ITEM FOUND     ', item.title, item.link);
             } else {

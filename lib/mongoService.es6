@@ -13,6 +13,43 @@ mongoose.connect(MONGO_URI, (err, res) => {
   }
 });
 
+// This is one way to make a model inline
+const User = mongoose.model('User', {
+  oauthID: Number,
+  name: String,
+  created: Date
+});
+
+module.exports.saveOrLoginUser = (profile) => {
+  var promise = new Promise((resolve, reject) => {
+    User.findOne({ oauthID: profile.id }, function(err, user) {
+      if(err) {
+        console.log('Mongo Error', err);  // handle errors!
+        reject(err);
+      }
+      if (!err && user !== null) {
+        console.log('User found:', profile.email);
+        resolve(user);
+      } else {
+        user = new User({
+          oauthID: profile.id,
+          name: profile.displayName,
+          created: Date.now()
+        });
+        user.save(function(err) {
+          if(err) {
+            console.log(err);  // handle errors!
+          } else {
+            console.log("Saving user", profile.email);
+            resolve(user);
+          }
+        });
+      }
+    });
+  });
+  return promise;
+};
+
 // Item schema holds items and itemTypes
 const itemSchema = new mongoose.Schema({
     // seq: { type: Number, unique:true, sparse:true },
@@ -27,6 +64,7 @@ const itemSchema = new mongoose.Schema({
   creationDate: Date,
   deleted: { type: Boolean, default: false },
 });
+// This is the other way to make a model
 const ItemModel = mongoose.model('Items', itemSchema);
 
 function saveItem(item) {

@@ -5,7 +5,7 @@ var debug = require('debug')('http');
 var path = require('path');
 var middleware = require('./lib/middleware/middleware.js');
 var scrapeKSL = require('./lib/js/scrapeKSL.js');
-var mongoItem = require('./lib/js/mongoItem.js');
+var mongoService = require('./lib/js/mongoService.js');
 var passport = require('passport');
 var config = require('./private-auth.js');
 var GoogleStrategy = require('passport-google-oauth2').Strategy;
@@ -23,18 +23,22 @@ env(__dirname+'/.env');
    done(null, obj);
  });
 
-passport.use(new GoogleStrategy({
-  clientID: config.google.clientID,
-  clientSecret: config.google.clientSecret,
-  callbackURL: config.google.callbackURL,
-  passReqToCallback: true
-  },
-  function(request, accessToken, refreshToken, profile, done) {
-    process.nextTick(function () {
-      return done(null, profile);
-    });
-  }
-));
+ passport.use(new GoogleStrategy({
+   clientID: config.google.clientID,
+   clientSecret: config.google.clientSecret,
+   callbackURL: config.google.callbackURL
+   },
+   function(request, accessToken, refreshToken, profile, done) {
+     mongoService.saveOrLoginUser(profile)
+     .then(function() {
+       done(null, profile);
+     })
+     .catch(function() {
+       console.log('ERROR');
+       done(null, profile);
+     });
+   }
+ ));
 
 var app = express();
 var bodyParser = require('body-parser');
@@ -69,7 +73,7 @@ app.get('/list', ensureAuthenticated, function(req, res) {
   debug('GET /list');
 
   var siteUrl = 'https://www.ksl.com/auto/search/index';
-  var results = mongoItem.getAll();
+  var results = mongoService.getAll();
   results.exec(function(err, result) {
     if (!err) {
       console.log('Rendering');
@@ -101,8 +105,8 @@ app.get('/', function(req, res) {
 });
 
 app.get('/account', ensureAuthenticated, function(req, res){
-  console.log('USER:');
-  console.log(req.user);
+  //console.log('USER:');
+  //console.log(req.user);
   res.render('account', {
             itemType: process.env.ITEM_TYPE || 'Item',
             user: req.user });
@@ -143,7 +147,7 @@ app.get('/car', function(req, res) {
 });
 
 app.get('/db/all', function(req, res) {
-  var results = mongoItem.getAll();
+  var results = mongoService.getAll();
   res.type('json');
   results.exec(function(err, result) {
     if (!err) {
@@ -185,7 +189,7 @@ app.get('/cl', function(req, res) {
 });
 
 app.get('/db/reset', function(req, res) {
-  var status = mongoItem.deleteAll();
+  var status = mongoService.deleteAll();
   if (process.env.SUB_APP) {
     res.redirect('/scrape/db/all');
   } else {

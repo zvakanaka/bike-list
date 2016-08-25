@@ -19,7 +19,7 @@
       <p>
         WELCOME <%= user.displayName %>! YOU ARE LOGGED IN
       </p>
-      <a href="/auth/google">Logout</a>
+      <a href="/logout">Logout</a>
     </div>
     <% if (process.env.SUB_APP && process.env.OUTER_APP_DIR) {%>
       <%- include(process.env.OUTER_APP_DIR+'/views/partials/footer') %>
