@@ -4,7 +4,7 @@ var express = require ('express');
 var debug = require('debug')('http');
 var path = require('path');
 var middleware = require('./lib/middleware/middleware.js');
-var scrapeKSL = require('./lib/js/scrapeKSL.js');
+var scrapers = require('./lib/js/scrapers.js');
 var mongoService = require('./lib/js/mongoService.js');
 var passport = require('passport');
 var config = require('./private-auth.js');
@@ -134,7 +134,7 @@ app.get('/car', function(req, res) {
   debug('GET /car');
   res.type('json');
   var siteUrl = 'https://www.ksl.com/auto/search/index';
-  scrapeKSL.cars({ zip: 84606,
+  scrapers.cars({ zip: 84606,
               minPrice: 30,
               maxPrice: 4000,
               resultsPerPage: 50,
@@ -163,7 +163,7 @@ app.get('/db/all', function(req, res) {
 app.get('/item', function(req, res) {
   debug('GET /item');
   res.type('json');
-  scrapeKSL.scrapeKsl('canon', { zip: 84606,
+  scrapers.scrapers('canon', { zip: 84606,
               minPrice: 30,
               maxPrice: 200,
               resultsPerPage: 50,
@@ -178,7 +178,7 @@ app.get('/item', function(req, res) {
 app.get('/cl', function(req, res) {
   debug('GET /cl');
   res.type('json');
-  scrapeKSL.craigslist({ zip: 90620,
+  scrapers.craigslist({ zip: 90620,
               searchTerm: 'Bow',
               maxPrice: 200 })
   .then(function (listings) {
