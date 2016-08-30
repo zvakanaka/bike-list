@@ -19,7 +19,15 @@
       <p>
         WELCOME <%= user.displayName %>! YOU ARE LOGGED IN
       </p>
-      <a href="/logout">Logout</a>
+      <ul>
+        <li><a href="/logout">Logout</a></li>
+        <li><a href="/car">Scrape Cars</a></li>
+        <li><a href="/cl">Scrape Craigslist</a></li>
+        <li><a href="/item">Scrape KSL</a></li>
+        <li><a href="/db/reset">Reset All</a></li>
+        <li><a href="/db/all">Check All</a></li>
+
+      </ul>
     </div>
     <% if (process.env.SUB_APP && process.env.OUTER_APP_DIR) {%>
       <%- include(process.env.OUTER_APP_DIR+'/views/partials/footer') %>

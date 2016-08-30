@@ -94,6 +94,28 @@ module.exports.insert = (item) => {
   return insertStatus;
 };
 
+module.exports.updateItemsDeleted = (itemType, deleted) => {
+  const promise = new Promise((resolve, reject) => {
+    ItemModel.update({itemType:itemType}, {deleted: deleted}, {multi: true},
+        function(err, num) {
+            console.log("updated "+num);
+            if (!err) {
+              resolve(num);
+            } else {
+              reject(err);
+            }
+        });
+  });
+  return promise;
+}
+
+module.exports.updateItemDeleted = (link, deleted) => {
+  ItemModel.update({ link: link }, { $set: { deleted: deleted }}, (err) => {
+    if (err) console.log('err', err);
+  });
+}
+
+module.exports.getActive = () => ItemModel.find({ deleted: false });
 module.exports.getAll = () => ItemModel.find();
 
 module.exports.deleteAll = () => {
