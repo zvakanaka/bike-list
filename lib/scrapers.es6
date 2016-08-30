@@ -4,7 +4,92 @@ const sendMail = require('./sendMail.js');
 const mongoService = require('./mongoService.js');
 
 // http://www.shopgoodwill.com/search/SearchKey.asp?itemTitle=bow&catid=279&sellerID=all&closed=no&minPrice=0&maxPrice=200&sortBy=itemEndTime&SortOrder=a&showthumbs=on
-// https://losangeles.craigslist.org/search/sga?max_price=200&sort=rel&query=bow&postal=90620&search_distance=30
+
+module.exports.goodwill = (options) => {
+    console.log('Scraping craigslist...');
+    const promise = new Promise((resolve, reject) => {
+      const city = options.city || 'orangecounty';
+      const searchTerm = options.searchTerm || 'bo';
+      const siteUrl = `http://www.shopgoodwill.com`;
+      const zip = options.zip || 90620;
+      const minPrice = options.minPrice || 1; // TODO: implement
+      const maxPrice = options.maxPrice || 200;
+      const section = options.section || '279';
+      const maxMiles = options.maxMiles || 30; // distance from zip in miles
+
+      const reuestUrl = `${siteUrl}/search/SearchKey.asp?itemTitle=${searchTerm}&catid=${section}&sellerID=all&closed=no&minPrice=${minPrice}&maxPrice=${maxPrice}&sortBy=itemEndTime&SortOrder=a&showthumbs=on`;
+      console.log('About to make request to', reuestUrl);
+      const response = request('GET', reuestUrl);
+      console.log('Getting\n'+reuestUrl+' ...');
+      const $ = cheerio.load(response.getBody());
+      const listings = [];
+      const selector = 'tr';
+      console.log($(selector));
+      const listingLength = $(selector).length;//to know when to resolve
+console.log(listingLength, 'rows found');
+      if (listingLength !== 0) {
+        $(selector).each(function(index) {
+//	console.log('img find:',
+  //        let img = $(this).find('img')['0']['attribs']['src'];
+    //      if (img !== undefined) {
+            // img = img.substring(img.indexOf("reuestUrl(")+4, img.indexOf(')'));
+            // img = img.substr(0, img.indexOf('?'));//remove query params
+      //    } else {
+          const  img = 'images/not-found.png';
+        //  }
+          console.log('img', img);
+          // const title = $(this).find('#titletextonly').text().trim();
+          const title = $(this).find('a').text().trim();
+console.log('title:', title);
+          let link = '';
+          if (title !== '') {
+            link = $(this).find('.row a');
+          }
+
+console.log('link', link);
+          // link = link.substr(0, link.indexOf('?'));//remove query params
+          let price = $(this).find('b').text().trim().substr(1);
+
+          // const mileage = $(this).find('.mileage').text().trim();
+          // let dateTemp = $(this).find('.nowrap').text().trim();
+          // let dateFormatted = dateTemp.substring(dateTemp.indexOf('min(')+4, dateTemp.indexOf(')'));
+          // let dateVal ="/Date("+dateFormatted+"000)/";
+          // const date = new Date(parseFloat(dateVal.substr(6)));
+          //TODO: get real place
+          const place = 'CA';
+          const info = '';
+
+          const item = { itemType: searchTerm,
+              img: img,
+              title: title, link: link,
+              price: price, info: info,
+              place: place, date: new Date() };
+
+          const result = mongoService.findByLink(link);
+          result.exec(function(err, result) {
+            if (!err) {
+              if (result && result.length === 0) {//NEW! if not found
+                mongoService.insert(item);
+                sendMail.sendText([item]);
+              } else {
+                console.log('EXISTING LINK FOUND', result[0].link)
+              }
+            }
+            else {
+              console.log('Error');
+            }
+            if (index === listingLength-3) {
+              resolve(listings);//done checking duplicates in $list
+            }
+            listings.push(item);
+          });
+        });
+      } else {
+        reject(Error('Error: no listings'));
+      }
+    });
+    return promise;
+}
 
 module.exports.craigslist = (options) => {
     console.log('Scraping craigslist...');

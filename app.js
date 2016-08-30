@@ -45,6 +45,8 @@ var bodyParser = require('body-parser');
 app.use(bodyParser.json()); // support json encoded bodies
 app.use(bodyParser.urlencoded({ extended: true })); // support encoded bodies
 
+app.set('json spaces', 2);
+
 app.set("views", path.join(__dirname, "views"));
 app.set('view engine', 'ejs');
 app.use(express.static(path.join(__dirname, 'dist')));
@@ -185,6 +187,18 @@ app.get('/cl', function(req, res) {
     res.send(listings);
   }).catch(function (listings) {
     res.send(err);
+  });
+});
+
+app.get('/gw', function(req, res) {
+  debug('GET /gw');
+  res.type('json');
+  scrapers.goodwill({ searchTerm: 'Bo',
+              maxPrice: 200 })
+  .then(function (listings) {
+    res.json(listings);
+  }).catch(function (listings) {
+    res.json(err);
   });
 });
 
