@@ -9,16 +9,16 @@ const mongoService = require('./mongoService.js');
 module.exports.craigslist = (options) => {
     console.log('Scraping craigslist...');
     const promise = new Promise((resolve, reject) => {
-      const city = options.city || 'losangeles';
+      const city = options.city || 'orangecounty';
       const searchTerm = options.searchTerm || 'bow';
-      const siteUrl = `https://${city}.craigslist.org/search`;
+      const siteUrl = `https://${city}.craigslist.org`;
       const zip = options.zip || 90620;
       const minPrice = options.minPrice || 1; // TODO: implement
-      const maxPrice = options.maxPrice || 2000;
+      const maxPrice = options.maxPrice || 200;
       const section = options.section || 'sga';
       const maxMiles = options.maxMiles || 30; // distance from zip in miles
 
-      const reuestUrl = `${siteUrl}/${section}?query=${searchTerm}&sort=rel&search_distance=${maxMiles}&max_price=${maxPrice}&postal=${zip}`;
+      const reuestUrl = `${siteUrl}/search/${section}?query=${searchTerm}&sort=rel&search_distance=${maxMiles}&max_price=${maxPrice}&postal=${zip}`;
       console.log('About to make request to', reuestUrl);
       const response = request('GET', reuestUrl);
       console.log('Getting\n'+reuestUrl+' ...');
@@ -29,7 +29,7 @@ module.exports.craigslist = (options) => {
 console.log(listingLength, 'rows found');
       if (listingLength !== 0) {
         $(".row").each(function(index) {
-//	console.log('img find:', 
+//	console.log('img find:',
   //        let img = $(this).find('img')['0']['attribs']['src'];
     //      if (img !== undefined) {
             // img = img.substring(img.indexOf("reuestUrl(")+4, img.indexOf(')'));
@@ -37,11 +37,15 @@ console.log(listingLength, 'rows found');
       //    } else {
           const  img = 'images/not-found.png';
         //  }
-          console.log(img);
-          const title = $(this).find('#titletextonly').text().trim();
+          console.log('img', img);
+          // const title = $(this).find('#titletextonly').text().trim();
+          const title = $(this).find('.pl a').text().trim();
+console.log('title:', title);
           let link = siteUrl + $(this).find('.pl a')['0']['attribs']['href'];
           // link = link.substr(0, link.indexOf('?'));//remove query params
-          const price = $(this).find('.price').text().trim().substr(1);
+          let price = $(this).find('.price').text().trim().substr(1);
+          price = price.substr(0, price.indexOf('$'));
+
           // const mileage = $(this).find('.mileage').text().trim();
           // let dateTemp = $(this).find('.nowrap').text().trim();
           // let dateFormatted = dateTemp.substring(dateTemp.indexOf('min(')+4, dateTemp.indexOf(')'));
@@ -49,7 +53,7 @@ console.log(listingLength, 'rows found');
           // const date = new Date(parseFloat(dateVal.substr(6)));
           //TODO: get real place
           const place = 'CA';
-          const info = 'change this yo';
+          const info = '';
 
           const item = { itemType: searchTerm,
               img: img,
@@ -97,7 +101,7 @@ module.exports.cars = (options) => {
     const minMiles = options.minMiles || 0;
     const maxMiles = options.maxMiles || 200000;
 
-    const url = `${siteUrl}?keyword=${searchTerm}&make%5B%5D=Honda&make%5B%5D=Toyota&make%5B%5D=Nissan&yearFrom=${minYear}&yearTo=${maxYear}&mileageFrom=${minMiles}&mileageTo=${maxMiles}&priceFrom=${minPrice}&priceTo=${maxPrice}&zip=${zip}&miles=${0}&newUsed%5B%5D=${'Used'}&newUsed%5B%5D=${'Certified'}&page=${0}&sellerType=${'For+Sale+By+Owner'}&postedTime=${'15DAYS'}&titleType=${'Clean+Title'}&sort=0&body=&transmission=&cylinders=&liters=&fuel=&drive=&numberDoors=&exteriorCondition=&interiorCondition=&cx_navSource=hp_search&search.x=65&search.y=7&search=Search+raquo%3B`;
+    const url = `${siteUrl}?keyword=${searchTerm}&make%5B%5D=Honda&make%5B%5D=Toyota&make%5B%5D=Nissan&yearFrom=${minYear}&yearTo=${maxYear}&mileageFrom=${minMiles}&mileageTo=${maxMiles}&priceFrom=${minPrice}&priceTo=${maxPrice}&zip=${zip}&miles=${0}&newUsed%5B%5D=${'Used'}&newUsed%5B%5D=${'Certified'}&page=${0}&sellerType=${'For+Sale+By+Owner'}&postedTime=${'15DAYS'}&titleType=${'Clean+Title'}&sort=5&body=&transmission=&cylinders=&liters=&fuel=&drive=&numberDoors=&exteriorCondition=&interiorCondition=&cx_navSource=hp_search&search.x=65&search.y=7&search=Search+raquo%3B`;
 
     const response = request('GET', url);
     console.log('Getting\n'+url+' ...');
@@ -168,7 +172,7 @@ module.exports.scrapers = function (searchTerm, options) {
     const minPrice = options.minPrice || 30;
     const maxPrice = options.maxPrice || 200;
     const resultsPerPage = options.resultsPerPage || 50;
-    const sortType = options.sortType || 0;// newest to oldest
+    const sortType = options.sortType || 5;// newest to oldest
 
     const url = `${siteUrl}?nid=231&sid=74268&cat=&search=${searchTerm}&zip=${zip}&distance=&min_price=${minPrice}&max_price=${maxPrice}&type=&category=&subcat=&sold=&city=&addisplay=&userid=&markettype=sale&adsstate=&nocache=1&o_facetSelected=&o_facetKey=&o_facetVal=&viewSelect=list&viewNumResults=${resultsPerPage}&sort=${sortType}`;
 
@@ -198,7 +202,7 @@ module.exports.scrapers = function (searchTerm, options) {
         //date
         let date = new Date()
         //description
-        let description = 'TODO: implement description'
+        let description = ''
         //TODO: get real place
         const place = 'UT';
 
