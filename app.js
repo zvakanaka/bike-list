@@ -70,19 +70,22 @@ if (!process.env.SUB_APP) {
 
 app.use(middleware);
 
+app.get('/manifest.json', ensureAuthenticated, function(req, res) {
+  debug('GET /manifest.json');
+  res.sendFile(__dirname + '/dist/vendors/manifest.json');
+});
+
 // index page
 app.get('/list', ensureAuthenticated, function(req, res) {
   debug('GET /list');
 
-  var siteUrl = 'https://www.ksl.com/auto/search/index';
-  var results = mongoService.getAll();
+  var results = mongoService.getActive();
   results.exec(function(err, result) {
     if (!err) {
       console.log('Rendering');
       res.render('index', {
-        page: process.env.SUB_APP ? req.url+'scrape' : req.url,//url
+        page: process.env.SUB_APP ? req.url + 'scrape' : req.url,//url
         itemType: process.env.ITEM_TYPE || 'Item',
-        siteUrl: siteUrl,
         listingData: result,
         user: req.user
       });
@@ -90,9 +93,8 @@ app.get('/list', ensureAuthenticated, function(req, res) {
     else {
       console.log('Rendering');
       res.render('index', {
-        page: process.env.SUB_APP ? req.url+'scrape' : req.url,//url
+        page: process.env.SUB_APP ? req.url + 'scrape' : req.url,//url
         itemType: process.env.ITEM_TYPE || 'Item',
-        siteUrl: siteUrl,
         listingData: [],
         error: 'empty',
         user: req.user
@@ -165,7 +167,7 @@ app.get('/db/all', function(req, res) {
 app.get('/item', function(req, res) {
   debug('GET /item');
   res.type('json');
-  scrapers.scrapers('canon', { zip: 84606,
+  scrapers.ksl('canon', { zip: 84606,
               minPrice: 30,
               maxPrice: 200,
               resultsPerPage: 50,

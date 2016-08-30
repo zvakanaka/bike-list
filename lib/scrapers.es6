@@ -113,56 +113,68 @@ module.exports.craigslist = (options) => {
       const listingLength = $('.row').length;//to know when to resolve
 console.log(listingLength, 'rows found');
       if (listingLength !== 0) {
-        $(".row").each(function(index) {
-//	console.log('img find:',
-  //        let img = $(this).find('img')['0']['attribs']['src'];
-    //      if (img !== undefined) {
-            // img = img.substring(img.indexOf("reuestUrl(")+4, img.indexOf(')'));
-            // img = img.substr(0, img.indexOf('?'));//remove query params
-      //    } else {
-          const  img = 'images/not-found.png';
-        //  }
-          console.log('img', img);
-          // const title = $(this).find('#titletextonly').text().trim();
-          const title = $(this).find('.pl a').text().trim();
-console.log('title:', title);
-          let link = siteUrl + $(this).find('.pl a')['0']['attribs']['href'];
-          // link = link.substr(0, link.indexOf('?'));//remove query params
-          let price = $(this).find('.price').text().trim().substr(1);
-          price = price.substr(0, price.indexOf('$'));
+        // set all previous to deleted and reset to true if we find same again
+        mongoService.updateItemsDeleted(searchTerm, true).then((mRes) => {
+          $(".row").each(function(index) {
+            let  img = 'images/not-found.png';
+            let imageTest = $(this).find('.px').text();
+            let hasImage = true;
+            if (imageTest.indexOf('pic') === -1) {
+              hasImage = false;
+            }
+            console.log('hasImage', hasImage);
+            const title = $(this).find('.pl a').text().trim();
+  console.log('title:', title);
+            let link = siteUrl + $(this).find('.pl a')['0']['attribs']['href'];
+            let price = $(this).find('.price').text().trim().substr(1);
+            price = price.substr(0, price.indexOf('$'));
 
-          // const mileage = $(this).find('.mileage').text().trim();
-          // let dateTemp = $(this).find('.nowrap').text().trim();
-          // let dateFormatted = dateTemp.substring(dateTemp.indexOf('min(')+4, dateTemp.indexOf(')'));
-          // let dateVal ="/Date("+dateFormatted+"000)/";
-          // const date = new Date(parseFloat(dateVal.substr(6)));
-          //TODO: get real place
-          const place = 'CA';
-          const info = '';
+            // let dateTemp = $(this).find('.nowrap').text().trim();
+            // let dateFormatted = dateTemp.substring(dateTemp.indexOf('min(')+4, dateTemp.indexOf(')'));
+            // let dateVal ="/Date("+dateFormatted+"000)/";
+            // const date = new Date(parseFloat(dateVal.substr(6)));
+            //TODO: get real place
+            const place = 'CA';
+            const info = '';
 
-          const item = { itemType: searchTerm,
-              img: img,
-              title: title, link: link,
-              price: price, info: info,
-              place: place, date: new Date() };
+            const item = { itemType: searchTerm,
+                img: img,
+                title: title, link: link,
+                price: price, info: info,
+                place: place, date: new Date() };
 
-          const result = mongoService.findByLink(link);
-          result.exec(function(err, result) {
-            if (!err) {
-              if (result && result.length === 0) {//NEW! if not found
-                mongoService.insert(item);
-                sendMail.sendText([item]);
-              } else {
-                console.log('EXISTING LINK FOUND', result[0].link)
+            const result = mongoService.findByLink(link);
+            result.exec(function(err, result) {
+              if (!err) {
+                if (result && result.length === 0) {//NEW! if not found
+                  //TODO: scrape image here
+                  if (link.startsWith('https://') && !link.includes('//', 7)) {
+                    if (hasImage) {
+                      console.log('MAKING REQUEST FOR IMG TO ', link);
+                      const imgRequest = request('GET', link);
+                      const $img = cheerio.load(imgRequest.getBody());
+                      item.img = $img('.swipe-wrap').find('div').children('img')[0].attribs.src;
+                    } else console.log('NO IMAGE FOR', link);
+                    console.log('Thumbnail', item.img);
+                  } else {
+                    console.log('URL Error:', link);
+                  }
+                  mongoService.insert(item);
+                  sendMail.sendText([item]);
+                } else {
+                  console.log('EXISTING LINK FOUND', result[0].link)
+                  // set to active
+                  mongoService.updateItemDeleted(result[0].link, false);
+                }
               }
-            }
-            else {
-              console.log('Error');
-            }
-            if (index === listingLength-1) {
-              resolve(listings);//done checking duplicates in $list
-            }
-            listings.push(item);
+              else {
+                console.log('Error');
+              }
+              if (index === listingLength-1) {
+                resolve(listings);//done checking duplicates in $list
+              }
+              listings.push(item);
+            });
           });
         });
       } else {
@@ -193,52 +205,56 @@ module.exports.cars = (options) => {
     const $ = cheerio.load(response.getBody());
     const listings = [];
     const listingLength = $('.listing').length;//to know when to resolve
-
     if (listingLength !== 0) {
-      $(".listing").each(function(index) {
-        let img = $(this).find('.photo')['0']['attribs']['style'];
-        if (img !== undefined) {
-          img = img.substring(img.indexOf("url(")+4, img.indexOf(')'));
-          img = img.substr(0, img.indexOf('?'));//remove query params
-        } else {
-          img = 'images/not-found.png';
-        }
-        console.log(img);
-        const title = $(this).find('.title').text().trim();
-        let link = 'http://www.ksl.com' + $(this).find('.title .link')['0']['attribs']['href'];
-        link = link.substr(0, link.indexOf('?'));//remove query params
-        const price = $(this).find('.price').text().trim().substr(1);
-        const mileage = $(this).find('.mileage').text().trim();
-        let dateTemp = $(this).find('.nowrap').text().trim();
-        let dateFormatted = dateTemp.substring(dateTemp.indexOf('min(')+4, dateTemp.indexOf(')'));
-        let dateVal ="/Date("+dateFormatted+"000)/";
-        const date = new Date(parseFloat(dateVal.substr(6)));
-        //TODO: get real place
-        const place = 'UT';
+      // set all previous to deleted and reset to true if we find same again
+      mongoService.updateItemsDeleted('Car', true).then((mRes) => {
+        $(".listing").each(function(index) {
+          let img = $(this).find('.photo')['0']['attribs']['style'];
+          if (img !== undefined) {
+            img = img.substring(img.indexOf("url(")+4, img.indexOf(')'));
+            img = img.substr(0, img.indexOf('?'));//remove query params
+          } else {
+            img = 'images/not-found.png';
+          }
+          console.log(img);
+          const title = $(this).find('.title').text().trim();
+          let link = 'http://www.ksl.com' + $(this).find('.title .link')['0']['attribs']['href'];
+          link = link.substr(0, link.indexOf('?'));//remove query params
+          const price = $(this).find('.price').text().trim().substr(1);
+          const mileage = $(this).find('.mileage').text().trim();
+          let dateTemp = $(this).find('.nowrap').text().trim();
+          let dateFormatted = dateTemp.substring(dateTemp.indexOf('min(')+4, dateTemp.indexOf(')'));
+          let dateVal ="/Date("+dateFormatted+"000)/";
+          const date = new Date(parseFloat(dateVal.substr(6)));
+          //TODO: get real place
+          const place = 'UT';
 
-        const item = {itemType: 'Car',
-            img: img,
-            title: title, link: link,
-            price: price, info: mileage,
-            place: place, date: date};
+          const item = {itemType: 'Car',
+              img: img,
+              title: title, link: link,
+              price: price, info: mileage,
+              place: place, date: date};
 
-        const result = mongoService.findByLink(link);
-        result.exec(function(err, result) {
-          if (!err) {
-            if (result && result.length === 0) {//NEW! if not found
-              mongoService.insert(item);
-              sendMail.sendText([item]);
-            } else {
-              console.log('EXISTING LINK FOUND', result[0].link)
+          const result = mongoService.findByLink(link);
+          result.exec(function(err, result) {
+            if (!err) {
+              if (result && result.length === 0) {//NEW! if not found
+                mongoService.insert(item);
+                sendMail.sendText([item]);
+              } else {
+                console.log('EXISTING LINK FOUND', result[0].link);
+                // set to active
+                mongoService.updateItemDeleted(result[0].link, false);
+              }
             }
-          }
-          else {
-            console.log('Error');
-          }
-          if (index === listingLength-1) {
-            resolve(listings);//done checking duplicates in $list
-          }
-          listings.push(item);
+            else {
+              console.log('Error');
+            }
+            if (index === listingLength-1) {
+              resolve(listings);//done checking duplicates in $list
+            }
+            listings.push(item);
+          });
         });
       });
     } else {
@@ -249,7 +265,7 @@ module.exports.cars = (options) => {
 }
 
 //options: zip, minPrice, maxPrice, resultsPerPage, sortType
-module.exports.scrapers = function (searchTerm, options) {
+module.exports.ksl = function (searchTerm, options) {
   console.log('SCRAPING KSL...');
   const promise = new Promise(function(resolve, reject) {
     const siteUrl = 'http://www.ksl.com/';
@@ -271,50 +287,56 @@ module.exports.scrapers = function (searchTerm, options) {
 
     console.log(listingLength, ' items found');
     if (listingLength !== 0) {
-      $(".listings .adBox").each(function(index) {
-        let img = $(this)['0'].children[0]['next'].children[0]['next'].children[0]['next']['data'];
-        if (img !== undefined) {
-          img = img.substring(img.indexOf("http://"), img.indexOf('?'));
-        } else {
-          img = 'images/not-found.png';
-        }
-        const title = $(this).find('.adTitle').text().trim()
-        let link = siteUrl + $(this).find('.listlink')['0']['attribs']['href'];
-        link = link.substr(0, link.indexOf('&cat='));//remove query params
-        let price = $(this).find('.priceBox').text().trim();
-        price = price.substring(1, price.length-2);
+      // set all previous to deleted and reset to true if we find same again
+      mongoService.updateItemsDeleted(searchTerm, true).then((mRes) => {
+        $(".listings .adBox").each(function(index) {
+          let img = $(this)['0'].children[0]['next'].children[0]['next'].children[0]['next']['data'];
+          if (img !== undefined) {
+            img = img.substring(img.indexOf("http://"), img.indexOf('?'));
+          } else {
+            img = 'images/not-found.png';
+          }
+          const title = $(this).find('.adTitle').text().trim()
+          let link = siteUrl + $(this).find('.listlink')['0']['attribs']['href'];
+          link = link.substr(0, link.indexOf('&cat='));//remove query params
+          let price = $(this).find('.priceBox').text().trim();
+          price = price.substring(1, price.length-2);
 
-        //date
-        let date = new Date()
-        //description
-        let description = ''
-        //TODO: get real place
-        const place = 'UT';
+          //date
+          let date = new Date()
+          //description
+          let description = ''
+          //TODO: get real place
+          const place = 'UT';
 
-        const item = {itemType: searchTerm,
-            img: img,
-            title: title, link: link,
-            price: price, info: description,
-            place: place, date: date};
+          const item = {itemType: searchTerm,
+              img: img,
+              title: title, link: link,
+              price: price, info: description,
+              place: place, date: date};
 
-        const result = mongoService.findByLink(link);
-        result.exec(function(err, result) {
-          if (!err) {
-            if (result && result.length === 0) {//NEW! if not found
-              mongoService.insert(item);
-              sendMail.sendText([item]);
-              console.log('NEW ITEM FOUND     ', item.title, item.link);
-            } else {
-              console.log('EXISTING LINK FOUND', item.title, result[0].link)
+          const result = mongoService.findByLink(link);
+          result.exec(function(err, result) {
+            if (!err) {
+              if (result && result.length === 0) {//NEW! if not found
+
+                mongoService.insert(item);
+                sendMail.sendText([item]);
+                console.log('NEW ITEM FOUND     ', item.title, item.link);
+              } else {
+                console.log('EXISTING LINK FOUND', item.title, result[0].link)
+                // set to active because it does still exist
+                mongoService.updateItemDeleted(result[0].link, false);
+              }
             }
-          }
-          else {
-            console.log('Error');
-          }
-          if (index === listingLength-1) {
-            resolve(listings);//done checking duplicates in $list
-          }
-          listings.push(item);
+            else {
+              console.log('Error');
+            }
+            if (index === listingLength-1) {
+              resolve(listings);//done checking duplicates in $list
+            }
+            listings.push(item);
+          });
         });
       });
     } else {
