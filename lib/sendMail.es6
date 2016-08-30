@@ -31,11 +31,14 @@ module.exports.sendText = (listings) => {
           + item.info + ' ' + item.link;
     if (index != listings.length-1) text += '\n\n';//last line
   });
-
-  mailServer.send({
-     text:    text,
-     from:    process.env.EMAIL_FROM || '',
-     to: process.env.EMAIL_TO || '',
-     subject: subject
-  }, function(err, message) { console.log(err || message); });
+  if (!process.env.NO_SEND_MAIL) {
+    mailServer.send({
+       text:    text,
+       from:    process.env.EMAIL_FROM || '',
+       to: process.env.EMAIL_TO || '',
+       subject: subject
+    }, function(err, message) { console.log(err || message); });
+  } else {
+    console.log('MAIL IS OFF: re-enable by removing config var \'NO_SEND_MAIL\'');
+  }
 };
