@@ -131,7 +131,7 @@ gulp.task('js', function(cb) {
 
 gulp.task('copy-configs', function() {
    gulp.src('./assets/manifest.json')
-   .pipe(gulp.dest('./dist/vendors/manifest.json'));
+   .pipe(gulp.dest('./dist/vendors/'));
 });
 
 gulp.task('lint', function() {
