@@ -16,18 +16,29 @@
     <% } %>
 
     <div class="container-fluid">
-      <p>
-        WELCOME <%= user.displayName %>! YOU ARE LOGGED IN
-      </p>
-      <ul>
-        <li><a href="/logout">Logout</a></li>
-        <li><a href="/car">Scrape Cars</a></li>
-        <li><a href="/cl">Scrape Craigslist</a></li>
-        <li><a href="/item">Scrape KSL</a></li>
-        <li><a href="/db/reset">Reset All</a></li>
-        <li><a href="/db/all">Check All</a></li>
 
-      </ul>
+        <div class="alert alert-info" role="alert">
+          <strong>Welcome <%= user.displayName %>!</strong> You are logged in.
+        </div>
+
+      <!-- <ul> -->
+        <!-- <li> -->
+        <a class="button btn btn-primary" href="/list">List of Active</a></li>
+
+        <a class="button btn btn-primary" href="/db/all">JSON of All</a></li>
+
+        <!-- <li> -->
+          <a class="button btn btn-primary" href="/car">Scrape Cars</a></li>
+        <!-- <li> -->
+          <a class="button btn btn-primary" href="/cl">Scrape Craigslist</a></li>
+        <!-- <li> -->
+          <a class="button btn btn-primary" href="/item">Scrape KSL</a></li>
+        <!-- <li> -->
+          <a class="button btn btn-danger" href="/db/reset">Reset All</a></li>
+        <!-- <li> -->
+        <a class="button btn btn-warning" href="/logout">Logout</a></li>
+
+      <!-- </ul> -->
     </div>
     <% if (process.env.SUB_APP && process.env.OUTER_APP_DIR) {%>
       <%- include(process.env.OUTER_APP_DIR+'/views/partials/footer') %>
