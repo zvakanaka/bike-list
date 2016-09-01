@@ -70,13 +70,13 @@ if (!process.env.SUB_APP) {
 
 app.use(middleware);
 
-app.get('/manifest.json', ensureAuthenticated, function(req, res) {
+app.get('/manifest.json', whoIsThere, function(req, res) {
   debug('GET /manifest.json');
   res.sendFile(__dirname + '/dist/vendors/manifest.json');
 });
 
 // index page
-app.get('/list', ensureAuthenticated, function(req, res) {
+app.get('/list', whoIsThere, function(req, res) {
   debug('GET /list');
 
   var results = mongoService.getActive();
@@ -108,7 +108,7 @@ app.get('/', function(req, res) {
   res.redirect('/list');
 });
 
-app.get('/account', ensureAuthenticated, function(req, res){
+app.get('/account', whoIsThere, function(req, res){
   //console.log('USER:');
   //console.log(req.user);
   res.render('account', {
@@ -192,6 +192,23 @@ app.get('/cl', function(req, res) {
   });
 });
 
+app.post('/new/cl', function(req, res) {
+  debug('POST /new/cl');
+  res.type('json');
+
+  var search = {
+    searchTerm: req.body.searchTerm || 'bike',
+    maxPrice: req.body.maxPrice || 200
+  };
+
+  scrapers.craigslist(search)
+  .then(function (listings) {
+    res.send(listings);
+  }).catch(function (listings) {
+    res.send(err);
+  });
+});
+
 app.get('/gw', function(req, res) {
   debug('GET /gw');
   res.type('json');
@@ -214,7 +231,7 @@ app.get('/db/reset', function(req, res) {
 });
 
 // test authentication
-function ensureAuthenticated(req, res, next) {
+function whoIsThere(req, res, next) {
   if (req.isAuthenticated()) { return next(); }
   console.log('Not authenticated - redirecting');
   res.redirect('/auth/google');
