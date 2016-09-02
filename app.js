@@ -70,11 +70,6 @@ if (!process.env.SUB_APP) {
 
 app.use(middleware);
 
-app.get('/manifest.json', whoIsThere, function(req, res) {
-  debug('GET /manifest.json');
-  res.sendFile(__dirname + '/dist/vendors/manifest.json');
-});
-
 // index page
 app.get('/list', whoIsThere, function(req, res) {
   debug('GET /list');
