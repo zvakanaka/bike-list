@@ -246,7 +246,7 @@ app.get('/gw', function(req, res) {
   });
 });
 
-app.delete('/db/reset', function(req, res) {
+app.get('/db/reset', function(req, res) {
   var status = mongoService.deleteAll();
   if (process.env.SUB_APP) {
     res.redirect('/scrape/db/all');
