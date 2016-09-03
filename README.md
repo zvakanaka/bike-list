@@ -1,6 +1,14 @@
 # bike-list
 ![Screenshot](screenshot/screenshot.jpg)  
 
+```sh
+npm install
+bower install
+gulp
+```  
+### System Dependencies
+`ssmtp`
+
 ## Env Setup
 Must have a file in root named `.env`  
 Required variables:  
@@ -17,9 +25,12 @@ Read into google authentication with passport [here](http://mherman.org/blog/201
 
 Optional variables:  
 ```sh
+POLLING=true
+NO_SEND_MAIL=true
 PORT=4000
 ITEM_TYPE=Camera
 NODE_ENV=dev
 SUB_APP=true
 OUTER_APP_DIR='../../howtoterminal-express'
+BROWSER='firefox'
 ```  

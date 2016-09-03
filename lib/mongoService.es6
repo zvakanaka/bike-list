@@ -16,7 +16,7 @@ mongoose.connect(MONGO_URI, (err, res) => {
 // This is one way to make a model inline
 const User = mongoose.model('User', {
   oauthID: Number,
-  name: String,
+  scrapeName: String,
   created: Date
 });
 
@@ -50,6 +50,70 @@ module.exports.saveOrLoginUser = (profile) => {
   return promise;
 };
 
+const scrapeSchema = new mongoose.Schema({
+    userId: String,
+    scrapeName: String,
+    sendTo: String,
+    sendMessage: { type: Boolean, default: true },
+    site: String, //craigslist, ksl, car, or goodwill
+    searchTerm: String,
+    maxPrice: Number,
+    section: String,
+    maxMiles: { type: Number, default: 0 },
+    minYear: Number,
+    created: Date,
+    deleted: { type: Boolean, default: false },
+  });
+const ScrapeModel = mongoose.model('Scrapes', scrapeSchema);
+
+module.exports.insertScrape = (scrape) => {
+  console.log('Inserting', scrape);
+  const scrapeToInsert = new ScrapeModel({
+    userId: scrape.userId,
+    scrapeName: scrape.scrapeName || new Date().toString().substr(0,24),
+    sendTo: scrape.sendTo,
+    sendMessage: scrape.sendMessage,
+    site: scrape.site, //craigslist, ksl, car, or goodwill
+    searchTerm: scrape.searchTerm,
+    maxPrice: scrape.maxPrice,
+    section: scrape.section || '',
+    maxMiles: scrape.maxMiles || 0,
+    minYear: scrape.minYear,
+    created: new Date(),
+  });
+
+  return new Promise((resolve, reject) => {
+      scrapeToInsert.save((err) => {
+        if (err) {
+          console.log(scrapeToInsert);
+          console.log('SAVE ERROR');
+          reject(new Error(err));
+        }
+        resolve(scrapeToInsert);
+      });
+    });;
+};
+module.exports.getAllActiveScrapes = () => ScrapeModel.find({ deleted: false });
+module.exports.getScrapesForUser = (id) => ScrapeModel.find({ userId: id });
+module.exports.deleteScrapes = (id) => {
+  if (id) {
+    ScrapeModel.remove({ userId: id}, (err) => {
+      if (err) return err;
+      return 'success: deleted all scrapes';
+    });
+  } else return new Error('Failed to specify UserId');
+};
+module.exports.deleteAllScrapes = () => {
+    const promise = new Promise((resolve, reject) => {
+      ScrapeModel.remove({}, (err) => {
+        if (err) reject(err);
+        console.log('deleted scrapes');
+        resolve ('success: deleted all scrapes');
+      });
+  });
+  return promise;
+};
+
 // Item schema holds items and itemTypes
 const itemSchema = new mongoose.Schema({
     // seq: { type: Number, unique:true, sparse:true },
@@ -77,7 +141,6 @@ function saveItem(item) {
     return status;
   });
 }
-
 module.exports.insert = (item) => {
   const itemToInsert = new ItemModel({
     itemType: item.itemType,
