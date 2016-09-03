@@ -50,63 +50,68 @@ module.exports.saveOrLoginUser = (profile) => {
   return promise;
 };
 
-const ScrapeModel = mongoose.model('PersonalScrape', {
-  oauthID: Number,
-  name: String,
-  sendTo: String,
-  sendMessage: { type: Boolean, default: true },
-  site: String, //craigslist, ksl, car, or goodwill
-  searchTerm: String,
-  maxPrice: Number,
-  section: String,
-  maxMiles: Number,
-  minYear: Number,
-  created: Date,
-  deleted: { type: Boolean, default: false },
-});
+const scrapeSchema = new mongoose.Schema({
+    userId: Number,
+    scrapeName: String,
+    sendTo: String,
+    sendMessage: { type: Boolean, default: true },
+    site: String, //craigslist, ksl, car, or goodwill
+    searchTerm: String,
+    maxPrice: Number,
+    section: String,
+    maxMiles: { type: Number, default: 0 },
+    minYear: Number,
+    created: Date,
+    deleted: { type: Boolean, default: false },
+  });
+const ScrapeModel = mongoose.model('Scrapes', scrapeSchema);
 
 module.exports.insertScrape = (scrape) => {
   console.log('Inserting', scrape);
   const scrapeToInsert = new ScrapeModel({
-    oauthID: scrape.user.oauthID,
+    userId: scrape.userId,
     scrapeName: scrape.scrapeName || new Date().toString().substr(0,24),
     sendTo: scrape.sendTo,
     sendMessage: scrape.sendMessage,
     site: scrape.site, //craigslist, ksl, car, or goodwill
     searchTerm: scrape.searchTerm,
     maxPrice: scrape.maxPrice,
-    section: scrape.section,
-    maxMiles: scrape.maxMiles,
+    section: scrape.section || '',
+    maxMiles: scrape.maxMiles || 0,
     minYear: scrape.minYear,
     created: new Date(),
   });
 
-  return new Promise((reject, resolve) => {
+  return new Promise((resolve, reject) => {
       scrapeToInsert.save((err) => {
         if (err) {
           console.log(scrapeToInsert);
           console.log('SAVE ERROR');
           reject(new Error(err));
         }
-        resolve('success');
+        resolve(scrapeToInsert);
       });
     });;
 };
 module.exports.getAllActiveScrapes = () => ScrapeModel.find({ deleted: false });
-module.exports.getScrapesForUser = (id) => ScrapeModel.find({ oathID: id });
-module.exports.deleteScrapes = (userId) => {
-  if (userId) {
-    ScrapeModel.remove({ oauthID: userId}, (err) => {
+module.exports.getScrapesForUser = (id) => ScrapeModel.find({ userId: id });
+module.exports.deleteScrapes = (id) => {
+  if (id) {
+    ScrapeModel.remove({ userId: id}, (err) => {
       if (err) return err;
       return 'success: deleted all scrapes';
     });
   } else return new Error('Failed to specify UserId');
 };
 module.exports.deleteAllScrapes = () => {
-    ScrapeModel.remove({}, (err) => {
-      if (err) return err;
-      return 'success: deleted all scrapes';
-    });
+    const promise = new Promise((resolve, reject) => {
+      ScrapeModel.remove({}, (err) => {
+        if (err) reject(err);
+        console.log('deleted scrapes');
+        resolve ('success: deleted all scrapes');
+      });
+  });
+  return promise;
 };
 
 // Item schema holds items and itemTypes
