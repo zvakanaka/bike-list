@@ -169,7 +169,7 @@ console.log(listingLength, 'rows found');
                   }
                   if (sendMail === true) {
                     console.log('Sending text to', options.sendTo);
-                    sendMail.sendText([item]);
+                    sendMail.sendText([item], options.sendTo);
                   }
                 } else {
                   console.log('EXISTING LINK FOUND', result[0].link)
