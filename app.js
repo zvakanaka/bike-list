@@ -70,16 +70,12 @@ if (!process.env.SUB_APP) {
 
 app.use(middleware);
 
-app.get('/manifest.json', ensureAuthenticated, function(req, res) {
-  debug('GET /manifest.json');
-  res.sendFile(__dirname + '/dist/vendors/manifest.json');
-});
-
 // index page
-app.get('/list', ensureAuthenticated, function(req, res) {
+app.get('/list', whoIsThere, function(req, res) {
   debug('GET /list');
 
   var results = mongoService.getActive();
+  console.dir(req.user);
   results.exec(function(err, result) {
     if (!err) {
       console.log('Rendering');
@@ -108,7 +104,7 @@ app.get('/', function(req, res) {
   res.redirect('/list');
 });
 
-app.get('/account', ensureAuthenticated, function(req, res){
+app.get('/account', whoIsThere, function(req, res){
   //console.log('USER:');
   //console.log(req.user);
   res.render('account', {
@@ -118,8 +114,7 @@ app.get('/account', ensureAuthenticated, function(req, res){
 
 app.get('/auth/google',
   passport.authenticate('google', { scope: [
-    'https://www.googleapis.com/auth/plus.login',
-    'https://www.googleapis.com/auth/plus.profile.emails.read'
+    'https://www.googleapis.com/auth/plus.login'
   ] }
 ));
 app.get('/auth/google/callback',
@@ -192,6 +187,53 @@ app.get('/cl', function(req, res) {
   });
 });
 
+app.post('/new/cl', function(req, res) {
+  debug('POST /new/cl');
+  console.log('POST /new/cl');
+  res.type('json');
+  if (!req.body.sendTo) sendMessage = false;
+
+  var search = {
+    searchTerm: req.body.searchTerm || 'bike',
+    maxPrice: req.body.maxPrice || 200,
+    insert: req.body.insert || true, // does not carry through to mongodb
+    sendMessage: req.body.sendMessage || true,
+    sendTo: req.body.sendTo,
+    userId: req.user.id,
+    section: req.body.section,
+    maxMiles: req.body.maxMiles,
+    scrapeName: req.body.scrapeName,
+    site: req.body.site
+  };
+
+  mongoService.insertScrape(search)
+    .then(function(result) {
+      console.log('Inserted', result);
+      search.sendMessage = false;// disable first messages so we don't get a million
+      console.log('Getting scrapes for ' + req.user.id);
+      var results = mongoService.getScrapesForUser(req.user.id);
+      results.exec(function(err, result) {
+        if (!err) {
+          console.log(result);
+          res.send(result);
+        }
+        else {
+          console.log();
+          console.log(result);
+          res.json(err);
+        }
+      });
+      scrapers.craigslist(search)
+      .then(function (listings) {
+        // res.send(listings);
+      }).catch(function (listings) {
+        // res.send(err);
+      });
+    }).catch(function(err) {
+      console.log('ERROR!', err, 'for', user.id);
+    });
+});
+
 app.get('/gw', function(req, res) {
   debug('GET /gw');
   res.type('json');
@@ -204,7 +246,7 @@ app.get('/gw', function(req, res) {
   });
 });
 
-app.get('/db/reset', function(req, res) {
+app.delete('/db/reset', function(req, res) {
   var status = mongoService.deleteAll();
   if (process.env.SUB_APP) {
     res.redirect('/scrape/db/all');
@@ -213,11 +255,88 @@ app.get('/db/reset', function(req, res) {
   }
 });
 
+app.get('/db/delete-scrapes', whoIsThere, function(req, res) {
+  var status = mongoService.deleteScrapes(req.user.id);
+  res.json({ success: 'deleted all scrapes for ' + req.user.id})
+});
+
+app.get('/db/my-scrapes', whoIsThere, function(req, res) {
+  console.log('Getting scrapes for ' + req.user.id);
+  var results = mongoService.getScrapesForUser(req.user.id);
+  results.exec(function(err, result) {
+    if (!err) {
+      console.log(result);
+      res.send(result);
+    }
+    else {
+      console.log();
+      console.log(result);
+      res.json(err);
+    }
+  });
+});
+
+app.get('/db/all-active-scrapes', function(req, res) {
+  console.log('Getting all active scrapes ' + req.user.id);
+  var results = mongoService.getAllActiveScrapes();
+  results.exec(function(err, result) {
+    if (!err) {
+      console.log(result);
+      res.send(result);
+    }
+    else {
+      console.log();
+      console.log(result);
+      res.json(err);
+    }
+  });
+});
+
+app.get('/db/delete-all-scrapes', whoIsThere, function(req, res) {
+  var result = mongoService.deleteAllScrapes();
+  res.json({ result: result });
+});
+
 // test authentication
-function ensureAuthenticated(req, res, next) {
+function whoIsThere(req, res, next) {
   if (req.isAuthenticated()) { return next(); }
   console.log('Not authenticated - redirecting');
   res.redirect('/auth/google');
+}
+
+// scrapes poll
+if (process.env.POLLING) {
+  var minutes = process.env.POLLING_INTERVAL_MINUTES || 30;
+  console.log('Paste the following line into \'crontab -e\' for polling every ' + minutes + ':');
+  console.log('*/' + minutes + ' * * * * echo Begin scrape $(date) >> ~/log/scrape.txt && wget -qO- localhost:5555/scrapes >> ~/log/scrape.txt && echo End scrape $(date) >> ~/log/scrape.txt');
+
+  // set up endpoint
+  app.get('/scrape', function(req, res) {
+    debug('GET /scrape');
+    res.type('json');
+
+    console.log('Scraping');
+    var results = mongoService.getAllActiveScrapes();
+    results.exec(function(err, results) {
+      if (!err) {
+        console.log(results);
+        results.forEach(function(result) {
+          console.log('Scraping:', result.site);
+          if (result.site === 'Craigslist') {
+            var options = result;
+            scrapers.craigslist(options)
+              .then(function() {
+                console.log('OPTIONS', options);
+              });
+          }
+        });
+        res.send(results);
+      }
+      else {
+        res.json(err);
+      }
+    });
+  });
 }
 
 if (process.env.SUB_APP) {
