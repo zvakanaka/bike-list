@@ -51,7 +51,7 @@ module.exports.saveOrLoginUser = (profile) => {
 };
 
 const scrapeSchema = new mongoose.Schema({
-    userId: Number,
+    userId: String,
     scrapeName: String,
     sendTo: String,
     sendMessage: { type: Boolean, default: true },
