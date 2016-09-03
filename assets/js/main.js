@@ -48,6 +48,10 @@ btnSubmit.addEventListener('click', function() {
     scrapeName:  document.getElementById('input-name').value,
     site:  document.getElementById('select-site').value
   };
-
+  // convert those checkboxes
+  if (scrapeOptions.sendMessage === 'on')
+    scrapeOptions.sendMessage = true;
+  else if (scrapeOptions.sendMessage === 'off')
+    scrapeOptions.sendMessage = false;
   addScrape(scrapeOptions);
 });

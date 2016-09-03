@@ -199,7 +199,7 @@ app.post('/new/cl', function(req, res) {
     insert: req.body.insert || true, // does not carry through to mongodb
     sendMessage: req.body.sendMessage || true,
     sendTo: req.body.sendTo,
-    user: req.user.id,
+    userId: req.user.id,
     section: req.body.section,
     maxMiles: req.body.maxMiles,
     scrapeName: req.body.scrapeName,
@@ -208,30 +208,30 @@ app.post('/new/cl', function(req, res) {
 
   mongoService.insertScrape(search)
     .then(function(result) {
+      console.log('Inserted', result);
       search.sendMessage = false;// disable first messages so we don't get a million
-      console.log('WE GET HERE!!');
+      console.log('Getting scrapes for ' + req.user.id);
+      var results = mongoService.getScrapesForUser(req.user.id);
+      results.exec(function(err, result) {
+        if (!err) {
+          console.log(result);
+          res.send(result);
+        }
+        else {
+          console.log();
+          console.log(result);
+          res.json(err);
+        }
+      });
       // scrapers.craigslist(search)
-      //   .then(function (listings) {
-      //     res.send(listings);
-      //   }).catch(function (listings) {
-      //     res.send(err);
-      //   });
+      // .then(function (listings) {
+      //   // res.send(listings);
+      // }).catch(function (listings) {
+      //   // res.send(err);
+      // });
     }).catch(function(err) {
       console.log('ERROR!', err, 'for', user.id);
-      mongoService.getScrapesForUser(user.id)
-      .then(function(scrapes) {
-        console.log(scrapes);
-        res.json(scrapes);
-      });
-      scrapers.craigslist(search)
-        .then(function (listings) {
-          // res.send(listings);
-        }).catch(function (listings) {
-          // res.send(err);
-        });
-
     });
-    console.log('SO DONE');
 });
 
 app.get('/gw', function(req, res) {
@@ -260,9 +260,36 @@ app.get('/db/delete-scrapes', whoIsThere, function(req, res) {
   res.json({ success: 'deleted all scrapes for ' + req.user.id})
 });
 
-app.get('/db/my-scrapes', whoIsThere, function(req, res) {
-  var result = mongoService.getScrapesForUser(req.user.id);
-  res.json(result);
+app.get('/db/my-scrapes', function(req, res) {
+  console.log('Getting scrapes for ' + req.user.id);
+  var results = mongoService.getScrapesForUser(req.user.id);
+  results.exec(function(err, result) {
+    if (!err) {
+      console.log(result);
+      res.send(result);
+    }
+    else {
+      console.log();
+      console.log(result);
+      res.json(err);
+    }
+  });
+});
+
+app.get('/db/all-active-scrapes', function(req, res) {
+  console.log('Getting all active scrapes ' + req.user.id);
+  var results = mongoService.getAllActiveScrapes();
+  results.exec(function(err, result) {
+    if (!err) {
+      console.log(result);
+      res.send(result);
+    }
+    else {
+      console.log();
+      console.log(result);
+      res.json(err);
+    }
+  });
 });
 
 app.get('/db/delete-all-scrapes', whoIsThere, function(req, res) {
@@ -288,11 +315,21 @@ if (process.env.POLLING) {
     debug('GET /scrape');
     res.type('json');
 
-    mongoService.getActiveScrapes()
-      .then(function(activeScrapes) {
-        console.log(activeScrapes);
-        res.json(activeScrapes);
-      });
+    console.log('Getting scrapes for ' + req.user.id);
+    var results = mongoService.getAllActiveScrapes();
+    results.exec(function(err, results) {
+      if (!err) {
+        console.log(results);
+        results.forEach(function(result) {
+          console.log('RESULT', result);
+          
+        });
+        res.send(results);
+      }
+      else {
+        res.json(err);
+      }
+    });
 
     // scrapers.goodwill({ searchTerm: 'Bo',
     //             maxPrice: 200 })
