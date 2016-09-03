@@ -1,6 +1,6 @@
 // Send new item reports through email
-const env = require('node-env-file'),
-      email = require("emailjs");
+const env = require('node-env-file');
+const email = require("emailjs");
 //Put the following in .env:
 //EMAIL_FROM='example@gmail.com'
 //EMAIL_PASSWORD='pass'
@@ -20,10 +20,11 @@ const mailServer = email.server.connect({
  array of results to send
  ********/
 module.exports.sendText = (listings) => {
+  console.log("Sending Text");
   let subject = listings.length;
   let itemType = process.env.ITEM_TYPE || 'item'
-  if (listings.length == 1) subject += ' new '+itemType+'s\n';
-  else subject += ' new '+itemType+'\n';
+  if (listings.length === 1) subject += ' new '+itemType+'\n';
+  else subject += ' new '+itemType+'s\n';
   let text = subject;
 
   listings.forEach(function(item, index) {

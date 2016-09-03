@@ -163,8 +163,14 @@ console.log(listingLength, 'rows found');
                   } else {
                     console.log('URL Error:', link);
                   }
-                  if (insert === true) mongoService.insert(item);
-                  if (sendMail === true) sendMail.sendText([item]);
+                  if (insert === true) {
+                    console.log('Inserting', item.title);
+                    mongoService.insert(item);
+                  }
+                  if (sendMail === true) {
+                    console.log('Sending text to', options.sendTo);
+                    sendMail.sendText([item]);
+                  }
                 } else {
                   console.log('EXISTING LINK FOUND', result[0].link)
                   // set to active
@@ -327,9 +333,9 @@ module.exports.ksl = function (searchTerm, options) {
           result.exec(function(err, result) {
             if (!err) {
               if (result && result.length === 0) {//NEW! if not found
+                console.log('NEW ITEM FOUND     ', item.title, item.link);
                 if (insert === true) mongoService.insert(item);
                 if (sendMail === true) sendMail.sendText([item]);
-                console.log('NEW ITEM FOUND     ', item.title, item.link);
               } else {
                 console.log('EXISTING LINK FOUND', item.title, result[0].link)
                 // set to active because it does still exist

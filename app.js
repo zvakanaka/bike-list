@@ -223,12 +223,12 @@ app.post('/new/cl', function(req, res) {
           res.json(err);
         }
       });
-      // scrapers.craigslist(search)
-      // .then(function (listings) {
-      //   // res.send(listings);
-      // }).catch(function (listings) {
-      //   // res.send(err);
-      // });
+      scrapers.craigslist(search)
+      .then(function (listings) {
+        // res.send(listings);
+      }).catch(function (listings) {
+        // res.send(err);
+      });
     }).catch(function(err) {
       console.log('ERROR!', err, 'for', user.id);
     });
@@ -260,7 +260,7 @@ app.get('/db/delete-scrapes', whoIsThere, function(req, res) {
   res.json({ success: 'deleted all scrapes for ' + req.user.id})
 });
 
-app.get('/db/my-scrapes', function(req, res) {
+app.get('/db/my-scrapes', whoIsThere, function(req, res) {
   console.log('Getting scrapes for ' + req.user.id);
   var results = mongoService.getScrapesForUser(req.user.id);
   results.exec(function(err, result) {
@@ -315,14 +315,20 @@ if (process.env.POLLING) {
     debug('GET /scrape');
     res.type('json');
 
-    console.log('Getting scrapes for ' + req.user.id);
+    console.log('Scraping');
     var results = mongoService.getAllActiveScrapes();
     results.exec(function(err, results) {
       if (!err) {
         console.log(results);
         results.forEach(function(result) {
-          console.log('RESULT', result);
-          
+          console.log('Scraping:', result.site);
+          if (result.site === 'Craigslist') {
+            var options = result;
+            scrapers.craigslist(options)
+              .then(function() {
+                console.log('OPTIONS', options);
+              });
+          }
         });
         res.send(results);
       }
@@ -330,14 +336,6 @@ if (process.env.POLLING) {
         res.json(err);
       }
     });
-
-    // scrapers.goodwill({ searchTerm: 'Bo',
-    //             maxPrice: 200 })
-    // .then(function (listings) {
-    //   res.json(listings);
-    // }).catch(function (listings) {
-    //   res.json(err);
-    // });
   });
 }
 
