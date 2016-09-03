@@ -21,6 +21,7 @@
           <strong>Welcome <%= user.displayName %>!</strong> You are logged in.
         </div>
 
+        <h3>Tools</h3>
       <!-- <ul> -->
         <!-- <li> -->
         <a class="button btn btn-primary" href="/list">List of Active</a></li>
@@ -34,12 +35,75 @@
         <!-- <li> -->
           <a class="button btn btn-primary" href="/item">Scrape KSL</a></li>
         <!-- <li> -->
-          <a class="button btn btn-danger" href="/db/reset">Reset All</a></li>
+        <a data-confirm="Are you sure?" data-method="delete" class="button btn btn-danger" href="/db/reset">Reset All</a></li>
+          <a data-confirm="Are you sure?" data-method="delete" class="button btn btn-danger" href="/db/delete-all-scrapes">Delete All Scrapes</a></li>
+          <a data-confirm="Are you sure?" data-method="delete" class="button btn btn-danger" href="/db/delete-scrapes">Delete My Scrapes</a></li>
         <!-- <li> -->
         <a class="button btn btn-warning" href="/logout">Logout</a></li>
 
+        <h3>Add new Scrape</h3>
+        <form>
+          <div class="form-group">
+            <label for="input-name">Scrape Name</label>
+            <input type="text" class="form-control" id="input-name" placeholder="e.g. Bikes in Katmandu">
+          </div>
+
+          <div class="form-group">
+            <label for="input-search-term">Search Term</label>
+            <input type="text" class="form-control" id="input-search-term" placeholder="e.g. Snow Bike">
+          </div>
+
+          <div class="form-group">
+            <label for="select-site">Site</label>
+            <select class="form-control" id="select-site">
+              <option>Craigslist</option>
+              <option>Shopgoodwill</option>
+              <option>KSL</option>
+              <option>KSL Auto</option>
+            </select>
+          </div>
+
+          <div class="form-group">
+            <label for="select-section">Section</label>
+            <select class="form-control" id="select-section">
+              <option value="">All</option>
+              <option value="sga">Sporting Goods</option>
+              <option value="cta">Cars</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label class="sr-only" for="input-max-price">Maximum Amount (in dollars)</label>
+            <div class="input-group">
+              <div class="input-group-addon">$</div>
+              <input type="text" class="form-control" id="input-max-price" placeholder="Max Amount">
+              <div class="input-group-addon">.00</div>
+            </div>
+          </div>
+
+          <div class="form-group">
+           <label class="sr-only" for="input-max-miles">Max Mileage (in miles)</label>
+           <div class="input-group">
+             <div class="input-group-addon">Max Miles</div>
+             <input type="text" class="form-control" id="input-max-miles" placeholder="Amount">
+           </div>
+         </div>
+
+          <div class="form-group">
+           <label for="input-send-to">Email address</label>
+           <input type="email" class="form-control" id="input-send-to" placeholder="Email">
+         </div>
+
+         <div class="checkbox">
+          <label>
+            <input checked type="checkbox" id="checkbox-send-message"> Send me messages
+          </label>
+        </div>
+        <button type="button" id="btn-add-scrape" class="btn btn-default">Add Scrape</button>
+        </form>
+
       <!-- </ul> -->
     </div>
+    <script src="/js/main.js"></script>
     <% if (process.env.SUB_APP && process.env.OUTER_APP_DIR) {%>
       <%- include(process.env.OUTER_APP_DIR+'/views/partials/footer') %>
     <% } else { %>

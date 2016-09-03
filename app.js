@@ -75,6 +75,7 @@ app.get('/list', whoIsThere, function(req, res) {
   debug('GET /list');
 
   var results = mongoService.getActive();
+  console.dir(req.user);
   results.exec(function(err, result) {
     if (!err) {
       console.log('Rendering');
@@ -113,8 +114,7 @@ app.get('/account', whoIsThere, function(req, res){
 
 app.get('/auth/google',
   passport.authenticate('google', { scope: [
-    'https://www.googleapis.com/auth/plus.login',
-    'https://www.googleapis.com/auth/plus.profile.emails.read'
+    'https://www.googleapis.com/auth/plus.login'
   ] }
 ));
 app.get('/auth/google/callback',
@@ -189,19 +189,49 @@ app.get('/cl', function(req, res) {
 
 app.post('/new/cl', function(req, res) {
   debug('POST /new/cl');
+  console.log('POST /new/cl');
   res.type('json');
+  if (!req.body.sendTo) sendMessage = false;
 
   var search = {
     searchTerm: req.body.searchTerm || 'bike',
-    maxPrice: req.body.maxPrice || 200
+    maxPrice: req.body.maxPrice || 200,
+    insert: req.body.insert || true, // does not carry through to mongodb
+    sendMessage: req.body.sendMessage || true,
+    sendTo: req.body.sendTo,
+    user: req.user.id,
+    section: req.body.section,
+    maxMiles: req.body.maxMiles,
+    scrapeName: req.body.scrapeName,
+    site: req.body.site
   };
 
-  scrapers.craigslist(search)
-  .then(function (listings) {
-    res.send(listings);
-  }).catch(function (listings) {
-    res.send(err);
-  });
+  mongoService.insertScrape(search)
+    .then(function(result) {
+      search.sendMessage = false;// disable first messages so we don't get a million
+      console.log('WE GET HERE!!');
+      // scrapers.craigslist(search)
+      //   .then(function (listings) {
+      //     res.send(listings);
+      //   }).catch(function (listings) {
+      //     res.send(err);
+      //   });
+    }).catch(function(err) {
+      console.log('ERROR!', err, 'for', user.id);
+      mongoService.getScrapesForUser(user.id)
+      .then(function(scrapes) {
+        console.log(scrapes);
+        res.json(scrapes);
+      });
+      scrapers.craigslist(search)
+        .then(function (listings) {
+          // res.send(listings);
+        }).catch(function (listings) {
+          // res.send(err);
+        });
+
+    });
+    console.log('SO DONE');
 });
 
 app.get('/gw', function(req, res) {
@@ -216,7 +246,7 @@ app.get('/gw', function(req, res) {
   });
 });
 
-app.get('/db/reset', function(req, res) {
+app.delete('/db/reset', function(req, res) {
   var status = mongoService.deleteAll();
   if (process.env.SUB_APP) {
     res.redirect('/scrape/db/all');
@@ -225,11 +255,53 @@ app.get('/db/reset', function(req, res) {
   }
 });
 
+app.get('/db/delete-scrapes', whoIsThere, function(req, res) {
+  var status = mongoService.deleteScrapes(req.user.id);
+  res.json({ success: 'deleted all scrapes for ' + req.user.id})
+});
+
+app.get('/db/my-scrapes', whoIsThere, function(req, res) {
+  var result = mongoService.getScrapesForUser(req.user.id);
+  res.json(result);
+});
+
+app.get('/db/delete-all-scrapes', whoIsThere, function(req, res) {
+  var result = mongoService.deleteAllScrapes();
+  res.json({ result: result });
+});
+
 // test authentication
 function whoIsThere(req, res, next) {
   if (req.isAuthenticated()) { return next(); }
   console.log('Not authenticated - redirecting');
   res.redirect('/auth/google');
+}
+
+// scrapes poll
+if (process.env.POLLING) {
+  var minutes = process.env.POLLING_INTERVAL_MINUTES || 30;
+  console.log('Paste the following line into \'crontab -e\' for polling every ' + minutes + ':');
+  console.log('*/' + minutes + ' * * * * echo Begin scrape $(date) >> ~/log/scrape.txt && wget -qO- localhost:5555/scrapes >> ~/log/scrape.txt && echo End scrape $(date) >> ~/log/scrape.txt');
+
+  // set up endpoint
+  app.get('/scrape', function(req, res) {
+    debug('GET /scrape');
+    res.type('json');
+
+    mongoService.getActiveScrapes()
+      .then(function(activeScrapes) {
+        console.log(activeScrapes);
+        res.json(activeScrapes);
+      });
+
+    // scrapers.goodwill({ searchTerm: 'Bo',
+    //             maxPrice: 200 })
+    // .then(function (listings) {
+    //   res.json(listings);
+    // }).catch(function (listings) {
+    //   res.json(err);
+    // });
+  });
 }
 
 if (process.env.SUB_APP) {
