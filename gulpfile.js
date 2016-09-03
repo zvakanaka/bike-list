@@ -53,7 +53,7 @@ gulp.task('browser-sync', ['nodemon'], function() {
     // for more browser-sync config options: http://www.browsersync.io/docs/options/
     browserSync({
       proxy: 'http://localhost:' + PORTNO,
-      browser: 'google-chrome'
+      browser: process.env.BROWSER || 'google-chrome'
     });
   } else {
     console.log('ERROR: Must set NODE_ENV=dev in .env for browserSync');
@@ -131,7 +131,7 @@ gulp.task('js', function(cb) {
 
 gulp.task('copy-configs', function() {
    gulp.src('./assets/manifest.json')
-   .pipe(gulp.dest('./dist/vendors/'));
+   .pipe(gulp.dest('./dist/'));
 });
 
 gulp.task('lint', function() {
