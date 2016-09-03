@@ -16,7 +16,7 @@ mongoose.connect(MONGO_URI, (err, res) => {
 // This is one way to make a model inline
 const User = mongoose.model('User', {
   oauthID: Number,
-  name: String,
+  scrapeName: String,
   created: Date
 });
 
@@ -50,6 +50,65 @@ module.exports.saveOrLoginUser = (profile) => {
   return promise;
 };
 
+const ScrapeModel = mongoose.model('PersonalScrape', {
+  oauthID: Number,
+  name: String,
+  sendTo: String,
+  sendMessage: { type: Boolean, default: true },
+  site: String, //craigslist, ksl, car, or goodwill
+  searchTerm: String,
+  maxPrice: Number,
+  section: String,
+  maxMiles: Number,
+  minYear: Number,
+  created: Date,
+  deleted: { type: Boolean, default: false },
+});
+
+module.exports.insertScrape = (scrape) => {
+  console.log('Inserting', scrape);
+  const scrapeToInsert = new ScrapeModel({
+    oauthID: scrape.user.oauthID,
+    scrapeName: scrape.scrapeName || new Date().toString().substr(0,24),
+    sendTo: scrape.sendTo,
+    sendMessage: scrape.sendMessage,
+    site: scrape.site, //craigslist, ksl, car, or goodwill
+    searchTerm: scrape.searchTerm,
+    maxPrice: scrape.maxPrice,
+    section: scrape.section,
+    maxMiles: scrape.maxMiles,
+    minYear: scrape.minYear,
+    created: new Date(),
+  });
+
+  return new Promise((reject, resolve) => {
+      scrapeToInsert.save((err) => {
+        if (err) {
+          console.log(scrapeToInsert);
+          console.log('SAVE ERROR');
+          reject(new Error(err));
+        }
+        resolve('success');
+      });
+    });;
+};
+module.exports.getAllActiveScrapes = () => ScrapeModel.find({ deleted: false });
+module.exports.getScrapesForUser = (id) => ScrapeModel.find({ oathID: id });
+module.exports.deleteScrapes = (userId) => {
+  if (userId) {
+    ScrapeModel.remove({ oauthID: userId}, (err) => {
+      if (err) return err;
+      return 'success: deleted all scrapes';
+    });
+  } else return new Error('Failed to specify UserId');
+};
+module.exports.deleteAllScrapes = () => {
+    ScrapeModel.remove({}, (err) => {
+      if (err) return err;
+      return 'success: deleted all scrapes';
+    });
+};
+
 // Item schema holds items and itemTypes
 const itemSchema = new mongoose.Schema({
     // seq: { type: Number, unique:true, sparse:true },
@@ -77,7 +136,6 @@ function saveItem(item) {
     return status;
   });
 }
-
 module.exports.insert = (item) => {
   const itemToInsert = new ItemModel({
     itemType: item.itemType,
