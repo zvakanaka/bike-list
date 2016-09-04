@@ -223,12 +223,8 @@ app.post('/new/cl', function(req, res) {
           res.json(err);
         }
       });
-      scrapers.craigslist(search)
-      .then(function (listings) {
-        // res.send(listings);
-      }).catch(function (listings) {
-        // res.send(err);
-      });
+      scrapeSite(search);
+
     }).catch(function(err) {
       console.log('ERROR!', err, 'for', user.id);
     });
@@ -319,16 +315,10 @@ if (process.env.POLLING) {
     var results = mongoService.getAllActiveScrapes();
     results.exec(function(err, results) {
       if (!err) {
-        console.log(results);
-        results.forEach(function(result) {
-          console.log('Scraping:', result.site);
-          if (result.site === 'Craigslist') {
-            var options = result;
-            scrapers.craigslist(options)
-              .then(function() {
-                console.log('OPTIONS', options);
-              });
-          }
+        console.log('Number of Scrapes:', results.length);
+        results.forEach(function(options) {
+          console.log('Scraping:', options.site, 'for', options.scrapeName);
+          scrapeSite(options);
         });
         res.send(results);
       }
@@ -339,6 +329,31 @@ if (process.env.POLLING) {
   });
 }
 
+function scrapeSite(options) {
+  if (options.site === 'Craigslist') {
+    scrapers.craigslist(options)
+      .then(function() {
+        console.log('DONE SCRAPING', options.scrapeName);
+      });
+  } else if (options.site === 'Shopgoodwill') {
+    scrapers.goodwill(options)
+      .then(function() {
+        console.log('DONE SCRAPING', options.scrapeName);
+      });
+  } else if (options.site === 'KSL') {
+    scrapers.ksl(options)
+      .then(function() {
+        console.log('DONE SCRAPING', options.scrapeName);
+      });
+  } else if (options.site === 'KSL Auto') {
+    scrapers.cars(options)
+      .then(function() {
+        console.log('DONE SCRAPING', options.scrapeName);
+      });
+  } else {
+    console.log(result.site, 'not yet supported.');
+  }
+}
 if (process.env.SUB_APP) {
   console.log('Exporting as sub-app');
   module.exports = app;
