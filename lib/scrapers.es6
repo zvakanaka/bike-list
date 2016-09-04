@@ -17,7 +17,7 @@ module.exports.goodwill = (options) => {
       const section = options.section || '279';
       const maxMiles = options.maxMiles || 30; // distance from zip in miles
       const insert = options.insert || true;
-      const sendMail = options.sendMail || true;
+      const sendMessage = options.sendMessage || true;
 
       const reuestUrl = `${siteUrl}/search/SearchKey.asp?itemTitle=${searchTerm}&catid=${section}&sellerID=all&closed=no&minPrice=${minPrice}&maxPrice=${maxPrice}&sortBy=itemEndTime&SortOrder=a&showthumbs=on`;
       console.log('About to make request to', reuestUrl);
@@ -72,7 +72,7 @@ console.log('link', link);
             if (!err) {
               if (result && result.length === 0) {//NEW! if not found
                 if (insert === true) mongoService.insert(item);
-                if (sendMail === true) sendMail.sendText([item]);
+                if (sendMessage === true) sendMail.sendText([item]);
               } else {
                 console.log('EXISTING LINK FOUND', result[0].link)
               }
@@ -105,7 +105,7 @@ module.exports.craigslist = (options) => {
       const section = options.section || '';// sga is sports
       const maxMiles = options.maxMiles || 30; // distance from zip in miles
       const insert = options.insert || true;
-      const sendMail = options.sendMail || true;
+      const sendMessage = options.sendMessage || true;
 
       const reuestUrl = `${siteUrl}/search/${section}?query=${searchTerm}&sort=rel&search_distance=${maxMiles}&max_price=${maxPrice}&postal=${zip}`;
       console.log('About to make request to', reuestUrl);
@@ -167,7 +167,7 @@ console.log(listingLength, 'rows found');
                     console.log('Inserting', item.title);
                     mongoService.insert(item);
                   }
-                  if (sendMail === true) {
+                  if (sendMessage === true) {
                     console.log('Sending text to', options.sendTo);
                     sendMail.sendText([item], options.sendTo);
                   }
@@ -208,7 +208,7 @@ module.exports.cars = (options) => {
     const minMiles = options.minMiles || 0;
     const maxMiles = options.maxMiles || 200000;
     const insert = options.insert || true;
-    const sendMail = options.sendMail || true;
+    const sendMessage = options.sendMessage || true;
 
     const url = `${siteUrl}?keyword=${searchTerm}&make%5B%5D=Honda&make%5B%5D=Toyota&make%5B%5D=Nissan&yearFrom=${minYear}&yearTo=${maxYear}&mileageFrom=${minMiles}&mileageTo=${maxMiles}&priceFrom=${minPrice}&priceTo=${maxPrice}&zip=${zip}&miles=${0}&newUsed%5B%5D=${'Used'}&newUsed%5B%5D=${'Certified'}&page=${0}&sellerType=${'For+Sale+By+Owner'}&postedTime=${'15DAYS'}&titleType=${'Clean+Title'}&sort=5&body=&transmission=&cylinders=&liters=&fuel=&drive=&numberDoors=&exteriorCondition=&interiorCondition=&cx_navSource=hp_search&search.x=65&search.y=7&search=Search+raquo%3B`;
 
@@ -252,7 +252,7 @@ module.exports.cars = (options) => {
             if (!err) {
               if (result && result.length === 0) {//NEW! if not found
                 if (insert === true) mongoService.insert(item);
-                if (sendMail === true) sendMail.sendText([item]);
+                if (sendMessage === true) sendMail.sendText([item]);
               } else {
                 console.log('EXISTING LINK FOUND', result[0].link);
                 // set to active
@@ -287,7 +287,7 @@ module.exports.ksl = function (searchTerm, options) {
     const resultsPerPage = options.resultsPerPage || 50;
     const sortType = options.sortType || 5;// newest to oldest
     const insert = options.insert || true;
-    const sendMail = options.sendMail || true;
+    const sendMessage = options.sendMessage || true;
 
     const url = `${siteUrl}?nid=231&sid=74268&cat=&search=${searchTerm}&zip=${zip}&distance=&min_price=${minPrice}&max_price=${maxPrice}&type=&category=&subcat=&sold=&city=&addisplay=&userid=&markettype=sale&adsstate=&nocache=1&o_facetSelected=&o_facetKey=&o_facetVal=&viewSelect=list&viewNumResults=${resultsPerPage}&sort=${sortType}`;
 
@@ -335,7 +335,7 @@ module.exports.ksl = function (searchTerm, options) {
               if (result && result.length === 0) {//NEW! if not found
                 console.log('NEW ITEM FOUND     ', item.title, item.link);
                 if (insert === true) mongoService.insert(item);
-                if (sendMail === true) sendMail.sendText([item]);
+                if (sendMessage === true) sendMail.sendText([item]);
               } else {
                 console.log('EXISTING LINK FOUND', item.title, result[0].link)
                 // set to active because it does still exist
