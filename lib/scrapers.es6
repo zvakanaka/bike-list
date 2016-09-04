@@ -14,7 +14,8 @@ module.exports.goodwill = (options) => {
       const zip = options.zip || 90620;
       const minPrice = options.minPrice || 1; // TODO: implement
       const maxPrice = options.maxPrice || 200;
-      const section = options.section || '279';
+      let section = options.section || '279';
+      if (section === 'sga') section = '279';
       const maxMiles = options.maxMiles || 30; // distance from zip in miles
       const insert = options.insert || true;
       const sendMessage = options.sendMessage || true;
@@ -25,7 +26,7 @@ module.exports.goodwill = (options) => {
       console.log('Getting\n'+reuestUrl+' ...');
       const $ = cheerio.load(response.getBody());
       const listings = [];
-      const selector = 'tr';
+      const selector = '.productresults tr';
       console.log($(selector));
       const listingLength = $(selector).length;//to know when to resolve
 console.log(listingLength, 'rows found');
@@ -107,12 +108,10 @@ module.exports.craigslist = (options) => {
       const insert = options.insert || true;
       const sendMessage = options.sendMessage || true;
 
-      const reuestUrl = `${siteUrl}/search/${section}?query=${searchTerm}&sort=rel&search_distance=${maxMiles}&max_price=${maxPrice}&postal=${zip}`;
-      console.log('About to make request to', reuestUrl);
+      const reuestUrl = `${siteUrl}/search/${section}?query=${searchTerm.replace(' ','+')}&sort=rel&search_distance=${maxMiles}&max_price=${maxPrice}&postal=${zip}`;
       const response = request('GET', reuestUrl);
       console.log('Getting\n'+reuestUrl+' ...');
       const $ = cheerio.load(response.getBody());
-      console.log($);
       const listings = [];
       const listingLength = $('.row').length;//to know when to resolve
 console.log(listingLength, 'rows found');
@@ -126,7 +125,6 @@ console.log(listingLength, 'rows found');
             if (imageTest.indexOf('pic') === -1) {
               hasImage = false;
             }
-            console.log('hasImage', hasImage);
             const title = $(this).find('.pl a').text().trim();
   console.log('title:', title);
             let link = siteUrl + $(this).find('.pl a')['0']['attribs']['href'];
@@ -154,12 +152,10 @@ console.log(listingLength, 'rows found');
                   //TODO: scrape image here
                   if (link.startsWith('https://') && !link.includes('//', 7)) {
                     if (hasImage) {
-                      console.log('MAKING REQUEST FOR IMG TO ', link);
                       const imgRequest = request('GET', link);
                       const $img = cheerio.load(imgRequest.getBody());
                       item.img = $img('.swipe-wrap').find('div').children('img')[0].attribs.src;
                     } else console.log('NO IMAGE FOR', link);
-                    console.log('Thumbnail', item.img);
                   } else {
                     console.log('URL Error:', link);
                   }
@@ -199,7 +195,8 @@ module.exports.cars = (options) => {
   console.log('SCRAPING KSL AUTOS...');
   const promise = new Promise((resolve, reject) => {
     const siteUrl = 'http://www.ksl.com/auto/search/index';
-    const searchTerm = options.searchTerm || '';
+    let searchTerm = options.searchTerm || '';
+    if (searchTerm === 'bike') searchTerm = '';
     const zip = options.zip || 84606;
     const minPrice = options.minPrice || 1;
     const maxPrice = options.maxPrice || 2000;
@@ -210,7 +207,7 @@ module.exports.cars = (options) => {
     const insert = options.insert || true;
     const sendMessage = options.sendMessage || true;
 
-    const url = `${siteUrl}?keyword=${searchTerm}&make%5B%5D=Honda&make%5B%5D=Toyota&make%5B%5D=Nissan&yearFrom=${minYear}&yearTo=${maxYear}&mileageFrom=${minMiles}&mileageTo=${maxMiles}&priceFrom=${minPrice}&priceTo=${maxPrice}&zip=${zip}&miles=${0}&newUsed%5B%5D=${'Used'}&newUsed%5B%5D=${'Certified'}&page=${0}&sellerType=${'For+Sale+By+Owner'}&postedTime=${'15DAYS'}&titleType=${'Clean+Title'}&sort=5&body=&transmission=&cylinders=&liters=&fuel=&drive=&numberDoors=&exteriorCondition=&interiorCondition=&cx_navSource=hp_search&search.x=65&search.y=7&search=Search+raquo%3B`;
+    const url = `${siteUrl}?keyword=${searchTerm.replace(' ','+')}&make%5B%5D=Honda&make%5B%5D=Toyota&make%5B%5D=Nissan&yearFrom=${minYear}&yearTo=${maxYear}&mileageFrom=${minMiles}&mileageTo=${maxMiles}&priceFrom=${minPrice}&priceTo=${maxPrice}&zip=${zip}&miles=${0}&newUsed%5B%5D=${'Used'}&newUsed%5B%5D=${'Certified'}&page=${0}&sellerType=${'For+Sale+By+Owner'}&postedTime=${'15DAYS'}&titleType=${'Clean+Title'}&sort=5&body=&transmission=&cylinders=&liters=&fuel=&drive=&numberDoors=&exteriorCondition=&interiorCondition=&cx_navSource=hp_search&search.x=65&search.y=7&search=Search+raquo%3B`;
 
     const response = request('GET', url);
     console.log('Getting\n'+url+' ...');
@@ -292,7 +289,6 @@ module.exports.ksl = function (searchTerm, options) {
     const url = `${siteUrl}?nid=231&sid=74268&cat=&search=${searchTerm}&zip=${zip}&distance=&min_price=${minPrice}&max_price=${maxPrice}&type=&category=&subcat=&sold=&city=&addisplay=&userid=&markettype=sale&adsstate=&nocache=1&o_facetSelected=&o_facetKey=&o_facetVal=&viewSelect=list&viewNumResults=${resultsPerPage}&sort=${sortType}`;
 
     const response = request('GET', url);
-    console.log('Getting\n'+url+' ...');
     const $ = cheerio.load(response.getBody());
     console.log('Got Body');
 

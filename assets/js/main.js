@@ -16,7 +16,6 @@ function database(url, data) {
   http.send(JSON.stringify(data));
 }
 
-
 function addScrape(options) {
 
   var searchTerm = options.searchTerm;
@@ -42,7 +41,7 @@ btnSubmit.addEventListener('click', function() {
     maxPrice: document.getElementById('input-max-price').value,
     insert:  document.getElementById('input-insert') || false,
     sendMessage:  document.getElementById('checkbox-send-message').value,
-    sendTo:  document.getElementById('input-send-to').value,
+    sendTo:  document.getElementById('input-send-to').value + document.getElementById('select-carrier').value,
     section:  document.getElementById('select-section').value,
     maxMiles:  document.getElementById('input-max-miles').value,
     scrapeName:  document.getElementById('input-name').value,
