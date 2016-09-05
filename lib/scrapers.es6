@@ -102,7 +102,8 @@ module.exports.craigslist = (options) => {
       const siteUrl = `https://${city}.craigslist.org`;
       const zip = options.zip || 90620;
       const minPrice = options.minPrice || 1; // TODO: implement
-      const maxPrice = options.maxPrice || 200;
+      // TODO: remove parseInt, it is in mongoService already 
+      const maxPrice = parseInt(options.maxPrice) || 200;
       const section = options.section || '';// sga is sports
       const maxMiles = options.maxMiles || 30; // distance from zip in miles
       const insert = options.insert || true;
