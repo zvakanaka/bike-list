@@ -68,6 +68,9 @@ const ScrapeModel = mongoose.model('Scrapes', scrapeSchema);
 
 module.exports.insertScrape = (scrape) => {
   console.log('Inserting', scrape);
+  if (typeOf(scrape.maxMiles) === "string") {
+    var maxMiles = scrape.maxMiles.replace(',','')
+  }
   const scrapeToInsert = new ScrapeModel({
     userId: scrape.userId,
     scrapeName: scrape.scrapeName || new Date().toString().substr(0,24),
@@ -75,9 +78,9 @@ module.exports.insertScrape = (scrape) => {
     sendMessage: scrape.sendMessage,
     site: scrape.site, //craigslist, ksl, car, or goodwill
     searchTerm: scrape.searchTerm,
-    maxPrice: scrape.maxPrice,
+    maxPrice: parseInt(scrape.maxPrice),
     section: scrape.section || '',
-    maxMiles: scrape.maxMiles || 0,
+    maxMiles: maxMiles || 0,
     minYear: scrape.minYear,
     created: new Date(),
   });
