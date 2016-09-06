@@ -301,33 +301,26 @@ function whoIsThere(req, res, next) {
 }
 
 // scrapes poll
-if (process.env.POLLING) {
-  var minutes = process.env.POLLING_INTERVAL_MINUTES || 30;
-  console.log('Paste the following line into \'crontab -e\' for polling every ' + minutes + ':');
-  console.log('*/' + minutes + ' * * * * echo Begin scrape $(date) >> ~/log/scrape.txt && wget -qO- localhost:5555/scrapes >> ~/log/scrape.txt && echo End scrape $(date) >> ~/log/scrape.txt');
+app.get('/scrape', function(req, res) {
+  debug('GET /scrape');
+  res.type('json');
 
-  // set up endpoint
-  app.get('/scrape', function(req, res) {
-    debug('GET /scrape');
-    res.type('json');
-
-    console.log('Scraping');
-    var results = mongoService.getAllActiveScrapes();
-    results.exec(function(err, results) {
-      if (!err) {
-        console.log('Number of Scrapes:', results.length);
-        results.forEach(function(options) {
-          console.log('Scraping:', options.site, 'for', options.scrapeName);
-          scrapeSite(options);
-        });
-        res.send(results);
-      }
-      else {
-        res.json(err);
-      }
-    });
+  console.log('Scraping');
+  var results = mongoService.getAllActiveScrapes();
+  results.exec(function(err, results) {
+    if (!err) {
+      console.log('Number of Scrapes:', results.length);
+      results.forEach(function(options) {
+        console.log('Scraping:', options.site, 'for', options.scrapeName);
+        scrapeSite(options);
+      });
+      res.send(results);
+    }
+    else {
+      res.json(err);
+    }
   });
-}
+});
 
 function scrapeSite(options) {
   if (options.site === 'Craigslist') {
@@ -341,15 +334,17 @@ function scrapeSite(options) {
         console.log('DONE SCRAPING', options.scrapeName);
       });
   } else if (options.site === 'KSL') {
-    scrapers.ksl(options)
-      .then(function() {
-        console.log('DONE SCRAPING', options.scrapeName);
-      });
-  } else if (options.site === 'KSL Auto') {
-    scrapers.cars(options)
-      .then(function() {
-        console.log('DONE SCRAPING', options.scrapeName);
-      });
+    if (options.section === 'cta') {
+      scrapers.cars(options)
+        .then(function() {
+          console.log('DONE SCRAPING', options.scrapeName);
+        });
+    } else {
+      scrapers.ksl(options)
+        .then(function() {
+          console.log('DONE SCRAPING', options.scrapeName);
+        });
+    }
   } else {
     console.log(result.site, 'not yet supported.');
   }

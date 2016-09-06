@@ -17,17 +17,6 @@ function database(url, data) {
 }
 
 function addScrape(options) {
-
-  var searchTerm = options.searchTerm;
-  var maxPrice = options.maxPrice;
-  var insert = options.insert;
-  var sendMessage = options.sendMessage;
-  var sendTo = options.sendTo;
-  var section = options.section;
-  var maxMiles = options.maxMiles;
-  var name = options.scrapeName;
-  var site = options.site;
-
   //TODO: change cl to something else
   database('/new/cl', options);
 }
@@ -44,6 +33,7 @@ btnSubmit.addEventListener('click', function() {
     sendTo:  document.getElementById('input-send-to').value + document.getElementById('select-carrier').value,
     section:  document.getElementById('select-section').value,
     maxMiles:  document.getElementById('input-max-miles').value,
+    maxAutoMiles:  document.getElementById('input-auto-max-miles').value,
     scrapeName:  document.getElementById('input-name').value,
     site:  document.getElementById('select-site').value
   };
@@ -53,4 +43,13 @@ btnSubmit.addEventListener('click', function() {
   else if (scrapeOptions.sendMessage === 'off')
     scrapeOptions.sendMessage = false;
   addScrape(scrapeOptions);
+});
+
+document.getElementById('car-selects').hidden = true;
+var selectSection = document.getElementById('select-section');
+selectSection.addEventListener('change', function() {
+  document.getElementById('car-selects').hidden = true;
+  if (selectSection.selectedIndex === 2) {
+    document.getElementById('car-selects').hidden = false;
+  }
 });
