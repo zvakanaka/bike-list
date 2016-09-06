@@ -71,6 +71,34 @@ if (!process.env.SUB_APP) {
 app.use(middleware);
 
 // index page
+app.get('/my-list', whoIsThere, function(req, res) {
+  debug('GET /my-list');
+
+  var results = mongoService.getMyActive(req.user.id);
+  console.log('Logged in as', req.user.displayName);
+  results.exec(function(err, result) {
+    if (!err) {
+      console.log('Rendering');
+      res.render('index', {
+        page: process.env.SUB_APP ? req.url + 'scrape' : req.url,//url
+        itemType: process.env.ITEM_TYPE || 'Item',
+        listingData: result,
+        user: req.user
+      });
+    }
+    else {
+      console.log('Rendering');
+      res.render('index', {
+        page: process.env.SUB_APP ? req.url + 'scrape' : req.url,//url
+        itemType: process.env.ITEM_TYPE || 'Item',
+        listingData: [],
+        error: 'empty',
+        user: req.user
+      });
+    }
+  });
+});
+
 app.get('/list', whoIsThere, function(req, res) {
   debug('GET /list');
 
@@ -128,23 +156,6 @@ app.get('/logout', function(req, res){
   res.redirect('/');
 });
 
-// index page
-app.get('/car', function(req, res) {
-  debug('GET /car');
-  res.type('json');
-  var siteUrl = 'https://www.ksl.com/auto/search/index';
-  scrapers.cars({ zip: 84606,
-              minPrice: 30,
-              maxPrice: 4000,
-              resultsPerPage: 50,
-              sortType: 5 })
-  .then(function (listings) {
-    res.send(listings);
-  }).catch(function (listings) {
-    res.send(err);
-  });
-});
-
 app.get('/db/all', function(req, res) {
   var results = mongoService.getAll();
   res.type('json');
@@ -159,45 +170,16 @@ app.get('/db/all', function(req, res) {
   });
 });
 
-app.get('/item', function(req, res) {
-  debug('GET /item');
-  res.type('json');
-  scrapers.ksl('canon', { zip: 84606,
-              minPrice: 30,
-              maxPrice: 200,
-              resultsPerPage: 50,
-              sortType: 5 })
-  .then(function (listings) {
-    res.send(listings);
-  }).catch(function (listings) {
-    res.send(err);
-  });
-});
-
-app.get('/cl', function(req, res) {
-  debug('GET /cl');
-  res.type('json');
-  scrapers.craigslist({ zip: 90620,
-              searchTerm: 'Bow',
-              maxPrice: 200 })
-  .then(function (listings) {
-    res.send(listings);
-  }).catch(function (listings) {
-    res.send(err);
-  });
-});
-
 app.post('/new-scrape', function(req, res) {
   debug('POST /new-scrape');
   console.log('POST /new-scrape');
   res.type('json');
-  if (!req.body.sendTo) sendMessage = false;
 
   var search = {
     searchTerm: req.body.searchTerm || 'bike',
     maxPrice: req.body.maxPrice || 200,
     insert: req.body.insert || true, // does not carry through to mongodb
-    sendMessage: req.body.sendMessage || true,
+    sendMessage: req.body.sendMessage || false,
     sendTo: req.body.sendTo,
     userId: req.user.id,
     section: req.body.section,
@@ -205,6 +187,7 @@ app.post('/new-scrape', function(req, res) {
     scrapeName: req.body.scrapeName,
     site: req.body.site
   };
+  if (!req.body.sendTo) search.sendMessage = false;
 
   mongoService.insertScrape(search)
     .then(function(result) {
@@ -228,18 +211,6 @@ app.post('/new-scrape', function(req, res) {
     }).catch(function(err) {
       console.log('ERROR!', err, 'for', user.id);
     });
-});
-
-app.get('/gw', function(req, res) {
-  debug('GET /gw');
-  res.type('json');
-  scrapers.goodwill({ searchTerm: 'Bo',
-              maxPrice: 200 })
-  .then(function (listings) {
-    res.json(listings);
-  }).catch(function (listings) {
-    res.json(err);
-  });
 });
 
 app.get('/db/reset', function(req, res) {
