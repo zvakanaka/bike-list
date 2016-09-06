@@ -1,3 +1,14 @@
+function addAlert(data) {
+  var newDiv = document.createElement("div");
+  var newContent = document.createTextNode('Success! Added new scrape: ' + data[data.length-1].scrapeName);
+  newDiv.setAttribute('class', 'alert alert-success');
+  newDiv.setAttribute('role', 'alert');
+  newDiv.appendChild(newContent); //add the text node to the newly created div.
+
+  // add the newly created element and its content into the DOM
+  var currentDiv = document.getElementById("form-add-scrape");
+  currentDiv.parentNode.insertBefore(newDiv, currentDiv.nextSibling);
+}
 /***************************
  * DATABASE
  ***************************/
@@ -11,6 +22,7 @@ function database(url, data) {
       var data = (http.responseText);
       console.log('RESPONSE! ' + data);
       data = JSON.parse(data);
+      addAlert(data);
     }
   };
   http.send(JSON.stringify(data));

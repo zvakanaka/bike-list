@@ -22,22 +22,51 @@
         </div>
 
         <h3>Tools</h3>
-        <a class="button btn btn-primary" href="/list">List of Active</a>
-        <a class="button btn btn-primary" href="/my-list">List of My Active</a>
-        <a class="button btn btn-primary" href="/db/all">JSON of All</a>
-          <a class="button btn btn-primary" href="/car">Scrape Cars</a>
-          <a class="button btn btn-primary" href="/cl">Scrape Craigslist</a>
-          <a class="button btn btn-primary" href="/item">Scrape KSL</a>
-        <a class="button btn btn-primary" href="/db/all-active-scrapes">All Active Scrapes</a>
-        <a class="button btn btn-primary" href="/db/my-scrapes">My Scrapes</a>
+        <!-- Single button -->
+
+<!-- Split button -->
+<div class="btn-group">
+  <a class="button btn btn-primary" href="/my-list">My Items</a>
+  <button type="button" class="btn btn-primary dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+    <span class="caret"></span>
+    <span class="sr-only">Toggle Dropdown</span>
+  </button>
+  <ul class="dropdown-menu">
+    <li><a href="/list">All Active Items</a></li>
+    <li role="separator" class="divider"></li>
+    <li><a href="/db/all">JSON of All</a></li>
+  </ul>
+</div>
+<div class="btn-group">
+  <a class="button btn btn-primary" href="/db/my-scrapes">My Scrapes</a>
+  <button type="button" class="btn btn-primary dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+    <span class="caret"></span>
+    <span class="sr-only">Toggle Dropdown</span>
+  </button>
+  <ul class="dropdown-menu">
+    <li><a href="/db/all-active-scrapes">All Active Scrapes</a></li>
+  </ul>
+</div>
+<div class="btn-group">
+  <button type="button" class="btn btn-danger dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+    Delete <span class="caret"></span>
+  </button>
+  <ul class="dropdown-menu">
+    <li><a href="/db/delete-scrapes">Delete My Scrapes</a></li>
+    <li role="separator" class="divider"></li>
+    <li><a href="/db/delete-all-scrapes">Delete All Scrapes</a></li>
+    <li><a href="/db/reset">Delete All Items</a></li>
+  </ul>
+</div>
 <!-- TODO: Make this personal by sending the id -->
         <a class="button btn btn-primary" href="/scrape">Scrape Now</a>
-        <a data-confirm="Are you sure?" data-method="delete" class="button btn btn-danger" href="/db/reset">Delete All Items</a>
-          <a data-confirm="Are you sure?" data-method="delete" class="button btn btn-danger" href="/db/delete-scrapes">Delete My Scrapes</a>
-          <a data-confirm="Are you sure?" data-method="delete" class="button btn btn-danger" href="/db/delete-all-scrapes">Delete All Scrapes</a>
         <a class="button btn btn-warning" href="/logout">Logout</a>
 
-        <h3>Add new Scrape</h3>
+        <div id="form-add-scrape" class="panel panel-default">
+          <div class="panel-heading">
+            <h3 class="panel-title">Add new Scrape</h3>
+          </div>
+          <div class="panel-body">
         <form>
           <div class="form-group">
             <label for="input-name">Scrape Name</label>
@@ -112,8 +141,10 @@
         </div>
         <button type="button" id="btn-add-scrape" class="btn btn-default">Add Scrape</button>
         </form>
+      </div>
+    </div>
+  </div>
 
-      <!-- </ul> -->
     </div>
     <script src="/js/main.js"></script>
     <% if (process.env.SUB_APP && process.env.OUTER_APP_DIR) {%>
