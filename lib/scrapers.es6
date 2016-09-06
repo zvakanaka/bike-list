@@ -144,7 +144,7 @@ console.log(listingLength, 'rows found');
             const info = '';
 
             const item = { itemType: searchTerm,
-                img: img,
+                img: img, userId: options.userId || 'null',
                 title: title, link: link,
                 price: price, info: info,
                 place: place, date: new Date() };
@@ -165,7 +165,9 @@ console.log(listingLength, 'rows found');
                   }
                   if (insert === true) {
                     console.log('Inserting', item.title);
-                    mongoService.insert(item);
+                    mongoService.insert(item).then(function(itemed) {
+                      console.log('Inserted', itemed.title);
+                    });
                   }
                   if (sendMessage === true) {
                     console.log('Sending text to', options.sendTo);

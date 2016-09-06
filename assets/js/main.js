@@ -29,7 +29,7 @@ btnSubmit.addEventListener('click', function() {
     searchTerm: document.getElementById('input-search-term').value,
     maxPrice: document.getElementById('input-max-price').value,
     insert:  document.getElementById('input-insert') || false,
-    sendMessage:  document.getElementById('checkbox-send-message').value,
+    sendMessage:  document.getElementById('checkbox-send-message').checked,
     sendTo:  document.getElementById('input-send-to').value + document.getElementById('select-carrier').value,
     section:  document.getElementById('select-section').value,
     maxMiles:  document.getElementById('input-max-miles').value,
@@ -37,11 +37,8 @@ btnSubmit.addEventListener('click', function() {
     scrapeName:  document.getElementById('input-name').value,
     site:  document.getElementById('select-site').value
   };
-  // convert those checkboxes
-  if (scrapeOptions.sendMessage === 'on')
-    scrapeOptions.sendMessage = true;
-  else if (scrapeOptions.sendMessage === 'off')
-    scrapeOptions.sendMessage = false;
+  console.log('scrapeOptions', scrapeOptions.sendMessage);
+
   addScrape(scrapeOptions);
 });
 

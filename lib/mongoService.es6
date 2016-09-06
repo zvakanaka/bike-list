@@ -54,13 +54,13 @@ const scrapeSchema = new mongoose.Schema({
     userId: String,
     scrapeName: String,
     sendTo: String,
-    sendMessage: { type: Boolean, default: true },
+    sendMessage: { type: Boolean },
     site: String, //craigslist, ksl, car, or goodwill
     searchTerm: String,
     maxPrice: Number,
     section: String,
-    maxMiles: { type: Number, default: 0 },
-    maxAutoMiles: { type: Number, default: 0 },
+    maxMiles: { type: Number },
+    maxAutoMiles: { type: Number },
     minYear: Number,
     created: Date,
     deleted: { type: Boolean, default: false },
@@ -91,7 +91,6 @@ module.exports.insertScrape = (scrape) => {
   return new Promise((resolve, reject) => {
       scrapeToInsert.save((err) => {
         if (err) {
-          console.log(scrapeToInsert);
           console.log('SAVE ERROR');
           reject(new Error(err));
         }
@@ -123,6 +122,7 @@ module.exports.deleteAllScrapes = () => {
 // Item schema holds items and itemTypes
 const itemSchema = new mongoose.Schema({
     // seq: { type: Number, unique:true, sparse:true },
+  userId: String,
   itemType: { type: String, trim: true },
   link: { type: String, trim: true, unique: true, sparse: true },
   img: { type: String, trim: true },
@@ -137,30 +137,31 @@ const itemSchema = new mongoose.Schema({
 // This is the other way to make a model
 const ItemModel = mongoose.model('Items', itemSchema);
 
-function saveItem(item) {
-  const status = { err: null };
-  item.save((err) => {
-    if (err) {
-      status.err = err;
-      console.log(item, status);
-    }
-    return status;
-  });
-}
 module.exports.insert = (item) => {
+  if (typeof(item.price === 'string')) {
+    item.price = parseFloat(item.price.replace(',', ''));
+  }
   const itemToInsert = new ItemModel({
+    userId: item.userId,
     itemType: item.itemType,
     link: item.link,
     img: item.img,
     title: item.title,
-    price: parseFloat(item.price.replace(',', '')),
+    price: parseInt(item.price),
     info: item.info,
     place: item.place,
     date: item.date,
     creationDate: new Date(),
   });
-  const insertStatus = saveItem(itemToInsert);
-  return insertStatus;
+  return new Promise((resolve, reject) => {
+      itemToInsert.save((err) => {
+        if (err) {
+          console.log('SAVE ERROR');
+          reject(new Error(err));
+        }
+        resolve(itemToInsert);
+      });
+    });;
 };
 
 module.exports.updateItemsDeleted = (itemType, deleted) => {
@@ -185,6 +186,7 @@ module.exports.updateItemDeleted = (link, deleted) => {
 }
 
 module.exports.getActive = () => ItemModel.find({ deleted: false });
+module.exports.getMyActive = (id) => ItemModel.find({ userId: id, deleted: false });
 module.exports.getAll = () => ItemModel.find();
 
 module.exports.deleteAll = () => {
