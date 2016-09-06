@@ -60,6 +60,7 @@ const scrapeSchema = new mongoose.Schema({
     maxPrice: Number,
     section: String,
     maxMiles: { type: Number, default: 0 },
+    maxAutoMiles: { type: Number, default: 0 },
     minYear: Number,
     created: Date,
     deleted: { type: Boolean, default: false },
@@ -68,8 +69,9 @@ const ScrapeModel = mongoose.model('Scrapes', scrapeSchema);
 
 module.exports.insertScrape = (scrape) => {
   console.log('Inserting', scrape);
-  if (typeOf(scrape.maxMiles) === "string") {
-    var maxMiles = scrape.maxMiles.replace(',','')
+  let maxAutoMiles;
+  if (typeof(scrape.maxAutoMiles) === "string") {
+    maxAutoMiles = scrape.maxAutoMiles.replace(',','');
   }
   const scrapeToInsert = new ScrapeModel({
     userId: scrape.userId,
@@ -80,7 +82,8 @@ module.exports.insertScrape = (scrape) => {
     searchTerm: scrape.searchTerm,
     maxPrice: parseInt(scrape.maxPrice),
     section: scrape.section || '',
-    maxMiles: maxMiles || 0,
+    maxMiles: scrape.maxMiles || 0,
+    maxAutoMiles: maxAutoMiles || scrape.maxAutoMiles || 0,
     minYear: scrape.minYear,
     created: new Date(),
   });

@@ -102,14 +102,17 @@ module.exports.craigslist = (options) => {
       const siteUrl = `https://${city}.craigslist.org`;
       const zip = options.zip || 90620;
       const minPrice = options.minPrice || 1; // TODO: implement
-      // TODO: remove parseInt, it is in mongoService already 
+      // TODO: remove parseInt, it is in mongoService already
       const maxPrice = parseInt(options.maxPrice) || 200;
-      const section = options.section || '';// sga is sports
+      let section = options.section || 'sss';// sga is sports
       const maxMiles = options.maxMiles || 30; // distance from zip in miles
       const insert = options.insert || true;
       const sendMessage = options.sendMessage || true;
-
-      const reuestUrl = `${siteUrl}/search/${section}?query=${searchTerm.replace(' ','+')}&sort=rel&search_distance=${maxMiles}&max_price=${maxPrice}&postal=${zip}`;
+      let additional = '';
+      if (section === 'cta') {
+        additional += `&max_auto_miles=${options.maxAutoMiles}`;
+      }
+      const reuestUrl = `${siteUrl}/search/${section}?query=${searchTerm.replace(' ','+')}&sort=rel&search_distance=${maxMiles}&max_price=${maxPrice}&postal=${zip}${additional}`;
       const response = request('GET', reuestUrl);
       console.log('Getting\n'+reuestUrl+' ...');
       const $ = cheerio.load(response.getBody());
