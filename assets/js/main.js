@@ -18,7 +18,7 @@ function database(url, data) {
 
 function addScrape(options) {
   //TODO: change cl to something else
-  database('/new/cl', options);
+  database('/new-scrape', options);
 }
 
 var btnSubmit = document.getElementById('btn-add-scrape');

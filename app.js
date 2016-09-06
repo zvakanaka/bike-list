@@ -187,9 +187,9 @@ app.get('/cl', function(req, res) {
   });
 });
 
-app.post('/new/cl', function(req, res) {
-  debug('POST /new/cl');
-  console.log('POST /new/cl');
+app.post('/new-scrape', function(req, res) {
+  debug('POST /new-scrape');
+  console.log('POST /new-scrape');
   res.type('json');
   if (!req.body.sendTo) sendMessage = false;
 
