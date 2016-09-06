@@ -63,7 +63,6 @@
               <option>Craigslist</option>
               <option>Shopgoodwill</option>
               <option>KSL</option>
-              <option>KSL Auto</option>
             </select>
           </div>
 
@@ -72,7 +71,7 @@
             <select class="form-control" id="select-section">
               <option value="">All</option>
               <option value="sga">Sporting Goods</option>
-              <option value="cta">Cars</option>
+              <option data-toggle="collapse" data-target="#car-slects" value="cta">Cars</option>
             </select>
           </div>
           <div class="form-group">
@@ -85,12 +84,20 @@
           </div>
 
           <div class="form-group">
-           <label class="sr-only" for="input-max-miles">Max Mileage (in miles)</label>
+           <label class="sr-only" for="input-max-miles">Max Miles from Zip (in miles)</label>
            <div class="input-group">
-             <div class="input-group-addon">Max Miles</div>
+             <div class="input-group-addon">Max Miles from Zip</div>
              <input type="text" class="form-control" id="input-max-miles" placeholder="Amount">
            </div>
          </div>
+
+         <div  id="car-selects" class="form-group">
+          <label class="sr-only" for="input-auto-max-miles">Max Miles on Auto (in miles)</label>
+          <div class="input-group">
+            <div class="input-group-addon">Max Auto Miles</div>
+            <input type="text" class="form-control" id="input-auto-max-miles" placeholder="Amount">
+          </div>
+        </div>
 
           <div class="form-group">
            <label for="input-send-to">Email address or Phone Number</label>
