@@ -136,7 +136,7 @@ app.get('/account', whoIsThere, function(req, res){
   //console.log('USER:');
   //console.log(req.user);
   res.render('account', {
-            itemType: process.env.ITEM_TYPE || 'Item',
+            page: process.env.SUB_APP ? req.url : req.url,//url
             user: req.user });
 });
 
