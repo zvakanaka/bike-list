@@ -12,18 +12,20 @@ filter-contrast()
   background-color: #0c2e28
 
 .navbar-inverse a img
-  height: inherit
   overflow: hidden
   filter-contrast: 106%
   filter-hue-rotate: -38deg
 
 @media screen and (max-width: 580px)
-  logo-cut-size = 298px
-  .navbar-inverse a img
-    -webkit-clip-path: inset(0 75px 0 0);
-    transform: translateX(-20px);
+  .logo
+    width: 100%
+    height: initial
+
+@media screen and (min-width: 581px)
   .custom-header-logo
-    width: 80px;
+    overflow: hidden
+    transform: translateY(-5px)
+
 
 .custom-header-logo
   overflow: hidden
@@ -43,8 +45,10 @@ filter-contrast()
   margin: 3px
 
 .craigs-box
-  width: 310px
+  width: 250px
   height: 310px
+  margin: 5px
+  padding: 5px
 
 .craigs-box img
   width: 250px
