@@ -185,8 +185,8 @@ module.exports.updateItemDeleted = (link, deleted) => {
   });
 }
 
-module.exports.getActive = () => ItemModel.find({ deleted: false });
-module.exports.getMyActive = (id) => ItemModel.find({ userId: id, deleted: false });
+module.exports.getActive = () => ItemModel.find({ deleted: false }).sort('-date');
+module.exports.getMyActive = (id) => ItemModel.find({ userId: id, deleted: false }).sort('-date');
 module.exports.getAll = () => ItemModel.find();
 
 module.exports.deleteAll = () => {
