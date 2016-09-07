@@ -192,7 +192,6 @@ app.post('/new-scrape', function(req, res) {
   mongoService.insertScrape(search)
     .then(function(result) {
       console.log('Inserted', result);
-      search.sendMessage = false;// disable first messages so we don't get a million
       console.log('Getting scrapes for ' + req.user.id);
       var results = mongoService.getScrapesForUser(req.user.id);
       results.exec(function(err, result) {
@@ -206,11 +205,35 @@ app.post('/new-scrape', function(req, res) {
           res.json(err);
         }
       });
+      search.sendMessage = false;// disable first messages so we don't get a million
       scrapeSite(search);
 
     }).catch(function(err) {
       console.log('ERROR!', err, 'for', user.id);
     });
+});
+
+app.get('/manage-scrapes', whoIsThere, function(req, res) {
+  console.log('Getting scrapes for ' + req.user.id);
+  var results = mongoService.getScrapesForUser(req.user.id);
+  results.exec(function(err, result) {
+    if (!err) {
+      res.render('manage-scrapes', {
+        page: process.env.SUB_APP ? req.url + 'scrape' : req.url,//url
+        myScrapes: result,
+        user: req.user
+      });
+    }
+    else {
+      console.log(err);
+      res.render('manage-scrapes', {
+        page: process.env.SUB_APP ? req.url + 'scrape' : req.url,//url
+        myScrapes: [],
+        error: 'empty',
+        user: req.user
+      });
+    }
+  });
 });
 
 app.get('/db/reset', function(req, res) {
@@ -220,6 +243,18 @@ app.get('/db/reset', function(req, res) {
   } else {
     res.redirect('/db/all');
   }
+});
+
+app.get('/db/delete-scrape', whoIsThere, function(req, res) {
+  var _id = req.query.id;
+  var status = mongoService.deleteScrape(_id);
+  console.log(status);
+  res.json({ success: 'deleted scrape: ' + _id})
+});
+
+app.get('/db/delete-my-items', whoIsThere, function(req, res) {
+  var status = mongoService.updateAllItemsDeleted(req.user.id);
+  res.json({ success: 'deleted all items for ' + req.user.id})
 });
 
 app.get('/db/delete-scrapes', whoIsThere, function(req, res) {

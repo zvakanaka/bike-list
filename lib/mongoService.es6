@@ -98,8 +98,8 @@ module.exports.insertScrape = (scrape) => {
       });
     });;
 };
-module.exports.getAllActiveScrapes = () => ScrapeModel.find({ deleted: false });
-module.exports.getScrapesForUser = (id) => ScrapeModel.find({ userId: id });
+module.exports.getAllActiveScrapes = () => ScrapeModel.find({ deleted: false }).sort('-date');
+module.exports.getScrapesForUser = (id) => ScrapeModel.find({ userId: id }).sort('-date');
 module.exports.deleteScrapes = (id) => {
   if (id) {
     ScrapeModel.remove({ userId: id}, (err) => {
@@ -107,6 +107,15 @@ module.exports.deleteScrapes = (id) => {
       return 'success: deleted all scrapes';
     });
   } else return new Error('Failed to specify UserId');
+};
+module.exports.deleteScrape = (_id) => {
+  if (_id) {
+    //TODO: update to innactive instead
+    ScrapeModel.remove({ _id: _id}, (err) => {
+      if (err) return err;
+      return 'success: deleted scrape';
+    });
+  } else return new Error('Failed to specify _id');
 };
 module.exports.deleteAllScrapes = () => {
     const promise = new Promise((resolve, reject) => {
@@ -181,6 +190,11 @@ module.exports.updateItemsDeleted = (itemType, deleted) => {
 
 module.exports.updateItemDeleted = (link, deleted) => {
   ItemModel.update({ link: link }, { $set: { deleted: deleted }}, (err) => {
+    if (err) console.log('err', err);
+  });
+}
+module.exports.updateAllItemsDeleted = (id) => {
+  ItemModel.update({ userId: id }, { $set: { deleted: true }}, {multi: true}, (err) => {
     if (err) console.log('err', err);
   });
 }
