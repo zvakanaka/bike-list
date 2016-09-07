@@ -1,6 +1,6 @@
 function addAlert(data) {
   var newDiv = document.createElement("div");
-  var newContent = document.createTextNode('Success! Added new scrape: ' + data[data.length-1].scrapeName);
+  var newContent = document.createTextNode('Success! Added new scrape: ' + data[0].scrapeName);
   newDiv.setAttribute('class', 'alert alert-success');
   newDiv.setAttribute('role', 'alert');
   newDiv.appendChild(newContent); //add the text node to the newly created div.
