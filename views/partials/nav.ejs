@@ -3,11 +3,8 @@
     <img alt="Brand" src="images/howtoterm.gif">
   </a>
   <ul class="nav navbar-nav">
-   <li><a href="../">Home</a></li>
-   <li class="active"><a href="#"><%= itemType %> Scrape</a></li>
+    <li class=""><a href="account">Account</a></li>
+    <li class=""><a href="/my-list">My Items</a></li>
   </ul>
-  <% if (this.user !== undefined) { %>
     <p class="navbar-text navbar-right">Logged in as <a href="#" class="navbar-link"><%= user.displayName %></a></p>
-  <% } %>
-  <p class="navbar-text navbar-right"><a href="account" class="navbar-link">Account</a></p>
 </nav>

@@ -20,8 +20,8 @@ filter-contrast()
 @media screen and (max-width: 580px)
   logo-cut-size = 298px
   .navbar-inverse a img
-    -webkit-clip-path: inset(0px 0px 0px logo-cut-size);
-    transform: translateX(-298px);
+    -webkit-clip-path: inset(0 75px 0 0);
+    transform: translateX(-20px);
   .custom-header-logo
     width: 80px;
 
@@ -35,6 +35,12 @@ filter-contrast()
 
 .navbar
   border-radius: 0px
+
+.navbar-nav
+  margin: 0px
+
+.btn-group
+  margin: 3px
 
 .craigs-box
   width: 310px

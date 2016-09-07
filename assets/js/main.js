@@ -12,7 +12,7 @@ function addAlert(data) {
 /***************************
  * DATABASE
  ***************************/
-function database(url, data) {
+function database(url, data, $loader) {
   var http = new XMLHttpRequest();
   http.open("POST", url, true);
   http.setRequestHeader("Content-type", "application/json; charset=utf-8");
@@ -23,20 +23,36 @@ function database(url, data) {
       console.log('RESPONSE! ' + data);
       data = JSON.parse(data);
       addAlert(data);
+      $loader.button('reset');
     }
   };
   http.send(JSON.stringify(data));
 }
 
-function addScrape(options) {
+function addScrape(options, $loader) {
   //TODO: change cl to something else
-  database('/new-scrape', options);
+  database('/new-scrape', options, $loader);
 }
 
 var btnSubmit = document.getElementById('btn-add-scrape');
 btnSubmit.addEventListener('click', function() {
   //TODO: validate form before parsing
   console.log('Button pressed');
+
+});
+
+document.getElementById('car-selects').hidden = true;
+var selectSection = document.getElementById('select-section');
+selectSection.addEventListener('change', function() {
+  document.getElementById('car-selects').hidden = true;
+  if (selectSection.selectedIndex === 2) {
+    document.getElementById('car-selects').hidden = false;
+  }
+});
+
+var btnAddScrape = document.getElementById('btn-add-scrape');
+btnAddScrape.addEventListener('click', function() {
+  var $btn = $(this).button('loading')
   var scrapeOptions = {
     searchTerm: document.getElementById('input-search-term').value,
     maxPrice: document.getElementById('input-max-price').value,
@@ -51,14 +67,5 @@ btnSubmit.addEventListener('click', function() {
   };
   console.log('scrapeOptions', scrapeOptions.sendMessage);
 
-  addScrape(scrapeOptions);
-});
-
-document.getElementById('car-selects').hidden = true;
-var selectSection = document.getElementById('select-section');
-selectSection.addEventListener('change', function() {
-  document.getElementById('car-selects').hidden = true;
-  if (selectSection.selectedIndex === 2) {
-    document.getElementById('car-selects').hidden = false;
-  }
+  addScrape(scrapeOptions, $btn);
 });
