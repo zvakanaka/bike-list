@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Manage Scrapes</title>
+    <% if (process.env.SUB_APP && process.env.OUTER_APP_DIR) {%>
+      <%- include(process.env.OUTER_APP_DIR+'/views/partials/head') %>
+    <% } else { %>
+      <% include partials/head %>
+    <% } %>
+  </head>
+  <body>
+    <% if (process.env.SUB_APP && process.env.OUTER_APP_DIR) {%>
+      <%- include(process.env.OUTER_APP_DIR+'/views/partials/nav') %>
+    <% } else { %>
+      <% include partials/nav %>
+    <% } %>
+
+    <div class="container-fluid">
+      <% if (myScrapes.length === 0) { %>
+        <p>No Scrapes</p>
+      <% } %>
+      <div class="panel panel-default">
+        <h3 class="panel-heading">My Scrapes</h3>
+        <table class="table table-striped">
+          <thead>
+            <tr><th>Title</th><th>Search Term</th><th>Max Price</th><th></th></tr>
+          </thead>
+          <tbody>
+            <% myScrapes.forEach(function(data) { %>
+              <tr><td><%= data.scrapeName %></td><td><%= data.searchTerm %></td><td>$<%= data.maxPrice %></td><td><a href="db/delete-scrape?id=<%= data._id %>" class="btn btn-danger" role="button">Delete</a></td></tr>
+            <% }); %>
+          </tbody>
+        </table>
+      </div>
+    </div>
+    <% if (process.env.SUB_APP && process.env.OUTER_APP_DIR) {%>
+      <%- include(process.env.OUTER_APP_DIR+'/views/partials/footer') %>
+    <% } else { %>
+      <% include partials/footer %>
+    <% } %>
+  </body>
+</html>
