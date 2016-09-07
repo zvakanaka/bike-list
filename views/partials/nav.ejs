@@ -20,8 +20,6 @@
       }]
       %>
 
-  <%= navs[0]['title'] %>
-
   <% navs.forEach(function(nav) { %>
     <% if (nav['link'] == page) { %>
       <li class="active"><a href="<%= nav['link'] %>"><%= nav['title'] %></a></li>
