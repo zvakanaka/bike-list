@@ -21,46 +21,55 @@
           <strong>Welcome <%= user.displayName %>!</strong> You are logged in.
         </div>
 
-        <h3>Tools</h3>
-        <!-- Single button -->
+<div id="tools" class="panel panel-default">
+  <div class="panel-heading">
+    <h3 class="panel-title">Tools</h3>
+  </div>
+  <div class="panel-body">
+    <div class="btn-group">
+      <a class="button btn btn-primary" href="/my-list">My Items</a>
+      <button type="button" class="btn btn-primary dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+        <span class="caret"></span>
+        <span class="sr-only">Toggle Dropdown</span>
+      </button>
+      <ul class="dropdown-menu">
+        <li><a href="/list">All Active Items</a></li>
+        <li role="separator" class="divider"></li>
+        <li><a href="/db/all">JSON of All</a></li>
+      </ul>
+    </div>
+    <div class="btn-group">
+      <a class="button btn btn-primary" href="/db/my-scrapes">My Scrapes</a>
+      <button type="button" class="btn btn-primary dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+        <span class="caret"></span>
+        <span class="sr-only">Toggle Dropdown</span>
+      </button>
+      <ul class="dropdown-menu">
+        <li><a href="/db/all-active-scrapes">All Active Scrapes</a></li>
+      </ul>
+    </div>
+    <div class="btn-group">
+      <button type="button" class="btn btn-danger dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+        Delete <span class="caret"></span>
+      </button>
+      <ul class="dropdown-menu">
+        <li><a href="/db/delete-scrapes">Delete My Scrapes</a></li>
+        <li role="separator" class="divider"></li>
+        <li><a href="/db/delete-all-scrapes">Delete All Scrapes</a></li>
+        <li><a href="/db/reset">Delete All Items</a></li>
+      </ul>
+    </div>
 
-<!-- Split button -->
-<div class="btn-group">
-  <a class="button btn btn-primary" href="/my-list">My Items</a>
-  <button type="button" class="btn btn-primary dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-    <span class="caret"></span>
-    <span class="sr-only">Toggle Dropdown</span>
-  </button>
-  <ul class="dropdown-menu">
-    <li><a href="/list">All Active Items</a></li>
-    <li role="separator" class="divider"></li>
-    <li><a href="/db/all">JSON of All</a></li>
-  </ul>
+  <div class="btn-group">
+  <!-- TODO: Make this personal by sending the id -->
+  <a class="button btn btn-primary" href="/scrape">Scrape Now</a>
 </div>
 <div class="btn-group">
-  <a class="button btn btn-primary" href="/db/my-scrapes">My Scrapes</a>
-  <button type="button" class="btn btn-primary dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-    <span class="caret"></span>
-    <span class="sr-only">Toggle Dropdown</span>
-  </button>
-  <ul class="dropdown-menu">
-    <li><a href="/db/all-active-scrapes">All Active Scrapes</a></li>
-  </ul>
+  <a class="button btn btn-warning" href="/logout">Logout</a>
 </div>
-<div class="btn-group">
-  <button type="button" class="btn btn-danger dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-    Delete <span class="caret"></span>
-  </button>
-  <ul class="dropdown-menu">
-    <li><a href="/db/delete-scrapes">Delete My Scrapes</a></li>
-    <li role="separator" class="divider"></li>
-    <li><a href="/db/delete-all-scrapes">Delete All Scrapes</a></li>
-    <li><a href="/db/reset">Delete All Items</a></li>
-  </ul>
 </div>
-<!-- TODO: Make this personal by sending the id -->
-        <a class="button btn btn-primary" href="/scrape">Scrape Now</a>
-        <a class="button btn btn-warning" href="/logout">Logout</a>
+</div>
+
 
         <div id="form-add-scrape" class="panel panel-default">
           <div class="panel-heading">
@@ -121,7 +130,7 @@
         </div>
 
           <div class="form-group">
-           <label for="input-send-to">Email address or Phone Number</label>
+           <label for="input-send-to">Phone Numberor Email address</label>
            <input type="email" class="form-control" id="input-send-to" placeholder="Email">
          </div>
 
@@ -139,7 +148,7 @@
             <input checked type="checkbox" id="checkbox-send-message"> Send me messages
           </label>
         </div>
-        <button type="button" id="btn-add-scrape" class="btn btn-default">Add Scrape</button>
+        <button type="button" id="btn-add-scrape" data-loading-text="Adding..." class="btn btn-default">Add Scrape</button>
         </form>
       </div>
     </div>
