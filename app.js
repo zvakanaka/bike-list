@@ -133,9 +133,13 @@ app.get('/', function(req, res) {
 });
 
 app.get('/account', whoIsThere, function(req, res){
-  //console.log('USER:');
-  //console.log(req.user);
   res.render('account', {
+            page: process.env.SUB_APP ? req.url : req.url,//url
+            user: req.user });
+});
+
+app.get('/add-scrape', whoIsThere, function(req, res){
+  res.render('add-scrape', {
             page: process.env.SUB_APP ? req.url : req.url,//url
             user: req.user });
 });
