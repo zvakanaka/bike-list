@@ -63,7 +63,7 @@ console.log('link', link);
           const info = '';
 
           const item = { itemType: searchTerm,
-              img: img,
+              img: img, userId: options.userId,
               title: title, link: link,
               price: price, info: info,
               place: place, date: new Date() };
@@ -144,7 +144,7 @@ console.log(listingLength, 'rows found');
             const info = '';
 
             const item = { itemType: searchTerm,
-                img: img, userId: options.userId || 'null',
+                img: img, userId: options.userId,
                 title: title, link: link,
                 price: price, info: info,
                 place: place, date: new Date() };
@@ -245,7 +245,7 @@ module.exports.cars = (options) => {
           const place = 'UT';
 
           const item = {itemType: 'Car',
-              img: img,
+              img: img, userId: options.userId,
               title: title, link: link,
               price: price, info: mileage,
               place: place, date: date};
@@ -326,7 +326,7 @@ module.exports.ksl = function (searchTerm, options) {
           const place = 'UT';
 
           const item = {itemType: searchTerm,
-              img: img,
+              img: img, userId: options.userId,
               title: title, link: link,
               price: price, info: description,
               place: place, date: date};

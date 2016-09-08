@@ -25,10 +25,8 @@ Read into google authentication with passport [here](http://mherman.org/blog/201
 
 Optional variables:  
 ```sh
-POLLING=true
 NO_SEND_MAIL=true
 PORT=4000
-ITEM_TYPE=Camera
 NODE_ENV=dev
 SUB_APP=true
 OUTER_APP_DIR='../../howtoterminal-express'
