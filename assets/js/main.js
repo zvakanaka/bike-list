@@ -63,7 +63,8 @@ btnAddScrape.addEventListener('click', function() {
     maxMiles:  document.getElementById('input-max-miles').value,
     maxAutoMiles:  document.getElementById('input-auto-max-miles').value,
     scrapeName:  document.getElementById('input-name').value,
-    site:  document.getElementById('select-site').value
+    site:  document.getElementById('select-site').value,
+    zip: document.getElementById('input-zip').value
   };
   console.log('scrapeOptions', scrapeOptions.sendMessage);
 

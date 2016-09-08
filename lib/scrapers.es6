@@ -101,7 +101,7 @@ module.exports.craigslist = (options) => {
       const searchTerm = options.searchTerm || 'bow';
       const siteUrl = `https://${city}.craigslist.org`;
       const zip = options.zip || 90620;
-      const minPrice = options.minPrice || 1; // TODO: implement
+      const minPrice = options.minPrice || 2; // TODO: implement
       // TODO: remove parseInt, it is in mongoService already
       const maxPrice = parseInt(options.maxPrice) || 200;
       let section = options.section || 'sss';// sga is sports
@@ -130,7 +130,6 @@ console.log(listingLength, 'rows found');
               hasImage = false;
             }
             const title = $(this).find('.pl a').text().trim();
-  console.log('title:', title);
             let link = siteUrl + $(this).find('.pl a')['0']['attribs']['href'];
             let price = $(this).find('.price').text().trim().substr(1);
             price = price.substr(0, price.indexOf('$'));
@@ -174,7 +173,6 @@ console.log(listingLength, 'rows found');
                     sendMail.sendText([item], options.sendTo);
                   }
                 } else {
-                  console.log('EXISTING LINK FOUND', result[0].link)
                   // set to active
                   mongoService.updateItemDeleted(result[0].link, false);
                 }
@@ -204,7 +202,7 @@ module.exports.cars = (options) => {
     let searchTerm = options.searchTerm || '';
     if (searchTerm === 'bike') searchTerm = '';
     const zip = options.zip || 84606;
-    const minPrice = options.minPrice || 1;
+    const minPrice = options.minPrice || 2;
     const maxPrice = options.maxPrice || 2000;
     const minYear = options.minYear || 1995;
     const maxYear = options.maxYear || 2016;
@@ -213,7 +211,7 @@ module.exports.cars = (options) => {
     const insert = options.insert || true;
     const sendMessage = options.sendMessage || true;
 
-    const url = `${siteUrl}?keyword=${searchTerm.replace(' ','+')}&make%5B%5D=Honda&make%5B%5D=Toyota&make%5B%5D=Nissan&yearFrom=${minYear}&yearTo=${maxYear}&mileageFrom=${minMiles}&mileageTo=${maxMiles}&priceFrom=${minPrice}&priceTo=${maxPrice}&zip=${zip}&miles=${0}&newUsed%5B%5D=${'Used'}&newUsed%5B%5D=${'Certified'}&page=${0}&sellerType=${'For+Sale+By+Owner'}&postedTime=${'15DAYS'}&titleType=${'Clean+Title'}&sort=5&body=&transmission=&cylinders=&liters=&fuel=&drive=&numberDoors=&exteriorCondition=&interiorCondition=&cx_navSource=hp_search&search.x=65&search.y=7&search=Search+raquo%3B`;
+    const url = `${siteUrl}?keyword=${searchTerm.replace(' ','+')}&yearFrom=${minYear}&yearTo=${maxYear}&mileageFrom=${minMiles}&mileageTo=${maxMiles}&priceFrom=${minPrice}&priceTo=${maxPrice}&zip=${zip}&miles=${0}&newUsed%5B%5D=${'Used'}&newUsed%5B%5D=${'Certified'}&page=${0}&sellerType=${'For+Sale+By+Owner'}&postedTime=${'15DAYS'}&titleType=${'Clean+Title'}&sort=1&body=&transmission=&cylinders=&liters=&fuel=&drive=&numberDoors=&exteriorCondition=&interiorCondition=&cx_navSource=hp_search&search.x=65&search.y=7&search=Search+raquo%3B`;
 
     const response = request('GET', url);
     console.log('Getting\n'+url+' ...');
@@ -280,20 +278,21 @@ module.exports.cars = (options) => {
 }
 
 //options: zip, minPrice, maxPrice, resultsPerPage, sortType
-module.exports.ksl = function (searchTerm, options) {
+module.exports.ksl = function (options) {
   console.log('SCRAPING KSL...');
   const promise = new Promise(function(resolve, reject) {
     const siteUrl = 'http://www.ksl.com/';
     const zip = options.zip || 84606;
+    const searchTerm = options.searchTerm || 'bike';
     const minPrice = options.minPrice || 30;
     const maxPrice = options.maxPrice || 200;
     const resultsPerPage = options.resultsPerPage || 50;
-    const sortType = options.sortType || 5;// newest to oldest
+    const sortType = options.sortType || 1;// newest to oldest
     const insert = options.insert || true;
     const sendMessage = options.sendMessage || true;
 
-    const url = `${siteUrl}?nid=231&sid=74268&cat=&search=${searchTerm}&zip=${zip}&distance=&min_price=${minPrice}&max_price=${maxPrice}&type=&category=&subcat=&sold=&city=&addisplay=&userid=&markettype=sale&adsstate=&nocache=1&o_facetSelected=&o_facetKey=&o_facetVal=&viewSelect=list&viewNumResults=${resultsPerPage}&sort=${sortType}`;
-
+    const url = `${siteUrl}?nid=231&cat=&search=${searchTerm}&zip=${zip}&distance=&min_price=${minPrice}&max_price=${maxPrice}&type=&category=&subcat=&sold=&city=&addisplay=&userid=&markettype=sale&adsstate=&nocache=1&o_facetSelected=&o_facetKey=&o_facetVal=&viewSelect=list&viewNumResults=${resultsPerPage}&sort=${sortType}`;
+console.log('about to scrape url:', url);
     const response = request('GET', url);
     const $ = cheerio.load(response.getBody());
     console.log('Got Body');
