@@ -152,7 +152,7 @@ app.get('/auth/google',
 app.get('/auth/google/callback',
   passport.authenticate('google', { failureRedirect: '/' }),
   function(req, res) {
-    res.redirect('/account');
+    res.redirect('/add-scrape');
 });
 
 app.get('/logout', function(req, res){

@@ -109,8 +109,8 @@ module.exports.craigslist = (options) => {
       const insert = options.insert || true;
       const sendMessage = options.sendMessage || true;
       let additional = '';
-      if (section === 'cta') {
-        additional += `&max_auto_miles=${options.maxAutoMiles}`;
+      if (section === 'cto') {
+        additional += `&max_auto_miles=${options.maxAutoMiles}&auto_title_status=1`;
       }
       const reuestUrl = `${siteUrl}/search/${section}?query=${searchTerm.replace(' ','+')}&sort=rel&search_distance=${maxMiles}&max_price=${maxPrice}&postal=${zip}${additional}`;
       const response = request('GET', reuestUrl);
