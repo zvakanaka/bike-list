@@ -28,8 +28,8 @@ module.exports.sendText = (listings, sendTo) => {
   let text = subject;
 
   listings.forEach(function(item, index) {
-    text += item.title + ' $'+item.price + ' '
-          + item.info + ' ' + item.link;
+    text = item.title + ' $'+item.price + ' '
+         + item.info + ' ' + item.link;
     if (index != listings.length-1) text += '\n\n';//last line
   });
   if (!process.env.NO_SEND_MAIL) {
