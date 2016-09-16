@@ -94,13 +94,25 @@ console.log('link', link);
     return promise;
 }
 
+function getCity(zip) {
+   if (zip > 83400 && zip <= 83499)
+    return 'eastidaho';
+  else if (zip > 90600 && zip <= 92899)
+    return 'orangecounty';
+  else if (zip === 84070 || zip > 84088 && zip <= 84095)
+    return 'saltlake';
+  else
+    return 'provo';
+}
+
 module.exports.craigslist = (options) => {
     console.log('Scraping craigslist...');
     const promise = new Promise((resolve, reject) => {
-      const city = options.city || 'orangecounty';
+      const zip = options.zip || 90620;
+      let city = options.zip ? getCity(options.zip) : 'orangecounty';
+      console.log('CITY: ',city, 'Zip:', zip);
       const searchTerm = options.searchTerm || 'bow';
       const siteUrl = `https://${city}.craigslist.org`;
-      const zip = options.zip || 90620;
       const minPrice = options.minPrice || 2; // TODO: implement
       // TODO: remove parseInt, it is in mongoService already
       const maxPrice = parseInt(options.maxPrice) || 200;

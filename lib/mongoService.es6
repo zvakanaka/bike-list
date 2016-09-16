@@ -58,6 +58,7 @@ const scrapeSchema = new mongoose.Schema({
     site: String, //craigslist, ksl, car, or goodwill
     searchTerm: String,
     maxPrice: Number,
+    zip: Number,
     section: String,
     maxMiles: { type: Number },
     maxAutoMiles: { type: Number },
@@ -81,6 +82,7 @@ module.exports.insertScrape = (scrape) => {
     site: scrape.site, //craigslist, ksl, car, or goodwill
     searchTerm: scrape.searchTerm,
     maxPrice: parseInt(scrape.maxPrice),
+    zip: parseInt(scrape.zip),
     section: scrape.section || '',
     maxMiles: scrape.maxMiles || 0,
     maxAutoMiles: maxAutoMiles || scrape.maxAutoMiles || 0,
