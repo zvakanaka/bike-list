@@ -189,7 +189,8 @@ app.post('/new-scrape', function(req, res) {
     section: req.body.section,
     maxMiles: req.body.maxMiles,
     scrapeName: req.body.scrapeName,
-    site: req.body.site
+    site: req.body.site,
+    zip: req.body.zip
   };
   if (!req.body.sendTo) search.sendMessage = false;
 
