@@ -22,7 +22,7 @@
         </div>
         <div class="panel-body">
           <form>
-            <div class="form-group">
+            <div class="hidden form-group">
               <label for="input-name">Scrape Name</label>
               <input type="text" class="form-control" id="input-name" placeholder="e.g. Bikes in Katmandu">
             </div>
@@ -36,7 +36,7 @@
               <label for="select-site">Site</label>
               <select class="form-control" id="select-site">
                 <option>Craigslist</option>
-                <option>Shopgoodwill</option>
+                <!-- <option>Shopgoodwill</option> -->
                 <option>KSL</option>
               </select>
             </div>
@@ -92,6 +92,7 @@
              <label for="select-carrier">Carrier</label>
              <select class="form-control" id="select-carrier">
                <option value="">None (email)</option>
+               <option value="@txt.att.net">AT&T</option>
                <option value="@text.republicwireless.com">Republic Wireless</option>
                <option value="@tmomail.net">T-Mobile</option>
              </select>
