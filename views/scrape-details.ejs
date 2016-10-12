@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Scrape Details</title>
+    <% if (process.env.SUB_APP && process.env.OUTER_APP_DIR) {%>
+      <%- include(process.env.OUTER_APP_DIR+'/views/partials/head') %>
+    <% } else { %>
+      <% include partials/head %>
+    <% } %>
+  </head>
+  <body>
+    <% if (process.env.SUB_APP && process.env.OUTER_APP_DIR) {%>
+      <%- include(process.env.OUTER_APP_DIR+'/views/partials/nav') %>
+    <% } else { %>
+      <% include partials/nav %>
+    <% } %>
+
+    <div class="container-fluid">
+      <div class="panel panel-default">
+        <div class="panel-heading">
+          <h3 class="panel-title">Scrape Details</h3>
+        </div>
+        <table class="table table-striped">
+          <tbody>
+            <tr>
+              <th>Search Term</th>
+              <td><%= result.searchTerm %></td>
+            </tr>
+            <tr>
+              <th>Section</th>
+              <td><%= result.section %></td>
+            </tr>
+            <tr>
+              <th>Message</th>
+              <td><%= result.sendMessage %></td>
+            </tr>
+            <tr>
+              <th>Site</th>
+              <td><%= result.site %></td>
+            </tr>
+            <tr>
+              <th>Max Price</th>
+              <td>$<%= result.maxPrice %></td>
+            </tr>
+            <tr>
+              <th>Zip</th>
+              <td><%= result.zip %></td>
+            </tr>
+            <tr>
+              <th>Date/Desc</th>
+              <td><%= result.scrapeName %></td>
+            </tr>
+            <tr>
+              <th>Action</th>
+              <td><a href="db/delete-scrape?id=<%= result._id %>" class="btn btn-danger" role="button">Delete</a></td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+    <% if (process.env.SUB_APP && process.env.OUTER_APP_DIR) {%>
+      <%- include(process.env.OUTER_APP_DIR+'/views/partials/footer') %>
+    <% } else { %>
+      <% include partials/footer %>
+    <% } %>
+  </body>
+</html>
