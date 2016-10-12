@@ -216,7 +216,7 @@ module.exports.cars = (options) => {
     const zip = options.zip || 84606;
     const minPrice = options.minPrice || 2;
     const maxPrice = options.maxPrice || 2000;
-    const minYear = options.minYear || 1995;
+    const minYear = options.minYear || 1985;
     const maxYear = options.maxYear || 2016;
     const minMiles = options.minMiles || 0;
     const maxMiles = options.maxMiles || 200000;

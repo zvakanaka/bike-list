@@ -102,6 +102,7 @@ module.exports.insertScrape = (scrape) => {
 };
 module.exports.getAllActiveScrapes = () => ScrapeModel.find({ deleted: false }).sort('-date');
 module.exports.getScrapesForUser = (id) => ScrapeModel.find({ userId: id }).sort('-date');
+module.exports.getScrape = (id) => ScrapeModel.find({ _id: id });
 module.exports.deleteScrapes = (id) => {
   if (id) {
     ScrapeModel.remove({ userId: id}, (err) => {

@@ -241,6 +241,31 @@ app.get('/manage-scrapes', whoIsThere, function(req, res) {
   });
 });
 
+app.get('/scrape-details', whoIsThere, function(req, res) {
+  console.log('Getting scrape for ' + req.user.id);
+  var _id = req.query.id;
+  var result = mongoService.getScrape(_id);
+  result.exec(function(err, result) {
+    if (!err) {
+	console.log('result:',result[0]);
+	res.render('scrape-details', {
+	      page: process.env.SUB_APP ? req.url + 'scrape' : req.url,//url
+        result: result[0],
+        user: req.user
+      });
+    }
+    else {
+      console.log(err);
+      res.render('scrape-details', {
+        page: process.env.SUB_APP ? req.url + 'scrape' : req.url,//url
+        result: {},
+        error: 'empty',
+        user: req.user
+      });
+    }
+  });
+});
+
 app.get('/db/reset', function(req, res) {
   var status = mongoService.deleteAll();
   if (process.env.SUB_APP) {
