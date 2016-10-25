@@ -1,6 +1,6 @@
 {
-  "name": "Bike Scraper",
-  "short_name": "Scrape",
+  "name": "Bike List",
+  "short_name": "Bike-list",
   "icons": [
     {
       "src": "images/launcher-icon-0-75x.png",
