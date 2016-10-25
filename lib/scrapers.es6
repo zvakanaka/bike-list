@@ -6,7 +6,7 @@ const mongoService = require('./mongoService.js');
 // http://www.shopgoodwill.com/search/SearchKey.asp?itemTitle=bow&catid=279&sellerID=all&closed=no&minPrice=0&maxPrice=200&sortBy=itemEndTime&SortOrder=a&showthumbs=on
 
 module.exports.goodwill = (options) => {
-    console.log('Scraping craigslist...');
+    console.log('Scraping shopgoodwill...');
     const promise = new Promise((resolve, reject) => {
       const city = options.city || 'orangecounty';
       const searchTerm = options.searchTerm || 'bo';
