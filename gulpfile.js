@@ -28,13 +28,13 @@ gulp.task('default', function() {
   console.log('In Default');
   runSequence(
     'clean',
-   ['copy-configs', 'img', 'js', 'css', 'transpile', 'lint'],
+   ['copy-configs', 'img', 'js', 'sw', 'css', 'transpile', 'lint'],
    'browser-sync',
    'watch-it');
 });
 
 gulp.task('build', function() {
-  runSequence('clean', ['copy-configs', 'img', 'js', 'lint', 'css', 'transpile'], 'exit');
+  runSequence('clean', ['copy-configs', 'img', 'js', 'sw', 'lint', 'css', 'transpile'], 'exit');
 });
 
 gulp.task('exit', function() {
@@ -44,6 +44,7 @@ gulp.task('exit', function() {
 gulp.task('watch-it', function() {
   gulp.watch("views/**/*.ejs").on('change', browserSync.reload);
   gulp.watch('assets/js/**/*.js', ['js', browserSync.reload]);
+  gulp.watch('assets/sw.js', ['sw', browserSync.reload]);
   gulp.watch('assets/styles/**/*.styl', ['css']);
   gulp.watch('lib/**/*.es6', ['transpile']);
 });
@@ -122,8 +123,19 @@ gulp.task('js', function(cb) {
   //uglify and copy
   pump([
       gulp.src('assets/js/**/*.js'),
-      uglify(),
+      //uglify(),
       gulp.dest('dist/js/')
+    ],
+    cb
+  );
+});
+
+gulp.task('sw', function(cb) {
+  //uglify and copy
+  pump([
+      gulp.src('assets/sw.js'),
+      uglify(),
+      gulp.dest('dist/')
     ],
     cb
   );
