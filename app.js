@@ -70,7 +70,7 @@ if (!process.env.SUB_APP) {
 
 app.use(middleware);
 
-// index page
+// list page
 app.get('/my-list', whoIsThere, function(req, res) {
   debug('GET /my-list');
 
@@ -79,7 +79,7 @@ app.get('/my-list', whoIsThere, function(req, res) {
   results.exec(function(err, result) {
     if (!err) {
       console.log('Rendering');
-      res.render('index', {
+      res.render('list', {
         page: process.env.SUB_APP ? req.url + 'scrape' : req.url,//url
         itemType: process.env.ITEM_TYPE || 'Item',
         listingData: result,
@@ -88,7 +88,7 @@ app.get('/my-list', whoIsThere, function(req, res) {
     }
     else {
       console.log('Rendering');
-      res.render('index', {
+      res.render('list', {
         page: process.env.SUB_APP ? req.url + 'scrape' : req.url,//url
         itemType: process.env.ITEM_TYPE || 'Item',
         listingData: [],
@@ -107,7 +107,7 @@ app.get('/list', whoIsThere, function(req, res) {
   results.exec(function(err, result) {
     if (!err) {
       console.log('Rendering');
-      res.render('index', {
+      res.render('list', {
         page: process.env.SUB_APP ? req.url + 'scrape' : req.url,//url
         itemType: process.env.ITEM_TYPE || 'Item',
         listingData: result,
@@ -116,7 +116,7 @@ app.get('/list', whoIsThere, function(req, res) {
     }
     else {
       console.log('Rendering');
-      res.render('index', {
+      res.render('list', {
         page: process.env.SUB_APP ? req.url + 'scrape' : req.url,//url
         itemType: process.env.ITEM_TYPE || 'Item',
         listingData: [],
@@ -129,7 +129,9 @@ app.get('/list', whoIsThere, function(req, res) {
 
 app.get('/', function(req, res) {
   debug('GET /');
-  res.redirect('/list');
+  res.render('login', {
+            page: process.env.SUB_APP ? req.url : req.url,//url
+            user: req.user });
 });
 
 app.get('/account', whoIsThere, function(req, res){
