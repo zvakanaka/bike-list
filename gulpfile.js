@@ -134,7 +134,7 @@ gulp.task('sw', function(cb) {
   //uglify and copy
   pump([
       gulp.src('assets/sw.js'),
-      uglify(),
+      //uglify(),
       gulp.dest('dist/')
     ],
     cb
