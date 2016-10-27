@@ -36,6 +36,23 @@ this.addEventListener('fetch', function(event) {
   }));
 });
 
-self.addEventListener('message', function(event){
-    console.log("SW Received Message: " + event.data);
+self.clients.matchAll().then(all => all.map(client => client.postMessage(data)));
+
+function myTimer(event) {
+  console.log('WELL HERE\'s some DATA WOHOO:',event.data);
+  if (!navigator.onLine) {
+    console.log('Warning:', 'navigator not online');
+  } else {
+    console.log('We\'re online!');
+    event.ports[0].postMessage({
+      error: null,
+      data: "WES ONLINE!"
+    });
+  }
+}
+
+self.addEventListener('message', function handler (event) {
+
+  console.log('Message in sw:'+event.data);
+  var myVar = setInterval(function(){ myTimer(event) }, 3000);
 });

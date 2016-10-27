@@ -33,15 +33,32 @@ function database(url, data, $loader) {
   http.send(JSON.stringify(data));
 }
 
-function postMessage(msg){
-    navigator.serviceWorker.controller.postMessage("Client 1 says '"+msg+"'");
+function sendMessage(message) {
+  console.log('sending',message);
+  return new Promise(function(resolve, reject) {
+     var messageChannel = new MessageChannel();
+     messageChannel.port1.onmessage = function(event) {
+       if (event.data.error) {
+         console.log('rejecting');
+         reject(event.data.error);
+       } else {
+         console.log('resolbing');
+         resolve(event.data);
+       }
+     };
+    navigator.serviceWorker.controller.postMessage(message, [messageChannel.port2]);
+  });
 }
 
 function addScrape(options, $loader) {
   if (!navigator.onLine) {
     console.log('Warning:', 'navigator not online');
     addAlert(`Warning: ${'navigator not online'}`, 'warning');
-    postMessage(JSON.stringify(options))
+    sendMessage(JSON.stringify(options)).then(function(result){
+      console.log('DATAS');
+      console.log(result);
+    });
+
     $loader.button('reset');
   } else {
     //TODO: change loader to be something within a cb
@@ -75,7 +92,7 @@ btnAddScrape.addEventListener('click', function() {
     site:  document.getElementById('select-site').value,
     zip: document.getElementById('input-zip').value
   };
-  console.log('scrapeOptions', scrapeOptions);
+  //console.log('scrapeOptions', scrapeOptions);
 
   addScrape(scrapeOptions, $btn);
 });
