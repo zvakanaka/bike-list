@@ -19,18 +19,21 @@ function database(url, data, $loader) {
   http.onreadystatechange = function() {
     if (http.readyState == 4 && http.status == 200) {
       //response
-      var data = (http.responseText);
-      console.log('RESPONSE! ' + data);
-      data = JSON.parse(data);
-      addAlert(`Success! Added new scrape: ${data[0].scrapeName}`, 'success');
+      var resData = (http.responseText);
+      console.log('RESPONSE! ' + resData);
+      resData = JSON.parse(resData);
+      addAlert(`Success! Added new scrape: ${resData[0].scrapeName}`, 'success');
       $loader.button('reset');
     } else {
-      console.log('Error:', http.status);
+      console.log('Error:', http.status, 'while sending', data);
       addAlert(`Error: ${http.status}`, 'danger');
       $loader.button('reset');
     }
   };
-  http.send(JSON.stringify(data));
+  // if (typeof data === 'string' || data instanceof String)
+  //   http.send(data);
+  // else
+    http.send(JSON.stringify(data));
 }
 
 function sendMessage(message) {
@@ -57,6 +60,7 @@ function addScrape(options, $loader) {
     sendMessage(JSON.stringify(options)).then(function(result){
       console.log('DATAS');
       console.log(result);
+      database('/new-scrape', result, $loader);
     });
 
     $loader.button('reset');
