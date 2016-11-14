@@ -93,7 +93,7 @@ module.exports.insertScrape = (scrape) => {
   return new Promise((resolve, reject) => {
       scrapeToInsert.save((err) => {
         if (err) {
-          console.log('SAVE ERROR');
+          console.log('SAVE ERROR', err);
           reject(new Error(err));
         }
         resolve(scrapeToInsert);
@@ -168,7 +168,7 @@ module.exports.insert = (item) => {
   return new Promise((resolve, reject) => {
       itemToInsert.save((err) => {
         if (err) {
-          console.log('SAVE ERROR');
+          console.log('SAVE ERROR', err);
           reject(new Error(err));
         }
         resolve(itemToInsert);
