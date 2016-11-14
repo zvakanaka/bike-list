@@ -212,14 +212,13 @@ module.exports.cars = (options) => {
   const promise = new Promise((resolve, reject) => {
     const siteUrl = 'http://www.ksl.com/auto/search/index';
     let searchTerm = options.searchTerm || '';
-    if (searchTerm === 'bike') searchTerm = '';
     const zip = options.zip || 84606;
     const minPrice = options.minPrice || 2;
     const maxPrice = options.maxPrice || 2000;
     const minYear = options.minYear || 1985;
     const maxYear = options.maxYear || 2016;
     const minMiles = options.minMiles || 0;
-    const maxMiles = options.maxMiles || 200000;
+    const maxMiles = options.maxAutoMiles || 200000;
     const insert = options.insert || true;
     const sendMessage = options.sendMessage || true;
 
@@ -293,17 +292,18 @@ module.exports.cars = (options) => {
 module.exports.ksl = function (options) {
   console.log('SCRAPING KSL...');
   const promise = new Promise(function(resolve, reject) {
-    const siteUrl = 'http://www.ksl.com/';
+    const siteUrl = 'http://www.ksl.com';
     const zip = options.zip || 84606;
-    const searchTerm = options.searchTerm || 'bike';
+    const searchTerm = options.searchTerm || '';
     const minPrice = options.minPrice || 30;
     const maxPrice = options.maxPrice || 200;
     const resultsPerPage = options.resultsPerPage || 50;
     const sortType = options.sortType || 1;// newest to oldest
     const insert = options.insert || true;
     const sendMessage = options.sendMessage || true;
+    const distance = options.maxMiles || '25';
 
-    const url = `${siteUrl}?nid=231&cat=&search=${searchTerm}&zip=${zip}&distance=&min_price=${minPrice}&max_price=${maxPrice}&type=&category=&subcat=&sold=&city=&addisplay=&userid=&markettype=sale&adsstate=&nocache=1&o_facetSelected=&o_facetKey=&o_facetVal=&viewSelect=list&viewNumResults=${resultsPerPage}&sort=${sortType}`;
+    const url = `${siteUrl}?nid=231&cat=&search=${searchTerm}&zip=${zip}&distance=${distance}&min_price=${minPrice}&max_price=${maxPrice}&type=&category=&subcat=&sold=&city=&addisplay=&userid=&markettype=sale&adsstate=&nocache=1&o_facetSelected=&o_facetKey=&o_facetVal=&viewSelect=list&viewNumResults=${resultsPerPage}&sort=${sortType}`;
 console.log('about to scrape url:', url);
     const response = request('GET', url);
     const $ = cheerio.load(response.getBody());
@@ -325,7 +325,7 @@ console.log('about to scrape url:', url);
           }
           const title = $(this).find('.adTitle').text().trim()
           let link = siteUrl + $(this).find('.listlink')['0']['attribs']['href'];
-          link = link.substr(0, link.indexOf('&cat='));//remove query params
+          link = link.substr(0, link.indexOf('?'));//remove query params
           let price = $(this).find('.priceBox').text().trim();
           price = price.substring(1, price.length-2);
 
@@ -350,7 +350,7 @@ console.log('about to scrape url:', url);
                 if (insert === true) mongoService.insert(item);
                 if (sendMessage === true) sendMail.sendText([item]);
               } else {
-                console.log('EXISTING LINK FOUND', item.title, result[0].link)
+                console.log(`EXISTING LINK FOUND: ${item.title} - ${item.link}, ${result[0].link}`)
                 // set to active because it does still exist
                 mongoService.updateItemDeleted(result[0].link, false);
               }

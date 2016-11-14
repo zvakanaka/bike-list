@@ -182,7 +182,7 @@ app.post('/new-scrape', function(req, res) {
   res.type('json');
 
   var search = {
-    searchTerm: req.body.searchTerm || 'bike',
+    searchTerm: req.body.searchTerm || '',
     maxPrice: req.body.maxPrice || 200,
     insert: req.body.insert || true, // does not carry through to mongodb
     sendMessage: req.body.sendMessage || false,

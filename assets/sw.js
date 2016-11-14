@@ -25,14 +25,25 @@ this.addEventListener('fetch', function(event) {
     return fetch(event.request);
   }).then(function(r) {
     response = r;
-    console.log('Found in cache, putting in new', r.url);
+    console.log('Found in cache:', r.url);
     caches.open('v1').then(function(cache) {
       cache.put(event.request, response);
     });
     return response.clone();
   }).catch(function() {
     console.log('Not found:', event.request.url);
-    return caches.match('images/not-found.pn');
+    console.log('No response found in cache. About to fetch from network...');
+
+     return fetch(event.request).then(function(response) {
+       console.log('Response from network is:', response);
+
+       return response;
+     }).catch(function(error) {
+       console.error('Fetching failed:', error);
+
+       throw error;
+     });
+    //return caches.match('images/not-found.pn');
   }));
 });
 
@@ -44,15 +55,14 @@ function myTimer(event) {
     console.log('Warning:', 'navigator not online');
   } else {
     console.log('We\'re online!');
-    event.ports[0].postMessage({
-      error: null,
-      data: "WES ONLINE!"
-    });
+    clearInterval(myVar);
+    event.ports[0].postMessage(event.data);
   }
 }
 
+var myVar;
 self.addEventListener('message', function handler (event) {
 
   console.log('Message in sw:'+event.data);
-  var myVar = setInterval(function(){ myTimer(event) }, 3000);
+  myVar = setInterval(function(){ myTimer(event) }, 3000);
 });

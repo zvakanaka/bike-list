@@ -12,7 +12,7 @@ function addAlert(content, kind) {
 /***************************
  * DATABASE
  ***************************/
-function database(url, data, $loader) {
+function postJSON(url, data, $loader) {
   var http = new XMLHttpRequest();
   http.open("POST", url, true);
   http.setRequestHeader("Content-type", "application/json; charset=utf-8");
@@ -24,15 +24,15 @@ function database(url, data, $loader) {
       resData = JSON.parse(resData);
       addAlert(`Success! Added new scrape: ${resData[0].scrapeName}`, 'success');
       $loader.button('reset');
-    } else {
+    } else if (http.status != 200) {
       console.log('Error:', http.status, 'while sending', data);
       addAlert(`Error: ${http.status}`, 'danger');
       $loader.button('reset');
     }
   };
-  // if (typeof data === 'string' || data instanceof String)
-  //   http.send(data);
-  // else
+  if (typeof data === 'string' || data instanceof String)
+    http.send(data);
+  else
     http.send(JSON.stringify(data));
 }
 
@@ -45,7 +45,7 @@ function sendMessage(message) {
          console.log('rejecting');
          reject(event.data.error);
        } else {
-         console.log('resolbing');
+         console.log('resolving');
          resolve(event.data);
        }
      };
@@ -60,13 +60,13 @@ function addScrape(options, $loader) {
     sendMessage(JSON.stringify(options)).then(function(result){
       console.log('DATAS');
       console.log(result);
-      database('/new-scrape', result, $loader);
+      postJSON('/new-scrape', result, $loader);
     });
 
     $loader.button('reset');
   } else {
     //TODO: change loader to be something within a cb
-    database('/new-scrape', options, $loader);
+    postJSON('/new-scrape', options, $loader);
   }
 }
 
@@ -79,14 +79,13 @@ selectSection.addEventListener('change', function() {
   }
 });
 
-//I'm not sure if I should have a n interval event that checks if online every so often and submits then.
 var btnAddScrape = document.getElementById('btn-add-scrape');
 btnAddScrape.addEventListener('click', function() {
   var $btn = $(this).button('loading');
   var scrapeOptions = {
     searchTerm: document.getElementById('input-search-term').value,
     maxPrice: document.getElementById('input-max-price').value,
-    insert:  document.getElementById('input-insert') || false,
+    insert: false,
     sendMessage:  document.getElementById('checkbox-send-message').checked,
     sendTo:  document.getElementById('input-send-to').value + document.getElementById('select-carrier').value,
     section:  document.getElementById('select-section').value,
@@ -94,7 +93,7 @@ btnAddScrape.addEventListener('click', function() {
     maxAutoMiles:  document.getElementById('input-auto-max-miles').value,
     scrapeName:  document.getElementById('input-name').value,
     site:  document.getElementById('select-site').value,
-    zip: document.getElementById('input-zip').value
+    zip: document.getElementById('input-zip').value || 84606
   };
   //console.log('scrapeOptions', scrapeOptions);
 
