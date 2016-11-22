@@ -1,4 +1,5 @@
 # bike-list
+Senior Project
 ![Screenshot](screenshot/screenshot.jpg)  
 
 ```sh
@@ -32,3 +33,30 @@ SUB_APP=true
 OUTER_APP_DIR='../../howtoterminal-express'
 BROWSER='firefox'
 ```  
+
+ Endpoints | Method | Description | Auth Needed
+--- | ---
+my-list  | GET | List all active items of current user | Yes
+list      | GET | List all active items for all users | Yes
+/ | GET | Either log in or deliver offline add-scrape form | No*
+account | GET | Manage account (buttons) | Yes
+add-scrape | GET | Add a scrape | Yes
+auth/google | GET | Authenticate with Passport and Google | No
+/auth/google/callback | GET | What happens after authentication (redirect to /add-scrape) | Yes
+/logout | GET | Log out and redirect to / | No
+/db/all | GET | Return JSON of every item in the database (deleted or not) | No**
+/new-scrape | POST | Insert a scrape to a site | No*
+/manage-scrapes | GET | See list of scrapes and click to get /scrape-details | Yes
+/scrape-details | GET | See details of clicked scrape ^^^ and show delete button | Yes
+/db/reset | GET | delete all items | No*
+/db/delete-scrape | GET | Delete scrape in query string (?id=) | Yes
+/db/delete-my-items | GET | Delete a user's items (?id=)| Yes
+/db/delete-scrapes | GET | Delete scrapes for a user (?id=) | Yes
+/db/my-scrapes | GET | Get the scrapes of a user in JSON | Yes
+/db/all-active-scrapes | GET | Get all active scrapes for all users | No
+/db/delete-all-scrapes | GET | Delete all scrapes for all users | Yes
+/scrape | GET | Collect new data from all scrapes again | No
+
+
+\* FIX this!  
+\*\* Possibly fix this  

@@ -27,7 +27,7 @@
 
       <div class="row centered mt mb">
       <% listingData.forEach(function(data) { %>
-          <div class="craigs-box col-lg-<%= 12/itemsPerRow %> col-md-<%= 12/itemsPerRow %> col-sm-<%= 12/itemsPerRow %> gallery">
+          <div class="craigs-box col-lg-<%= 12/itemsPerRow %> col-md-<%= 12/itemsPerRow/2 %> col-sm-<%= 12/itemsPerRow/4 %> gallery">
             <img src="<%= data.img %>" alt="<%= data.title %>" onError="this.onerror=null;this.src='images/not-found.png';">
             <div class="caption">
               <h4><%= data.title %></h4>
