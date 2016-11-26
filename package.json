@@ -27,7 +27,7 @@
     "gulp-babel": "^6.1.2",
     "gulp-clean-css": "^2.0.11",
     "gulp-cli": "gulpjs/gulp-cli",
-    "gulp-imagemin": "^3.0.1",
+    "gulp-express": "^0.3.5",
     "gulp-jshint": "^2.0.1",
     "gulp-stylus": "^2.5.0",
     "gulp-uglify": "^1.5.4",
@@ -46,12 +46,11 @@
     "browser-sync": "^2.13.0",
     "chai": "^3.5.0",
     "chai-http": "^3.0.0",
-    "gulp-nodemon": "^2.1.0",
-    "url-to-screenshot": "^0.6.1"
+    "gulp-nodemon": "^2.1.0"
   },
   "scripts": {
     "start": "node app.js",
-    "postinstall": "if [ ! -f .env ];then echo -e \"PORT=4000\nITEM_TYPE=Car\n#NODE_ENV=dev\nEMAIL_FROM=''\nEMAIL_PASSWORD=''\nEMAIL_TO='Jon <5@text.republicwireless.com>, Gus <5@tmomail.net>'\nMONGO_URI=''\nSUB_APP=true\n\" >> .env;fi; gulp build; bower install"
+    "postinstall": "if [ ! -f .env ];then echo \"PORT=4000\nITEM_TYPE=Car\n#NODE_ENV=dev\nEMAIL_FROM=''\nEMAIL_PASSWORD=''\nEMAIL_TO='Jon <5@text.republicwireless.com>, Gus <5@tmomail.net>'\nMONGO_URI=''\nSUB_APP=true\n\" >> .env;fi; gulp build; bower install"
   },
   "homepage": "http://howtoterminal.com/bike-list"
 }
