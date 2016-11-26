@@ -1,10 +1,10 @@
 var gulp = require('gulp'),
-    babel = require('gulp-babel'),
+		server = require('gulp-express'),
+		babel = require('gulp-babel'),
     cleanCSS = require('gulp-clean-css'),
     del = require('del'),
     env = require('node-env-file'),
     fs = require('fs'),
-    imagemin = require('gulp-imagemin'),
     jshint = require('gulp-jshint'),
     pump = require('pump'),
     runSequence = require('run-sequence'),
@@ -13,13 +13,11 @@ var gulp = require('gulp'),
 
 env(__dirname+'/.env');
 var PORTNO = process.env.PORT || 5000;
-var SCREENSHOT_FILE = process.env.SCREENSHOT_FILE || '/screenshot/screenshot2.jpg';
 var BROWSER_SYNC_RELOAD_DELAY = 500;
 
 //Only devs should need these
-var screenshot, browserSync, nodemon;
+var browserSync, nodemon;
 if (process.env.NODE_ENV == 'dev') {
-  screenshot = require('url-to-screenshot');
   browserSync = require('browser-sync');
   nodemon = require('gulp-nodemon');
 }
@@ -35,6 +33,10 @@ gulp.task('default', function() {
 
 gulp.task('build', function() {
   runSequence('clean', ['copy-configs', 'img', 'js', 'sw', 'lint', 'css', 'transpile'], 'exit');
+});
+
+gulp.task('server', function () {
+	server.run(['app.js']);
 });
 
 gulp.task('exit', function() {
@@ -92,7 +94,8 @@ gulp.task('nodemon', function(cb) {
         }, BROWSER_SYNC_RELOAD_DELAY);
       });
   } else {
-    console.log('ERROR: Must set NODE_ENV=dev in .env for nodemon');
+    gulp.watch(['app.js', 'lib/**/*.js'], [server.run]);
+		//console.log('ERROR: Must set NODE_ENV=dev in .env for nodemon');
   }
 });
 
@@ -113,9 +116,9 @@ gulp.task('clean', function() {
 
 gulp.task('img', function () {
     return gulp.src('assets/images/*')
-        .pipe(imagemin({
-            progressive: true
-        }))
+        //.pipe(imagemin({
+          //  progressive: true
+        //}))
         .pipe(gulp.dest('dist/images'));
 });
 
@@ -160,21 +163,3 @@ gulp.task('transpile', function() {
     .pipe(gulp.dest('lib/js/'));
 });
 
-// call via 'gulp screenshot'. App must be running
-gulp.task('screenshot', function() {
-  console.log('Saving screenshot to', __dirname + SCREENSHOT_FILE);
-  if (process.env.NODE_ENV === 'dev') {
-    screenshot('http://localhost:' + PORTNO)
-    .width(950)
-    .height(600)
-    .clip()
-    .format('jpg')
-    .capture(function(err, img) {
-      if (err) throw err;
-      fs.writeFileSync(__dirname + SCREENSHOT_FILE, img);
-      console.log('open ' + SCREENSHOT_FILE);
-    });
-  } else {
-    console.log('ERROR: Must set NODE_ENV=dev in .env for screenshot');
-  }
-});
