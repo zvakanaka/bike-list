@@ -1,5 +1,5 @@
 # bike-list
-Senior Project
+## Senior Project  
 ![Screenshot](https://github.com/zvakanaka/bike-list/raw/service-worker/screenshot/screenshot.jpg)  
 
 ```sh
