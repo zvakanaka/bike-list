@@ -1,6 +1,6 @@
 # bike-list
 Senior Project
-![Screenshot](screenshot/screenshot.jpg)  
+![Screenshot](https://github.com/zvakanaka/bike-list/raw/service-worker/screenshot/screenshot.jpg)  
 
 ```sh
 npm install
