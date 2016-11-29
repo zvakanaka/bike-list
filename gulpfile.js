@@ -1,5 +1,5 @@
 var gulp = require('gulp'),
-		server = require('gulp-express'),
+ 		gls = require('gulp-live-server'),
 		babel = require('gulp-babel'),
     cleanCSS = require('gulp-clean-css'),
     del = require('del'),
@@ -36,7 +36,10 @@ gulp.task('build', function() {
 });
 
 gulp.task('server', function () {
-	server.run(['app.js']);
+	console.log('IN SERVER');
+	var server = gls.new('app.js');
+  server.start();
+	return server;
 });
 
 gulp.task('exit', function() {
@@ -93,9 +96,13 @@ gulp.task('nodemon', function(cb) {
           });
         }, BROWSER_SYNC_RELOAD_DELAY);
       });
-  } else {
-    gulp.watch(['app.js', 'lib/**/*.js'], [server.run]);
-		//console.log('ERROR: Must set NODE_ENV=dev in .env for nodemon');
+  } else { // NODE ENV not set to dev
+		console.log('Launching server');
+		var server = gulp.start('server');
+    gulp.watch(['app.js', 'lib/**/*.js'], function() {
+			server.stop();
+			server = gulp.start('server');
+		});
   }
 });
 
@@ -162,4 +169,3 @@ gulp.task('transpile', function() {
     }))
     .pipe(gulp.dest('lib/js/'));
 });
-
