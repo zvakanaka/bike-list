@@ -94,7 +94,7 @@ console.log('link', link);
     return promise;
 }
 
-function getCity(zip) {
+module.exports.getCity = (zip) => {
    if (zip > 83400 && zip <= 83499)
     return 'eastidaho';
   else if (zip > 90600 && zip <= 92899)
