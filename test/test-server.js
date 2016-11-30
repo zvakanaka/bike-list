@@ -11,15 +11,24 @@ var scrapers = require('../lib/js/scrapers.js');
 
 describe('Delete scrapes with no user ID', function() {
   it('should return an error', function() {
-    var err = new Error('Failed to specify UserId');
-    mongoService.deleteScrapes().should.equal(err);
+    var err = new Error('Failed to specify UserId').toString();
+    mongoService.deleteScrapes().toString().should.equal(err);
   });
 });
 
 describe('Get all active scrapes ', function() {
-  it('should return multiple scrapes', function() {
-    var status = mongoService.deleteScrapes();
-    status.should.Throw;
+  it('should return multiple scrapes', function(done) {
+    var results = mongoService.getAllActiveScrapes();
+    results.exec(function(err, result) {
+      if (!err) {
+        result.length.should.be.at.least(1);
+        done();
+      }
+      else {//error
+        true.should.equal(false);
+        done();
+      }
+    });
   });
 });
 
