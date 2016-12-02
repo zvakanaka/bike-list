@@ -35,7 +35,7 @@ BROWSER='firefox'
 ```  
   
 | Endpoints | Method | Description | Auth Needed |
-| --- | --- |
+| --- | --- | --- | --- |
 | my-list  | GET | List all active items of current user | Yes |
 | list      | GET | List all active items for all users | Yes |
 | / | GET | Either log in or deliver offline add-scrape form | No\* |
