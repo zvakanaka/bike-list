@@ -304,7 +304,7 @@ module.exports.ksl = function (options) {
     const distance = options.maxMiles || '25';
 
     const url = `${siteUrl}?nid=231&cat=&search=${searchTerm}&zip=${zip}&distance=${distance}&min_price=${minPrice}&max_price=${maxPrice}&type=&category=&subcat=&sold=&city=&addisplay=&userid=&markettype=sale&adsstate=&nocache=1&o_facetSelected=&o_facetKey=&o_facetVal=&viewSelect=list&viewNumResults=${resultsPerPage}&sort=${sortType}`;
-console.log('about to scrape url:', url);
+    console.log('about to scrape url:', url);
     const response = request('GET', url);
     const $ = cheerio.load(response.getBody());
     console.log('Got Body');
@@ -336,11 +336,13 @@ console.log('about to scrape url:', url);
           //TODO: get real place
           const place = 'UT';
 
-          const item = {itemType: searchTerm,
+          const item = {
+              itemType: searchTerm,
               img: img, userId: options.userId,
               title: title, link: link,
               price: price, info: description,
-              place: place, date: date};
+              place: place, date: date
+            };
 
           const result = mongoService.findByLink(link);
           result.exec(function(err, result) {
@@ -359,7 +361,10 @@ console.log('about to scrape url:', url);
               console.log('Error');
             }
             if (index === listingLength-1) {
+              console.log("RESOLVING");
               resolve(listings);//done checking duplicates in $list
+            } else {
+              console.log(index, " is not ", listingLength);
             }
             listings.push(item);
           });

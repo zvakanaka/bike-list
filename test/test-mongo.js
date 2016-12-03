@@ -6,7 +6,6 @@ var should = chai.should();
 chai.use(chaiHttp);
 
 var mongoService = require('../lib/js/mongoService.js');
-var scrapers = require('../lib/js/scrapers.js');
 
 // MongoDB
 describe('Delete scrapes with no user ID', function() {
@@ -36,10 +35,10 @@ describe('Inserting a valid scrape', function() {
       .then(function(result) {
         var results = mongoService.getScrapesForUser(123);
         results.exec(function(err, result) {
-          console.log("HEYHEYHEY");
           if (!err) {
             console.log(result);
             var err = new Error('Failed to specify UserId').toString();
+            //TODO: FIX THIS TO BE REAL
             result.should.equal('TEST');
           }
           else {
@@ -67,19 +66,3 @@ describe('Get all active scrapes ', function() {
     });
   });
 });
-
-//Scraper
-describe('Get city name from zip ', function() {
-  it('should return corresponding city names', function() {
-    var city = scrapers.getCity(90620);
-    city.should.equal('orangecounty');
-    city = scrapers.getCity(83440);
-    city.should.equal('eastidaho');
-  });
-});
-
-
-
-it('should add a SINGLE blob on /blobs POST');
-it('should update a SINGLE blob on /blob/<id> PUT');
-it('should delete a SINGLE blob on /blob/<id> DELETE');
