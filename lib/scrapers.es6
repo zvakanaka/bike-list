@@ -109,7 +109,7 @@ module.exports.craigslist = (options) => {
     console.log('Scraping craigslist...');
     const promise = new Promise((resolve, reject) => {
       const zip = options.zip || 90620;
-      let city = options.zip ? getCity(options.zip) : 'orangecounty';
+      let city = options.zip ? module.exports.getCity(options.zip) : 'orangecounty';
       console.log('CITY: ',city, 'Zip:', zip);
       const searchTerm = options.searchTerm || 'bow';
       const siteUrl = `https://${city}.craigslist.org`;

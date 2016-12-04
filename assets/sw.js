@@ -6,7 +6,7 @@ this.addEventListener('install', function(event) {
         'js/main.js',
         'js/load-sw.js',
         'images/github.gif',
-        'images/howtoterm.gif',
+        'images/launcher-icon-1x.png',
         'images/not-found.png',
         'styles/styles.css',
         'components/bootstrap/dist/css/bootstrap.min.css',
@@ -43,26 +43,27 @@ this.addEventListener('fetch', function(event) {
 
        throw error;
      });
-    //return caches.match('images/not-found.pn');
+    //return caches.match('images/not-found.pn');//default
   }));
 });
 
 self.clients.matchAll().then(all => all.map(client => client.postMessage(data)));
 
-function myTimer(event) {
+function onlineTimer(event) {
+  //called at an interval
   console.log('WELL HERE\'s some DATA WOHOO:',event.data);
   if (!navigator.onLine) {
     console.log('Warning:', 'navigator not online');
   } else {
     console.log('We\'re online!');
-    clearInterval(myVar);
+    clearInterval(timerInterval);
     event.ports[0].postMessage(event.data);
   }
 }
 
-var myVar;
+var timerInterval;
+//called the first time offline data is added
 self.addEventListener('message', function handler (event) {
-
   console.log('Message in sw:'+event.data);
-  myVar = setInterval(function(){ myTimer(event) }, 3000);
+  timerInterval = setInterval(function(){ onlineTimer(event) }, 3000);
 });

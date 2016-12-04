@@ -16,7 +16,7 @@
 
     <nav class="navbar navbar-inverse">
       <a class="navbar-brand custom-header-logo" href="../">
-        <img alt="Brand" class="logo" src="images/howtoterm.gif">
+        <img alt="Brand" class="logo" src="images/launcher-icon-1x.png">
       </a>
       <ul class="nav navbar-nav">
           <li><a href="/account">Tools</a></li>
@@ -24,7 +24,7 @@
           <li><a href="/my-list">My Items</a></li>
           <li><a href="/manage-scrapes">My Scrapes</a></li>
       </ul>
-      <p class="navbar-text navbar-right">Logged in as <a href="#" class="navbar-link">Offline User</a></p>
+      <p class="navbar-text navbar-right">Logged in as <a href="#" id="username" class="navbar-link">Please Sign in</a></p>
     </nav>
 
     <div class="container-fluid">
@@ -124,6 +124,24 @@
     <script src="/js/main.js"></script>
 
     <footer class="footer">
+      <script type="text/javascript">
+      function getCookie(cname) {
+        var name = cname + "=";
+        var ca = document.cookie.split(';');
+        for(var i = 0; i <ca.length; i++) {
+            var c = ca[i];
+            while (c.charAt(0)==' ') {
+                c = c.substring(1);
+            }
+            if (c.indexOf(name) == 0) {
+                return c.substring(name.length,c.length);
+            }
+        }
+        return "";
+      }
+      console.log('Behold the cookie',getCookie('name'));
+      document.querySelector("#username").innerHTML = unescape(getCookie('name'));
+      </script>
       <a class="navbar-brand navbar-right" href="https://github.com/zvakanaka">
         <img class="custom-footer-logo" alt="Github Logo" src="images/github.gif">
       </a>

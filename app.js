@@ -9,6 +9,7 @@ var mongoService = require('./lib/js/mongoService.js');
 var passport = require('passport');
 var config = require('./private-auth.js');
 var GoogleStrategy = require('passport-google-oauth2').Strategy;
+var cookieParser = require('cookie-parser')
 
 env(__dirname+'/.env');
 
@@ -44,6 +45,8 @@ var app = express();
 var bodyParser = require('body-parser');
 app.use(bodyParser.json()); // support json encoded bodies
 app.use(bodyParser.urlencoded({ extended: true })); // support encoded bodies
+
+app.use(cookieParser());
 
 app.set('json spaces', 2);
 
@@ -154,10 +157,14 @@ app.get('/auth/google',
 app.get('/auth/google/callback',
   passport.authenticate('google', { failureRedirect: '/' }),
   function(req, res) {
+    res.cookie('id', req.user.id, { maxAge: 900000, httpOnly: true });
+    res.cookie('name', req.user.displayName, { maxAge: 900000, httpOnly: false });
     res.redirect('/add-scrape');
 });
 
 app.get('/logout', function(req, res){
+  res.clearCookie('name');
+  res.clearCookie('id');
   req.logout();
   res.redirect('/');
 });
@@ -187,7 +194,7 @@ app.post('/new-scrape', function(req, res) {
     insert: req.body.insert || true, // does not carry through to mongodb
     sendMessage: req.body.sendMessage || false,
     sendTo: req.body.sendTo,
-    userId: req.user.id,
+    userId: req.user.id || req.cookies.id,
     section: req.body.section,
     maxMiles: req.body.maxMiles,
     scrapeName: req.body.scrapeName,
