@@ -16,7 +16,8 @@ describe('Delete scrapes with no user ID', function() {
 });
 
 describe('Inserting a valid scrape', function() {
-  it('should not return an error', function() {
+  it('should return the scrape after inserting', function(done) {
+    this.timeout(15000);
     var scrapeToInsert = {
       scrapeToInsertTerm: 'TEST',
       maxPrice: 999,
@@ -33,30 +34,55 @@ describe('Inserting a valid scrape', function() {
 
     mongoService.insertScrape(scrapeToInsert)
       .then(function(result) {
-        var results = mongoService.getScrapesForUser(123);
-        results.exec(function(err, result) {
-          if (!err) {
-            console.log(result);
-            var err = new Error('Failed to specify UserId').toString();
-            //TODO: FIX THIS TO BE REAL
-            result.should.equal('TEST');
-          }
-          else {
-            console.log(result, err);
-          }
-        });
+        result.userId.should.equal(scrapeToInsert.userId.toString());
+        done();
       }).catch(function(err) {
         console.log('ERROR!', err, 'for', 123);
+        done();
       });
   });
 });
 
+describe('Get all scrapes for userId 123 ', function() {
+  it('should return at least one scrape', function(done) {
+    this.timeout(15000);
+    var results = mongoService.getScrapesForUser(123);
+    results.exec(function(err, result) {
+      if (!err) {
+        result.length.should.be.at.least(1);
+        done();
+      }
+      else {
+        console.log(result, err);
+      }
+    });
+  });
+});
+
 describe('Get all active scrapes ', function() {
-  it('should return multiple scrapes', function(done) {
+  it('should return at least one scrape', function(done) {
     var results = mongoService.getAllActiveScrapes();
     results.exec(function(err, result) {
       if (!err) {
         result.length.should.be.at.least(1);
+        done();
+      }
+      else {//error
+        true.should.equal(false);
+        done();
+      }
+    });
+  });
+});
+
+describe('Deleting scrapes for userId 123 ', function() {
+  it('should leave user with no scrapes', function(done) {
+    this.timeout(15000);
+    var status = mongoService.deleteScrapes(123);
+    var results = mongoService.getScrapesForUser(123);
+    results.exec(function(err, result) {
+      if (!err) {
+        result.length.should.equal(0);
         done();
       }
       else {//error
