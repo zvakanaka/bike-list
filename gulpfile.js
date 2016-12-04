@@ -23,7 +23,6 @@ if (process.env.NODE_ENV == 'dev') {
 }
 
 gulp.task('default', function() {
-  console.log('In Default');
   runSequence(
     'clean',
    ['copy-configs', 'img', 'js', 'sw', 'css', 'transpile', 'lint'],
@@ -36,7 +35,6 @@ gulp.task('build', function() {
 });
 
 gulp.task('server', function () {
-	console.log('IN SERVER');
 	var server = gls.new('app.js');
   server.start();
 	return server;
@@ -97,11 +95,11 @@ gulp.task('nodemon', function(cb) {
         }, BROWSER_SYNC_RELOAD_DELAY);
       });
   } else { // NODE ENV not set to dev
-		console.log('Launching server');
 		var server = gulp.start('server');
     gulp.watch(['app.js', 'lib/**/*.js'], function() {
-			server.stop();
-			server = gulp.start('server');
+			server.stop().then(function (){
+        server = gulp.start('server');
+      });
 		});
   }
 });
