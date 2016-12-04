@@ -9,7 +9,7 @@ mongoose.connect(MONGO_URI, (err, res) => {
   if (err) {
     console.log('ERROR connecting to: ' + MONGO_URI + '. ' + err + res);
   } else {
-    console.log('Yay connected to: ' + MONGO_URI);
+    //console.log('Yay connected to: ' + MONGO_URI);
   }
 });
 
