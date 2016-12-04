@@ -17,8 +17,9 @@ describe('Get city name from zip ', function() {
   });
 });
 
-describe('Scrape KSL for furniture ', function() {
-  it('should return some furniture listings', function() {
+describe('Scrape KSL for couches ', function() {
+  this.timeout(15000);
+  it('should return at least one listing', function(done) {
     var search = {
       scrapeToInsertTerm: 'couch',
       maxPrice: 999,
@@ -34,8 +35,9 @@ describe('Scrape KSL for furniture ', function() {
     };
     scrapers.ksl(search)
       .then(function(listings) {
-        console.log("HEY", typeof(listings), listings.length);
+        console.log(listings.length + ' items found');
         listings.length.should.be.at.least(1);
+        done();
       });
   });
 });

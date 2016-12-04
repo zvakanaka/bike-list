@@ -69,7 +69,6 @@ const scrapeSchema = new mongoose.Schema({
 const ScrapeModel = mongoose.model('Scrapes', scrapeSchema);
 
 module.exports.insertScrape = (scrape) => {
-  console.log('Inserting', scrape);
   let maxAutoMiles;
   if (typeof(scrape.maxAutoMiles) === "string") {
     maxAutoMiles = scrape.maxAutoMiles.replace(',','');
@@ -171,7 +170,7 @@ module.exports.insert = (item) => {
           console.log('SAVE ERROR', err);
           reject(new Error(err));
         }
-        resolve(itemToInsert);
+        resolve(item);
       });
     });;
 };
@@ -180,9 +179,8 @@ module.exports.updateItemsDeleted = (itemType, deleted) => {
   const promise = new Promise((resolve, reject) => {
     ItemModel.update({itemType:itemType}, {deleted: deleted}, {multi: true},
         function(err, num) {
-            console.log("updated "+num);
             if (!err) {
-              resolve(num);
+              resolve(num.nModified);
             } else {
               reject(err);
             }
