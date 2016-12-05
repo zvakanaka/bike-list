@@ -188,13 +188,15 @@ app.post('/new-scrape', function(req, res) {
   console.log('POST /new-scrape');
   res.type('json');
 
+  var userId = req.cookies.id;
+
   var search = {
     searchTerm: req.body.searchTerm || '',
     maxPrice: req.body.maxPrice || 200,
     insert: req.body.insert || true, // does not carry through to mongodb
     sendMessage: req.body.sendMessage || false,
     sendTo: req.body.sendTo,
-    userId: req.user.id || req.cookies.id,
+    userId: userId,
     section: req.body.section,
     maxMiles: req.body.maxMiles,
     scrapeName: req.body.scrapeName,
@@ -206,8 +208,8 @@ app.post('/new-scrape', function(req, res) {
   mongoService.insertScrape(search)
     .then(function(result) {
       console.log('Inserted', result);
-      console.log('Getting scrapes for ' + req.user.id);
-      var results = mongoService.getScrapesForUser(req.user.id);
+      console.log('Getting scrapes for ' + userId);
+      var results = mongoService.getScrapesForUser(userId);
       results.exec(function(err, result) {
         if (!err) {
           console.log(result);
@@ -223,7 +225,7 @@ app.post('/new-scrape', function(req, res) {
       scrapeSite(search);
 
     }).catch(function(err) {
-      console.log('ERROR!', err, 'for', user.id);
+      console.log('ERROR!', err, 'for', userId);
     });
 });
 
