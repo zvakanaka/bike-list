@@ -37,7 +37,10 @@ gulp.task('build', function() {
 gulp.task('server', function () {
 	var server = gls.new('app.js');
   server.start();
-	return server;
+
+  gulp.watch(['app.js', 'lib/**/*.js'], function() {
+    server.start.bind(server)();
+  });
 });
 
 gulp.task('exit', function() {
@@ -96,11 +99,6 @@ gulp.task('nodemon', function(cb) {
       });
   } else { // NODE ENV not set to dev
 		var server = gulp.start('server');
-    gulp.watch(['app.js', 'lib/**/*.js'], function() {
-			server.stop().then(function (){
-        server = gulp.start('server');
-      });
-		});
   }
 });
 
