@@ -23,11 +23,11 @@ function postJSON(url, data, $loader) {
       console.log('RESPONSE! ' + resData);
       resData = JSON.parse(resData);
       addAlert(`Success! Added new scrape: ${resData[0].scrapeName}`, 'success');
-      $loader.button('reset');
+      if ($loader) $loader.button('reset');
     } else if (http.status != 200) {
       console.log('Error:', http.status, 'while sending', data);
       addAlert(`Error: ${http.status}`, 'danger');
-      $loader.button('reset');
+      if ($loader) $loader.button('reset');
     }
   };
   if (typeof data === 'string' || data instanceof String)
@@ -54,18 +54,30 @@ function sendMessage(message) {
   });
 }
 
+//check local storage, if scrape exists, call addscrape
+if (localStorage.getItem("scrape") !== null) {
+  console.log("pending scrape", localStorage.getItem("scrape"));
+  // var $btn = btnAddScrape.button('loading');
+  addScrape(JSON.parse(localStorage.getItem("scrape")));
+}
+
 function addScrape(options, $loader) {
   if (!navigator.onLine) {
-    console.log('Warning:', 'navigator not online');
-    addAlert(`Warning: ${'navigator not online'}`, 'warning');
+    if (localStorage.getItem("scrape") === null) {
+      console.log("adding scrape to local storage", JSON.stringify(options));
+      localStorage.setItem("scrape", JSON.stringify(options));
+    }
+    console.log('Warning:', 'scrape will be added on connection');
+    addAlert(`Warning: ${'scrape will be added on connection'}`, 'warning');
     sendMessage(JSON.stringify(options)).then(function(result){
       //when sendMessage resolves:
+      localStorage.removeItem("scrape");
       console.log('DATAS');
       console.log(result);
       postJSON('/new-scrape', result, $loader);
     });
 
-    $loader.button('reset');
+    if ($loader) $loader.button('reset');
   } else {
     //TODO: change loader to be something within a cb
     postJSON('/new-scrape', options, $loader);
