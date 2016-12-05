@@ -215,7 +215,7 @@ app.post('/new-scrape', function(req, res) {
         }
         else {
           console.log();
-          console.log(result);
+          console.log('error', result);
           res.json(err);
         }
       });
@@ -256,7 +256,7 @@ app.get('/scrape-details', whoIsThere, function(req, res) {
   var result = mongoService.getScrape(_id);
   result.exec(function(err, result) {
     if (!err) {
-	console.log('result:',result[0]);
+	console.log('details:',result[0]);
 	res.render('scrape-details', {
 	      page: process.env.SUB_APP ? req.url + 'scrape' : req.url,//url
         result: result[0],

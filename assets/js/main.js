@@ -37,6 +37,7 @@ function postJSON(url, data, $loader) {
 }
 
 function sendMessage(message) {
+  //used to initially send data while offline
   console.log('sending',message);
   return new Promise(function(resolve, reject) {
      var messageChannel = new MessageChannel();
@@ -58,6 +59,7 @@ function addScrape(options, $loader) {
     console.log('Warning:', 'navigator not online');
     addAlert(`Warning: ${'navigator not online'}`, 'warning');
     sendMessage(JSON.stringify(options)).then(function(result){
+      //when sendMessage resolves:
       console.log('DATAS');
       console.log(result);
       postJSON('/new-scrape', result, $loader);
