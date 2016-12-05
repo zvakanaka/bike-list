@@ -51,7 +51,6 @@ self.clients.matchAll().then(all => all.map(client => client.postMessage(data)))
 
 function onlineTimer(event) {
   //called at an interval
-  console.log('WELL HERE\'s some DATA WOHOO:',event.data);
   if (!navigator.onLine) {
     console.log('Warning:', 'navigator not online');
   } else {
