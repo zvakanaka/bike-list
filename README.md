@@ -16,16 +16,19 @@ Required variables:
 ```sh
 EMAIL_FROM='soandso@whateva.com'
 EMAIL_PASSWORD='password'
-EMAIL_TO='Ady <555@text.republicwireless.com>, Jo <555@tmomail.net>'
 MONGO_URI='mongodb://heroku_blablablablabla'
 GOOGLE_CLIENT_ID='blablablabla'
 GOOGLE_CLIENT_SECRET='whodei-wannaseeDisNow'
+PATH_TO_BUNDLE_CERT='howtoterminal_com.ca-bundle'
+PATH_TO_CERT='howtoterminal_com.crt'
+PATH_TO_KEY='howtoterminal_com.key'
 ```  
 `MONGO_URI` can be set up through [mLab](https://mlab.com/)  
 Read into google authentication with passport [here](http://mherman.org/blog/2013/11/10/social-authentication-with-passport-dot-js/)  
 
 Optional variables:  
 ```sh
+EMAIL_TO='Ady <555@text.republicwireless.com>, Jo <555@tmomail.net>'
 NO_SEND_MAIL=true
 PORT=4000
 NODE_ENV=dev
@@ -33,7 +36,7 @@ SUB_APP=true
 OUTER_APP_DIR='../../howtoterminal-express'
 BROWSER='firefox'
 ```  
-  
+
 | Endpoints | Method | Description | Auth Needed |
 | --- | --- | --- | --- |
 | my-list  | GET | List all active items of current user | Yes |
@@ -56,7 +59,3 @@ BROWSER='firefox'
 | /db/all-active-scrapes | GET | Get all active scrapes for all users | No |
 | /db/delete-all-scrapes | GET | Delete all scrapes for all users | Yes |
 | /scrape | GET | Collect new data from all scrapes again | No |
-
-
-\* FIX this!  
-\*\* Possibly fix this  
