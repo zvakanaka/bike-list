@@ -9,9 +9,17 @@ var mongoService = require('./lib/js/mongoService.js');
 var passport = require('passport');
 var config = require('./private-auth.js');
 var GoogleStrategy = require('passport-google-oauth2').Strategy;
-var cookieParser = require('cookie-parser')
+var cookieParser = require('cookie-parser');
+var fs = require('fs');
+var https = require('https');
 
 env(__dirname+'/.env');
+
+var expressOptions = {
+  ca: [fs.readFileSync(process.env.PATH_TO_BUNDLE_CERT)],
+  cert: fs.readFileSync(process.env.PATH_TO_CERT),
+  key: fs.readFileSync(process.env.PATH_TO_KEY)
+};
 
 /**
  * passport
@@ -66,9 +74,11 @@ app.use(passport.session());
 
 var PORTNO = process.env.PORT || 5000;
 
+var server = https.createServer(expressOptions, app);
 if (!process.env.SUB_APP) {
-  app.listen(PORTNO);
-  console.log(PORTNO+' is the magic port');
+   server.listen(PORTNO, function(){
+       console.log(`server running at https://IP_ADDRESS:${PORTNO}/`)
+   });
 }
 
 app.use(middleware);

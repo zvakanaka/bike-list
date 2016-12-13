@@ -6,3 +6,7 @@ dist/
 lib/js/
 .env
 npm-debug.log
+*.key
+*.crt
+*.csr
+*.ca-bundle
