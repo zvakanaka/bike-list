@@ -6,7 +6,7 @@ var ids = {
   google: {
     clientID: process.env.GOOGLE_CLIENT_ID,
     clientSecret: process.env.GOOGLE_CLIENT_SECRET,
-    callbackURL: 'http://127.0.0.1:' + port + '/auth/google/callback'
+    callbackURL: process.env.DOMAIN + ':' + port + '/auth/google/callback'
   }
 };
 
