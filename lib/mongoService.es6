@@ -135,7 +135,7 @@ const itemSchema = new mongoose.Schema({
     // seq: { type: Number, unique:true, sparse:true },
   userId: String,
   itemType: { type: String, trim: true },
-  link: { type: String, trim: true, unique: true, sparse: true },
+  link: { type: String, trim: true},
   img: { type: String, trim: true },
   title: { type: String, trim: true },
   price: { type: Number },
@@ -145,6 +145,8 @@ const itemSchema = new mongoose.Schema({
   creationDate: Date,
   deleted: { type: Boolean, default: false },
 });
+itemSchema.index({ link: 1, userId: 1 }, { unique: true });
+
 // This is the other way to make a model
 const ItemModel = mongoose.model('Items', itemSchema);
 
@@ -213,4 +215,5 @@ module.exports.deleteAll = () => {
 
 module.exports.findByLink = (l) => ItemModel.find({
   link: l,
+  deleted: false
 });

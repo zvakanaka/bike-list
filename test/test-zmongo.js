@@ -92,3 +92,21 @@ describe('Deleting scrapes for userId 123 ', function() {
     });
   });
 });
+
+describe('Deleting items for userId 123 ', function() {
+  it('should leave user with no items', function(done) {
+    this.timeout(15000);
+    var status = mongoService.updateAllItemsDeleted(123);
+    var results = mongoService.getMyActive(123);
+    results.exec(function(err, result) {
+      if (!err) {
+        result.length.should.equal(0);
+        done();
+      }
+      else {//error
+        true.should.equal(false);
+        done();
+      }
+    });
+  });
+});

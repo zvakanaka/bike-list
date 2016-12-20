@@ -71,7 +71,7 @@ describe('Scrape Craigslist for cameras ', function() {
   this.timeout(15000);
   it('should return at least one listing', function(done) {
     var search = {
-      searchTerm: 'camera',
+      searchTerm: 'mirrorless',
       maxPrice: 999,
       insert: true, // does not carry through to mongodb
       sendMessage: false,
