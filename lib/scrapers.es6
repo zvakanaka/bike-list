@@ -288,54 +288,138 @@ module.exports.cars = (options) => {
   return promise;
 }
 
+const SITE_ELEMENTS = {
+  "ksl": {
+        "listing": ".listing-group .listing",
+        "title": ".title",
+        "link": ".title .link",
+        "description": ".description-text",
+        "img": ".photo a img",
+        "price": ".price",
+        "protocol": "http"
+  }, "goodwill": {
+        "listing": "body > div.mainbluebox > div.searchresults > table > tbody > tr",
+        "title": "th a",
+        "link": "th a",
+        "description": "",
+        "img": "th:nth-child(2) > img",
+        "price": "th:nth-child(3) td b",
+        "protocol": "http"
+  }, "craigslist": {
+        "listing": "ul.rows li.result-row",
+        "title": "p.result-info a.result-title",
+        "link": "p.result-info a.result-title",
+        "description": false,
+        "img": false,
+        "price": "span.result-meta span.result-price",
+        "protocol": "http"
+  }
+};
+    
+const SITE_URL_PARTS = {
+  "ksl": {
+        "siteUrl": "http://www.ksl.com",
+        "searchUrl": "/classifieds/search/?keyword=",
+        "sortParam": "sort",
+        "sortType": "0",
+        "maxPrice": "priceTo",
+        "minPrice": "priceFrom",
+        "zip": "zip",
+        "distance": "distance",
+        "extra": ""        
+  }, "goodwill": {
+        "siteUrl": "http://www.shopgoodwill.com",
+        "searchUrl": "/search/SearchKey.asp?itemTitle=",
+        "sortParam": "SortOrder",
+        "sortType": "a",
+        "maxPrice": "maxPrice",
+        "minPrice": "minPrice",
+        "zip": "sellerId",
+        "distance": "distance",
+        "extra": "&showthumbs=on"
+  }, "craigslist": {
+        "siteUrl": "http://www.craigslist.com",
+        "searchUrl": "/search/sss?query=",
+        "sortParam": "sort",
+        "sortType": "date",
+        "maxPrice": "max_price",
+        "minPrice": "min_price",
+        "zip": "postal",
+        "distance": "search_distance",
+        "extra": ""
+  }
+};
+
 //options: zip, minPrice, maxPrice, resultsPerPage, sortType
-module.exports.ksl = function (options) {
-  console.log('SCRAPING KSL...');
+module.exports.scrape = function (options) {
   const promise = new Promise(function(resolve, reject) {
-    const siteUrl = 'http://www.ksl.com';
-    const zip = options.zip || 84606;
+    const quals = SITE_ELEMENTS[options.site];
+    const param = SITE_URL_PARTS[options.site];
+    console.log(`SCRAPING ${param.siteUrl}...`);
+
+    const zip = options.zip;
     const searchTerm = options.searchTerm || '';
     const minPrice = options.minPrice || 30;
     const maxPrice = options.maxPrice || 200;
     const resultsPerPage = options.resultsPerPage || 50;
-    const sortType = options.sortType || 1;// newest to oldest
     const insert = options.insert;
     const sendMessage = options.sendMessage;
 
     const distance = options.maxMiles || '25';
 
-    const url = `${siteUrl}?nid=231&cat=&search=${searchTerm}&zip=${zip}&distance=${distance}&min_price=${minPrice}&max_price=${maxPrice}&type=&category=&subcat=&sold=&city=&addisplay=&userid=&markettype=sale&adsstate=&nocache=1&o_facetSelected=&o_facetKey=&o_facetVal=&viewSelect=list&viewNumResults=${resultsPerPage}&sort=${sortType}`;
+    const url = `${param.siteUrl}${param.searchUrl}${searchTerm}&${param.zip}=${zip}&${param.distance}=${distance}&${param.minPrice}=${minPrice}&${param.maxPrice}=${maxPrice}&${param.sortParam}=${param.sortType}${param.extra}`;
     console.log('url:', url);
     const response = request('GET', url);
     const $ = cheerio.load(response.getBody());
     //console.log('Got Body');
 
     let listings = [];
-    let listingLength = $('.listings .adBox').length;//to know when to resolve
+    
+    let listingLength = $(quals.listing).length;//to know when to resolve
 
-    //console.log(listingLength, ' items found');
+    console.log(listingLength, ' items found');
     if (listingLength !== 0) {
       // set all previous to deleted and reset to true if we find same again
       mongoService.updateItemsDeleted(searchTerm, true).then((mRes) => {
-        $(".listings .adBox").each(function(index) {
-          let img = $(this)['0'].children[0]['next'].children[0]['next'].children[0]['next']['data'];
-          if (img !== undefined) {
-            img = img.substring(img.indexOf("http://"), img.indexOf('?'));
+        $(quals.listing).each(function(index) {
+          // get image
+          let img = "";
+          if (quals.img) {
+            img = $(this).find(quals.img)['0']['attribs']['src'];
+            if (img !== undefined) {
+              if (img.indexOf('?') !== -1) { // remove query string
+                img = img.substring(0, img.indexOf('?'));
+              }
+              if (img[0] === '/' && img[1] === '/') {
+                img = `${quals.protocol}:${img}`;
+              }
+            } else {
+              img = 'images/not-found.png';
+            }
           } else {
-            img = 'images/not-found.png';
+              img = 'images/not-found.png';            
           }
-          const title = $(this).find('.adTitle').text().trim()
-          let link = siteUrl + $(this).find('.listlink')['0']['attribs']['href'];
-          link = link.substr(0, link.indexOf('?'));//remove query params
-          let price = $(this).find('.priceBox').text().trim();
-          price = price.substring(1, price.length-2);
+          
+          const title = $(this).find(quals.title).text().trim()
+          let link = param.siteUrl + $(this).find(quals.link)['0']['attribs']['href'];
+          //link = link.substr(0, link.indexOf('?'));//remove query params
+          let price = $(this).find(quals.price).text().trim();
+          // console.dir(price)
+          if (price[0] === '$') {
+            price = price.substring(1, price.length);
+          }
 
           //date
           let date = new Date()
           //description
-          let description = ''
-          //TODO: get real place
-          const place = 'UT';
+          let description = "";
+          if (quals.description) {
+            description = $(this).find(quals.description).text().trim();
+          }
+          if (description.length > 256) { // add ellipses if long
+            description = `${description.substring(0, 256)}...`;
+          }
+          const place = module.exports.getCity(zip);
 
           const item = {
               itemType: searchTerm,
@@ -361,6 +445,7 @@ module.exports.ksl = function (options) {
               console.log('Error');
             }
             if (index === listingLength-1) {
+              // console.dir(listings)
               resolve(listings);//done checking duplicates in $list
             }
             listings.push(item);
