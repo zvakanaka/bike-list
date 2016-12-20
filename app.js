@@ -381,12 +381,12 @@ app.get('/scrape', function(req, res) {
 
 function scrapeSite(options) {
   if (options.site === 'Craigslist') {
-    scrapers.craigslist(options)
+    scrapers.scrape(options)
       .then(function() {
         console.log('DONE SCRAPING', options.scrapeName);
       });
   } else if (options.site === 'Shopgoodwill') {
-    scrapers.goodwill(options)
+    scrapers.scrape(options)
       .then(function() {
         console.log('DONE SCRAPING', options.scrapeName);
       });
@@ -397,7 +397,7 @@ function scrapeSite(options) {
           console.log('DONE SCRAPING', options.scrapeName);
         });
     } else {
-      scrapers.ksl(options)
+      scrapers.scrape(options)
         .then(function() {
           console.log('DONE SCRAPING', options.scrapeName);
         });
