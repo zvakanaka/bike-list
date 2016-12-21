@@ -135,7 +135,7 @@ const itemSchema = new mongoose.Schema({
     // seq: { type: Number, unique:true, sparse:true },
   userId: String,
   itemType: { type: String, trim: true },
-  link: { type: String, trim: true},
+  link: { type: String, trim: true, unique: true, sparse: true},
   img: { type: String, trim: true },
   title: { type: String, trim: true },
   price: { type: Number },
@@ -214,6 +214,5 @@ module.exports.deleteAll = () => {
 };
 
 module.exports.findByLink = (l) => ItemModel.find({
-  link: l,
-  deleted: false
+  link: l
 });

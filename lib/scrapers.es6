@@ -4,7 +4,8 @@ const sendMail = require('./sendMail.js');
 const mongoService = require('./mongoService.js');
 
 module.exports.getCity = (zip) => {
-   if (zip > 83400 && zip <= 83499)
+  zip = parseInt(zip);
+  if (zip > 83400 && zip <= 83499)
     return 'eastidaho';
   else if (zip > 90600 && zip <= 92899)
     return 'orangecounty';
@@ -116,14 +117,14 @@ const SITE_ELEMENTS = {
   }, "craigslist": {
         "listing": "ul.rows li.result-row",
         "title": "p.result-info a.result-title",
-        "link": "p.result-info a.result-title",
+        "link": "a.result-image",
         "description": false,
         "img": false,
         "price": "span.result-meta span.result-price",
         "protocol": "http"
   }
 };
-    
+
 const SITE_URL_PARTS = {
   "ksl": {
         "siteUrl": "http://www.ksl.com",
@@ -134,7 +135,7 @@ const SITE_URL_PARTS = {
         "minPrice": "priceFrom",
         "zip": "zip",
         "distance": "distance",
-        "extra": ""        
+        "extra": ""
   }, "goodwill": {
         "siteUrl": "http://www.shopgoodwill.com",
         "searchUrl": "/search/SearchKey.asp?itemTitle=",
@@ -182,7 +183,7 @@ module.exports.scrape = function (options) {
     //console.log('Got Body');
 
     let listings = [];
-    
+
     let listingLength = $(quals.listing).length;//to know when to resolve
 
     console.log(listingLength, ' items found');
@@ -205,9 +206,9 @@ module.exports.scrape = function (options) {
               img = 'images/not-found.png';
             }
           } else {
-              img = 'images/not-found.png';            
+              img = 'images/not-found.png';
           }
-          
+
           const title = $(this).find(quals.title).text().trim()
           let link = param.siteUrl + $(this).find(quals.link)['0']['attribs']['href'];
           //link = link.substr(0, link.indexOf('?'));//remove query params
@@ -239,6 +240,9 @@ module.exports.scrape = function (options) {
           const result = mongoService.findByLink(link);
           result.exec(function(err, result) {
             if (!err) {
+              console.log('Searching for', title);
+              console.log('Length', result.length);
+              // console.dir(result);
               if (result && result.length === 0) {//NEW! if not found
                 console.log('NEW ITEM FOUND     ', item.title, item.link);
                 if (insert === true) mongoService.insert(item);
