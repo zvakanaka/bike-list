@@ -99,7 +99,7 @@ btnAddScrape.addEventListener('click', function() {
   var scrapeOptions = {
     searchTerm: document.getElementById('input-search-term').value,
     maxPrice: document.getElementById('input-max-price').value,
-    insert: false,
+    insert: true,
     sendMessage:  document.getElementById('checkbox-send-message').checked,
     sendTo:  document.getElementById('input-send-to').value + document.getElementById('select-carrier').value,
     section:  document.getElementById('select-section').value,

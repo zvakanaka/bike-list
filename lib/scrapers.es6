@@ -15,6 +15,18 @@ module.exports.getCity = (zip) => {
     return 'provo';
 }
 
+module.exports.getArea = (zip) => {
+  zip = parseInt(zip);
+  if (zip > 83400 && zip <= 83499)
+    return 'eastidaho';
+  else if (zip > 90600 && zip <= 92899)
+    return 'orangecounty';
+  else if (zip === 84070 || zip > 84088 && zip <= 84095)
+    return 'saltlake';
+  else
+    return 'provo';
+}
+
 // options: searchTerm, zip, minPrice, maxPrice, minYear, maxYear, minMiles, maxMiles
 module.exports.cars = (options) => {
   console.log('SCRAPING KSL AUTOS...');
@@ -104,30 +116,34 @@ const SITE_ELEMENTS = {
         "link": ".title .link",
         "description": ".description-text",
         "img": ".photo a img",
-        "price": ".price",
-        "protocol": "http"
+        "price": ".price"
   }, "goodwill": {
         "listing": "body > div.mainbluebox > div.searchresults > table > tbody > tr",
         "title": "th a",
         "link": "th a",
         "description": "",
         "img": "th:nth-child(2) > img",
-        "price": "th:nth-child(3) td b",
-        "protocol": "http"
+        "price": "th:nth-child(3) td b"
   }, "craigslist": {
         "listing": "ul.rows li.result-row",
         "title": "p.result-info a.result-title",
         "link": "a.result-image",
         "description": false,
         "img": false,
-        "price": "span.result-meta span.result-price",
-        "protocol": "http"
+        "price": "span.result-meta span.result-price"
+  }, "howtoterminal": {
+        "listing": "main .album-thumb",
+        "title": "body > main > div > div",
+        "link": "body > main > div > a",
+        "description": false,
+        "img": "body > main > div > a > img",
+        "price": false
   }
 };
 
 const SITE_URL_PARTS = {
   "ksl": {
-        "siteUrl": "http://www.ksl.com",
+        "siteUrl": "ksl.com",
         "searchUrl": "/classifieds/search/?keyword=",
         "sortParam": "sort",
         "sortType": "0",
@@ -135,9 +151,10 @@ const SITE_URL_PARTS = {
         "minPrice": "priceFrom",
         "zip": "zip",
         "distance": "distance",
-        "extra": ""
+        "extra": "",
+        "protocol": "http"
   }, "goodwill": {
-        "siteUrl": "http://www.shopgoodwill.com",
+        "siteUrl": "shopgoodwill.com",
         "searchUrl": "/search/SearchKey.asp?itemTitle=",
         "sortParam": "SortOrder",
         "sortType": "a",
@@ -145,9 +162,10 @@ const SITE_URL_PARTS = {
         "minPrice": "minPrice",
         "zip": "sellerId",
         "distance": "distance",
-        "extra": "&showthumbs=on"
+        "extra": "&showthumbs=on",
+        "protocol": "http"
   }, "craigslist": {
-        "siteUrl": "http://www.craigslist.com",
+        "siteUrl": "craigslist.com",
         "searchUrl": "/search/sss?query=",
         "sortParam": "sort",
         "sortType": "date",
@@ -155,7 +173,19 @@ const SITE_URL_PARTS = {
         "minPrice": "min_price",
         "zip": "postal",
         "distance": "search_distance",
-        "extra": ""
+        "extra": "",
+        "protocol": "http"
+  }, "howtoterminal": {
+        "siteUrl": "howtoterminal.com/php-class/dynamic/?action=home",
+        "searchUrl": "",
+        "sortParam": "",
+        "sortType": "",
+        "maxPrice": "",
+        "minPrice": "",
+        "zip": "",
+        "distance": "",
+        "extra": "",
+        "protocol": "http"
   }
 };
 
@@ -167,16 +197,21 @@ module.exports.scrape = function (options) {
     console.log(`SCRAPING ${param.siteUrl}...`);
 
     const zip = options.zip;
-    const searchTerm = options.searchTerm || '';
+    const searchTerm = options.searchTerm.replace(' ', '+') || '';
     const minPrice = options.minPrice || 30;
     const maxPrice = options.maxPrice || 200;
     const resultsPerPage = options.resultsPerPage || 50;
-    const insert = options.insert;
+    const insert = options.insert || true;
     const sendMessage = options.sendMessage;
 
     const distance = options.maxMiles || '25';
 
-    const url = `${param.siteUrl}${param.searchUrl}${searchTerm}&${param.zip}=${zip}&${param.distance}=${distance}&${param.minPrice}=${minPrice}&${param.maxPrice}=${maxPrice}&${param.sortParam}=${param.sortType}${param.extra}`;
+    let subdomain = "";
+    if (options.site.toLowerCase() === 'craigslist') {
+      subdomain = `${module.exports.getArea(zip)}.`;
+    }
+
+    const url = `${param.protocol}://${subdomain}${param.siteUrl}${param.searchUrl}${searchTerm}&${param.zip}=${zip}&${param.distance}=${distance}&${param.minPrice}=${minPrice}&${param.maxPrice}=${maxPrice}&${param.sortParam}=${param.sortType}${param.extra}`;
     console.log('url:', url);
     const response = request('GET', url);
     const $ = cheerio.load(response.getBody());
@@ -200,7 +235,7 @@ module.exports.scrape = function (options) {
                 img = img.substring(0, img.indexOf('?'));
               }
               if (img[0] === '/' && img[1] === '/') {
-                img = `${quals.protocol}:${img}`;
+                img = `${param.protocol}:${img}`;
               }
             } else {
               img = 'images/not-found.png';
@@ -210,9 +245,12 @@ module.exports.scrape = function (options) {
           }
 
           const title = $(this).find(quals.title).text().trim()
-          let link = param.siteUrl + $(this).find(quals.link)['0']['attribs']['href'];
+          let link = `${param.protocol}://${subdomain}${param.siteUrl}${$(this).find(quals.link)['0']['attribs']['href']}`;
           //link = link.substr(0, link.indexOf('?'));//remove query params
-          let price = $(this).find(quals.price).text().trim();
+          let price = "";
+          if (quals.price) {
+            price = $(this).find(quals.price).text().trim();
+          }
           // console.dir(price)
           if (price[0] === '$') {
             price = price.substring(1, price.length);
@@ -240,12 +278,14 @@ module.exports.scrape = function (options) {
           const result = mongoService.findByLink(link);
           result.exec(function(err, result) {
             if (!err) {
-              console.log('Searching for', title);
+              // console.log('Searching for', title);
               console.log('Length', result.length);
               // console.dir(result);
               if (result && result.length === 0) {//NEW! if not found
                 console.log('NEW ITEM FOUND     ', item.title, item.link);
+                // console.log('insert', insert);
                 if (insert === true) mongoService.insert(item);
+                console.log('sendMessage', sendMessage);
                 if (sendMessage === true) sendMail.sendText([item]);
               } else {
                 //console.log(`EXISTING LINK FOUND: ${item.title} - ${item.link}, ${result[0].link}`)

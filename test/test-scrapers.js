@@ -81,7 +81,7 @@ describe('Scrape Craigslist for cameras ', function() {
       maxMiles: 30,
       scrapeName: 'Raharizuandrinarina',
       site: 'craigslist',
-      zip: ""
+      zip: "90620"
     };
     scrapers.scrape(search)
       .then(function(listings) {
