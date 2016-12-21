@@ -77,7 +77,7 @@ var PORTNO = process.env.PORT || 5000;
 var server = https.createServer(expressOptions, app);
 if (!process.env.SUB_APP) {
    server.listen(PORTNO, function(){
-       console.log(`server running at https://IP_ADDRESS:${PORTNO}/`)
+       console.log(`server running at ${process.env.DOMAIN}:${PORTNO}`)
    });
 }
 
