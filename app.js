@@ -380,30 +380,17 @@ app.get('/scrape', function(req, res) {
 });
 
 function scrapeSite(options) {
-  if (options.site === 'Craigslist') {
-    scrapers.scrape(options)
+  if (options.section === 'cta') {
+    scrapers.cars(options)
       .then(function() {
         console.log('DONE SCRAPING', options.scrapeName);
       });
-  } else if (options.site === 'Shopgoodwill') {
-    scrapers.scrape(options)
-      .then(function() {
-        console.log('DONE SCRAPING', options.scrapeName);
-      });
-  } else if (options.site === 'KSL') {
-    if (options.section === 'cta') {
-      scrapers.cars(options)
-        .then(function() {
-          console.log('DONE SCRAPING', options.scrapeName);
-        });
-    } else {
-      scrapers.scrape(options)
-        .then(function() {
-          console.log('DONE SCRAPING', options.scrapeName);
-        });
-    }
   } else {
-    console.log(result.site, 'not yet supported.');
+    console.log('insert',options.insert);
+    scrapers.scrape(options)
+      .then(function() {
+        console.log('DONE SCRAPING', options.scrapeName);
+      });
   }
 }
 if (process.env.SUB_APP) {
