@@ -54,30 +54,30 @@ describe('Scrape KSL for couches ', function() {
   });
 });
 
-// describe('Scrape Goodwill for cameras ', function() {
-//   this.timeout(15000);
-//   it('should return at least one listing', function(done) {
-//     var search = {
-//       searchTerm: 'camera',
-//       maxPrice: 999,
-//       insert: true, // does not carry through to mongodb
-//       sendMessage: false,
-//       sendTo: 'nobody@ihopethisdoesntexist.com',
-//       userId: 123,
-//       section: '',
-//       maxMiles: 30,
-//       scrapeName: 'Raharizuandrinarina',
-//       site: 'goodwill',
-//       zip: ""
-//     };
-//     scrapers.scrape(search)
-//       .then(function(listings) {
-//         console.log(listings.length + ' items found');
-//         listings.length.should.be.at.least(1);
-//         done();
-//       });
-//   });
-// });
+describe('Scrape Goodwill for cameras ', function() {
+  this.timeout(15000);
+  it('should return at least one listing', function(done) {
+    var search = {
+      searchTerm: 'camera',
+      maxPrice: 999,
+      insert: true, // does not carry through to mongodb
+      sendMessage: false,
+      sendTo: 'nobody@ihopethisdoesntexist.com',
+      userId: 123,
+      section: '',
+      maxMiles: 30,
+      scrapeName: 'Raharizuandrinarina',
+      site: 'goodwill',
+      zip: ""
+    };
+    scrapers.scrape(search)
+      .then(function(listings) {
+        console.log(listings.length + ' items found');
+        listings.length.should.be.at.least(1);
+        done();
+      });
+  });
+});
 
 describe('Scrape Craigslist for cameras ', function() {
   this.timeout(15000);
