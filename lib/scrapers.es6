@@ -144,7 +144,8 @@ const SITE_ELEMENTS = {
 const SITE_URL_PARTS = {
   "ksl": {
         "siteUrl": "ksl.com",
-        "searchUrl": "/classifieds/search/?keyword=",
+        "searchPrefix": "/classifieds/search/?keyword=",
+        "section": "",
         "sortParam": "sort",
         "sortType": "0",
         "maxPrice": "priceTo",
@@ -155,7 +156,8 @@ const SITE_URL_PARTS = {
         "protocol": "http"
   }, "goodwill": {
         "siteUrl": "shopgoodwill.com",
-        "searchUrl": "/search/SearchKey.asp?itemTitle=",
+        "searchPrefix": "/search/SearchKey.asp?itemTitle=",
+        "section": "",
         "sortParam": "SortOrder",
         "sortType": "a",
         "maxPrice": "maxPrice",
@@ -166,7 +168,9 @@ const SITE_URL_PARTS = {
         "protocol": "http"
   }, "craigslist": {
         "siteUrl": "craigslist.com",
-        "searchUrl": "/search/sss?query=",
+        "searchPrefix": "/search/",
+        "section": "sss",
+        "searchSuffix": "?query=",
         "sortParam": "sort",
         "sortType": "date",
         "maxPrice": "max_price",
@@ -177,10 +181,11 @@ const SITE_URL_PARTS = {
         "protocol": "http"
   }, "howtoterminal": {
         "siteUrl": "howtoterminal.com/php-class/dynamic/",
-        "searchUrl": "?action=home",
+        "searchPrefix": "?action=home",
         "imgPrefix": "howtoterminal.com",
         "sortParam": "",
         "sortType": "",
+        "section": "",
         "maxPrice": "",
         "minPrice": "",
         "zip": "",
@@ -189,6 +194,63 @@ const SITE_URL_PARTS = {
         "protocol": "http"
   }
 };
+
+const SITE_SECTIONS = {
+  "craigslist": {
+        "all": "sss",
+        "antiques": "ata",
+        "appliances": "ppa",
+        "arts+crafts": "ara",
+        "atvs/utvs/snow": "sna",
+        "auto parts": "pta",
+        "auto wheels &amp; tires": "wta",
+        "baby+kids": "baa",
+        "barter": "bar",
+        "beauty+hlth": "haa",
+        "bike parts": "bip",
+        "bikes": "bia",
+        "boat parts": "bpa",
+        "boats": "boo",
+        "books": "bka",
+        "business": "bfa",
+        "cars+trucks": "cta",
+        "cds/dvd/vhs": "ema",
+        "cell phones": "moa",
+        "clothes+acc": "cla",
+        "collectibles": "cba",
+        "computer parts": "syp",
+        "computers": "sya",
+        "electronics": "ela",
+        "farm+garden": "gra",
+        "free stuff": "zip",
+        "furniture": "fua",
+        "garage sales": "gms",
+        "general": "foa",
+        "heavy equipment": "hva",
+        "household": "hsa",
+        "jewelry": "jwa",
+        "materials": "maa",
+        "motorcycle parts": "mpa",
+        "motorcycles": "mca",
+        "music instr": "msa",
+        "photo+video": "pha",
+        "RVs": "rva",
+        "sporting": "sga",
+        "tickets": "tia",
+        "tools": "tla",
+        "toys+games": "taa",
+        "trailers": "tra",
+        "video gaming": "vga",
+        "wanted": "waa"
+  }
+};
+
+function getSection(site, section) {
+  if (section && site) {
+    return SITE_SECTIONS[site.toLowerCase()][section.toLowerCase()];
+  }
+  return "";
+}
 
 //options: zip, minPrice, maxPrice, resultsPerPage, sortType
 module.exports.scrape = function (options) {
@@ -208,11 +270,20 @@ module.exports.scrape = function (options) {
     const distance = options.maxMiles || '25';
 
     let subdomain = "";
+    let searchSegment = `${param.siteUrl}${param.searchPrefix}${searchTerm}`;
+    // craiglist special treatment
     if (options.site.toLowerCase() === 'craigslist') {
       subdomain = `${module.exports.getArea(zip)}.`;
+      let section = "";
+      if (options.site, options.section) {
+        section = getSection(options.section);
+      } else if (param.section) {
+        section = param.section;
+      }
+      searchSegment = `${subdomain}${param.siteUrl}${param.searchPrefix}${section}${param.searchSuffix}${searchTerm}`;
     }
 
-    const url = `${param.protocol}://${subdomain}${param.siteUrl}${param.searchUrl}${searchTerm}&${param.zip}=${zip}&${param.distance}=${distance}&${param.minPrice}=${minPrice}&${param.maxPrice}=${maxPrice}&${param.sortParam}=${param.sortType}${param.extra}`;
+    const url = `${param.protocol}://${searchSegment}&${param.zip}=${zip}&${param.distance}=${distance}&${param.minPrice}=${minPrice}&${param.maxPrice}=${maxPrice}&${param.sortParam}=${param.sortType}${param.extra}`;
     console.log('url:', url);
     const response = request('GET', url);
     const $ = cheerio.load(response.getBody());
