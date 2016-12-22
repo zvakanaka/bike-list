@@ -197,59 +197,57 @@ const SITE_URL_PARTS = {
 
 const SITE_SECTIONS = {
   "craigslist": {
-        "all": "sss",
-        "antiques": "ata",
-        "appliances": "ppa",
-        "arts+crafts": "ara",
-        "atvs/utvs/snow": "sna",
-        "auto parts": "pta",
-        "auto wheels &amp; tires": "wta",
-        "baby+kids": "baa",
-        "barter": "bar",
-        "beauty+hlth": "haa",
-        "bike parts": "bip",
-        "bikes": "bia",
-        "boat parts": "bpa",
-        "boats": "boo",
-        "books": "bka",
-        "business": "bfa",
-        "cars+trucks": "cta",
-        "cds/dvd/vhs": "ema",
-        "cell phones": "moa",
-        "clothes+acc": "cla",
-        "collectibles": "cba",
-        "computer parts": "syp",
-        "computers": "sya",
-        "electronics": "ela",
-        "farm+garden": "gra",
-        "free stuff": "zip",
-        "furniture": "fua",
-        "garage sales": "gms",
-        "general": "foa",
-        "heavy equipment": "hva",
-        "household": "hsa",
-        "jewelry": "jwa",
-        "materials": "maa",
-        "motorcycle parts": "mpa",
-        "motorcycles": "mca",
-        "music instr": "msa",
-        "photo+video": "pha",
-        "RVs": "rva",
-        "sporting": "sga",
-        "tickets": "tia",
-        "tools": "tla",
-        "toys+games": "taa",
-        "trailers": "tra",
-        "video gaming": "vga",
-        "wanted": "waa"
+    "": "sss",
+    "all": "sss",
+    "antiques": "ata",
+    "appliances": "ppa",
+    "arts+crafts": "ara",
+    "atvs/utvs/snow": "sna",
+    "auto parts": "pta",
+    "auto wheels &amp; tires": "wta",
+    "baby+kids": "baa",
+    "barter": "bar",
+    "beauty+hlth": "haa",
+    "bike parts": "bip",
+    "bikes": "bia",
+    "boat parts": "bpa",
+    "boats": "boo",
+    "books": "bka",
+    "business": "bfa",
+    "cars+trucks": "cta",
+    "cds/dvd/vhs": "ema",
+    "cell phones": "moa",
+    "clothes+acc": "cla",
+    "collectibles": "cba",
+    "computer parts": "syp",
+    "computers": "sya",
+    "electronics": "ela",
+    "farm+garden": "gra",
+    "free stuff": "zip",
+    "furniture": "fua",
+    "garage sales": "gms",
+    "general": "foa",
+    "heavy equipment": "hva",
+    "household": "hsa",
+    "jewelry": "jwa",
+    "materials": "maa",
+    "motorcycle parts": "mpa",
+    "motorcycles": "mca",
+    "music instr": "msa",
+    "photo+video": "pha",
+    "RVs": "rva",
+    "sporting": "sga",
+    "tickets": "tia",
+    "tools": "tla",
+    "toys+games": "taa",
+    "trailers": "tra",
+    "video gaming": "vga",
+    "wanted": "waa"
   }
 };
 
-function getSection(site, section) {
-  if (section && site) {
-    return SITE_SECTIONS[site.toLowerCase()][section.toLowerCase()];
-  }
-  return "";
+module.exports.getSection = function (site, section) {
+  return SITE_SECTIONS[site.toLowerCase()][section.toLowerCase()] || "";
 }
 
 //options: zip, minPrice, maxPrice, resultsPerPage, sortType
@@ -276,7 +274,7 @@ module.exports.scrape = function (options) {
       subdomain = `${module.exports.getArea(zip)}.`;
       let section = "";
       if (options.site, options.section) {
-        section = getSection(options.section);
+        section = module.exports.getSection(options.section);
       } else if (param.section) {
         section = param.section;
       }

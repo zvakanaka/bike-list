@@ -17,6 +17,18 @@ describe('Get city name from zip ', function() {
   });
 });
 
+describe('Get section name ', function() {
+  it('should return proper craigslist abreviation', function() {
+    var sectionName = scrapers.getSection('craigslist', 'antiques');
+    sectionName.should.equal('ata');
+    sectionName = scrapers.getSection('craigslist', 'cars+trucks');
+    sectionName.should.equal('cta');
+    sectionName = scrapers.getSection('craigslist', '');
+    sectionName.should.equal('sss');
+  });
+});
+
+
 describe('Scrape KSL for couches ', function() {
   this.timeout(15000);
   it('should return at least one listing', function(done) {
