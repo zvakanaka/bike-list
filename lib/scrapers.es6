@@ -109,6 +109,7 @@ module.exports.cars = (options) => {
   return promise;
 }
 
+// css selectors for cheerio
 const SITE_ELEMENTS = {
   "ksl": {
         "listing": ".listing-group .listing",
@@ -123,7 +124,7 @@ const SITE_ELEMENTS = {
         "link": "th a",
         "description": "",
         "img": "th:nth-child(2) > img",
-        "price": "th:nth-child(3) td b"
+        "price": false
   }, "craigslist": {
         "listing": "ul.rows li.result-row",
         "title": "p.result-info a.result-title",
@@ -141,6 +142,7 @@ const SITE_ELEMENTS = {
   }
 };
 
+// pieces that make up the url
 const SITE_URL_PARTS = {
   "ksl": {
         "siteUrl": "ksl.com",
@@ -195,6 +197,7 @@ const SITE_URL_PARTS = {
   }
 };
 
+//these translate the select list to the specific site format
 const SITE_SECTIONS = {
   "craigslist": {
     "": "sss",
@@ -317,8 +320,12 @@ module.exports.scrape = function (options) {
           }
 
           const title = $(this).find(quals.title).text().trim()
-          let link = '';
-          link = `${param.protocol}://${subdomain}${param.siteUrl}${$(this).find(quals.link)['0']['attribs']['href']}`;
+          let link = $(this).find(quals.link)['0']['attribs']['href'];
+          if (link.startsWith(`${param.protocol}://`)) {
+            //do nothing... at the moment
+          } else {
+            link = `${param.protocol}://${subdomain}${param.siteUrl}${link}`;
+          }
           //link = link.substr(0, link.indexOf('?'));//remove query params
           let price = "0";
           if (quals.price) {
