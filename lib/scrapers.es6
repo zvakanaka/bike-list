@@ -133,10 +133,10 @@ const SITE_ELEMENTS = {
         "price": "span.result-meta span.result-price"
   }, "howtoterminal": {
         "listing": "main .album-thumb",
-        "title": "body > main > div > div",
-        "link": "body > main > div > a",
+        "title": "div > div",
+        "link": "div > a",
         "description": false,
-        "img": "body > main > div > a > img",
+        "img": "div > a > img",
         "price": false
   }
 };
@@ -176,8 +176,8 @@ const SITE_URL_PARTS = {
         "extra": "",
         "protocol": "http"
   }, "howtoterminal": {
-        "siteUrl": "howtoterminal.com/php-class/dynamic/?action=home",
-        "searchUrl": "",
+        "siteUrl": "howtoterminal.com/php-class/dynamic/",
+        "searchUrl": "?action=home",
         "sortParam": "",
         "sortType": "",
         "maxPrice": "",
@@ -245,9 +245,10 @@ module.exports.scrape = function (options) {
           }
 
           const title = $(this).find(quals.title).text().trim()
-          let link = `${param.protocol}://${subdomain}${param.siteUrl}${$(this).find(quals.link)['0']['attribs']['href']}`;
+          let link = '';
+          link = `${param.protocol}://${subdomain}${param.siteUrl}${$(this).find(quals.link)['0']['attribs']['href']}`;
           //link = link.substr(0, link.indexOf('?'));//remove query params
-          let price = "";
+          let price = "0";
           if (quals.price) {
             price = $(this).find(quals.price).text().trim();
           }
@@ -279,7 +280,6 @@ module.exports.scrape = function (options) {
           result.exec(function(err, result) {
             if (!err) {
               // console.log('Searching for', title);
-              console.log('Length', result.length);
               // console.dir(result);
               if (result && result.length === 0) {//NEW! if not found
                 console.log('NEW ITEM FOUND     ', item.title, item.link);
