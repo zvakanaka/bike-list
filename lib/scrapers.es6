@@ -178,6 +178,7 @@ const SITE_URL_PARTS = {
   }, "howtoterminal": {
         "siteUrl": "howtoterminal.com/php-class/dynamic/",
         "searchUrl": "?action=home",
+        "imgPrefix": "howtoterminal.com",
         "sortParam": "",
         "sortType": "",
         "maxPrice": "",
@@ -236,6 +237,8 @@ module.exports.scrape = function (options) {
               }
               if (img[0] === '/' && img[1] === '/') {
                 img = `${param.protocol}:${img}`;
+              } else if (img[0] === '/') {
+                img = `${param.protocol}://${param.imgPrefix}${img}`;
               }
             } else {
               img = 'images/not-found.png';
