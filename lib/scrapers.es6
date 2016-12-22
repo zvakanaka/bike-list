@@ -289,7 +289,7 @@ module.exports.scrape = function (options) {
                 // console.log('insert', insert);
                 if (insert === true) mongoService.insert(item);
                 console.log('sendMessage', sendMessage);
-                if (sendMessage === true) sendMail.sendText([item]);
+                if (sendMessage === true) sendMail.sendText([item], options.sendTo);
               } else {
                 //console.log(`EXISTING LINK FOUND: ${item.title} - ${item.link}, ${result[0].link}`)
                 // set to active because it does still exist
