@@ -237,8 +237,8 @@ module.exports.scrape = function (options) {
               }
               if (img[0] === '/' && img[1] === '/') {
                 img = `${param.protocol}:${img}`;
-              } else if (img[0] === '/') {
-                img = `${param.protocol}://${param.imgPrefix}${img}`;
+              } else if (img[4] === '.' && img[5] === '/') {
+                img = `${param.protocol}://${param.imgPrefix}${img.substring(5, img.length)}`;
               }
             } else {
               img = 'images/not-found.png';
