@@ -2,149 +2,32 @@
 <html>
   <head>
     <title>Login</title>
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-
-    <!-- bootstrap -->
-    <link rel="stylesheet" href="components/bootstrap/dist/css/bootstrap.min.css">
-    <script src="components/jquery/dist/jquery.min.js"></script>
-    <script src="components/bootstrap/dist/js/bootstrap.min.js"></script>
-
-    <link rel="stylesheet" href="styles/styles.css">
-    <link rel="manifest" href="/manifest.json">
+    <% if (process.env.SUB_APP && process.env.OUTER_APP_DIR) {%>
+      <%- include(process.env.OUTER_APP_DIR+'/views/partials/head') %>
+    <% } else { %>
+      <% include partials/head %>
+    <% } %>
   </head>
   <body>
-
-    <nav class="navbar navbar-inverse">
-      <a class="navbar-brand custom-header-logo" href="../">
-        <img alt="Brand" class="logo" src="images/launcher-icon-1x.png">
-      </a>
-      <ul class="nav navbar-nav">
-          <li><a href="/account">Tools</a></li>
-          <li class="active"><a href="/add-scrape">Add Scrape</a></li>
-          <li><a href="/my-list">My Items</a></li>
-          <li><a href="/manage-scrapes">My Scrapes</a></li>
-      </ul>
-      <p class="navbar-text navbar-right">Logged in as <a href="#" id="username" class="navbar-link">Please Sign in</a></p>
-    </nav>
+    <% if (process.env.SUB_APP && process.env.OUTER_APP_DIR) {%>
+      <%- include(process.env.OUTER_APP_DIR+'/views/partials/nav') %>
+    <% } else { %>
+      <% include partials/nav %>
+    <% } %>
 
     <div class="container-fluid">
-      <div id="form-add-scrape" class="panel panel-default">
+      <div id="login" class="panel panel-default">
         <div class="panel-heading">
-          <h3 class="panel-title">Add new Scrape</h3>
+          <h3 class="panel-title">Log in</h3>
         </div>
-        <div class="panel-body">
-          <form>
-            <div class="hidden form-group">
-              <label for="input-name">Scrape Name</label>
-              <input type="text" class="form-control" id="input-name" placeholder="e.g. Bikes in Katmandu">
-            </div>
-
-            <div class="form-group">
-              <label for="input-search-term">Search Term</label>
-              <input type="text" class="form-control" id="input-search-term" placeholder="e.g. Snow Bike">
-            </div>
-
-            <div class="form-group">
-              <label for="select-site">Site</label>
-              <select class="form-control" id="select-site">
-                <!-- <option>Craigslist</option> -->
-                <!-- <option>Shopgoodwill</option> -->
-                <option>KSL</option>
-              </select>
-            </div>
-
-            <div class="form-group">
-              <label for="select-section">Section</label>
-              <select class="form-control" id="select-section">
-                <option value="">All</option>
-                <option value="sga">Sporting Goods</option>
-                <option data-toggle="collapse" data-target="#car-slects" value="cta">Cars</option>
-              </select>
-            </div>
-            <div class="form-group">
-              <label class="sr-only" for="input-max-price">Max Amount</label>
-              <div class="input-group">
-                <div class="input-group-addon">Max Price $</div>
-                <input type="text" class="form-control" id="input-max-price" placeholder="e.g. 200">
-                <div class="input-group-addon">.00</div>
-              </div>
-            </div>
-
-            <div class="form-group">
-             <label class="sr-only" for="input-zip">Zip</label>
-             <div class="input-group">
-               <div class="input-group-addon">Zip</div>
-               <input type="text" class="form-control" id="input-zip" placeholder="e.g. 84606">
-            </div>
+          <div class="panel-body">
+            <a href="/auth/google">Log In!</a>
           </div>
-
-
-            <div class="form-group">
-             <label class="sr-only" for="input-max-miles">Max Miles from Zip (in miles)</label>
-             <div class="input-group">
-               <div class="input-group-addon">Max Miles from Zip</div>
-               <input type="text" class="form-control" id="input-max-miles" placeholder="e.g. 30">
-             </div>
-           </div>
-
-           <div id="car-selects" class="form-group" hidden="">
-            <label class="sr-only" for="input-auto-max-miles">Max Miles on Auto (in miles)</label>
-            <div class="input-group">
-              <div class="input-group-addon">Max Auto Miles</div>
-              <input type="text" class="form-control" id="input-auto-max-miles" placeholder="e.g. 100000">
-            </div>
-          </div>
-
-            <div class="form-group">
-             <label for="input-send-to">Phone Number or Email address</label>
-             <input type="email" class="form-control" id="input-send-to" placeholder="e.g. 55555555">
-           </div>
-
-           <div class="form-group">
-             <label for="select-carrier">Carrier</label>
-             <select class="form-control" id="select-carrier">
-               <option value="">None (email)</option>
-               <option value="@txt.att.net">AT&amp;T</option>
-               <option value="@text.republicwireless.com">Republic Wireless</option>
-               <option value="@tmomail.net">T-Mobile</option>
-             </select>
-           </div>
-
-           <div class="checkbox">
-            <label>
-              <input checked="" type="checkbox" id="checkbox-send-message"> Send me messages
-            </label>
-          </div>
-          <button type="button" id="btn-add-scrape" data-loading-text="Adding..." class="btn btn-default">Add Scrape</button>
-          </form>
         </div>
-      </div>
-    </div>
-    <script src="/js/load-sw.js"></script>
-    <script src="/js/main.js"></script>
-
-    <footer class="footer">
-      <script type="text/javascript">
-      function getCookie(cname) {
-        var name = cname + "=";
-        var ca = document.cookie.split(';');
-        for(var i = 0; i <ca.length; i++) {
-            var c = ca[i];
-            while (c.charAt(0)==' ') {
-                c = c.substring(1);
-            }
-            if (c.indexOf(name) == 0) {
-                return c.substring(name.length,c.length);
-            }
-        }
-        return "";
-      }
-      console.log('Behold the cookie',getCookie('name'));
-      document.querySelector("#username").innerHTML = unescape(getCookie('name'));
-      </script>
-      <a class="navbar-brand navbar-right" href="https://github.com/zvakanaka">
-        <img class="custom-footer-logo" alt="Github Logo" src="images/github.gif">
-      </a>
-    </footer>
-  </body>
-</html>
+        <% if (process.env.SUB_APP && process.env.OUTER_APP_DIR) {%>
+          <%- include(process.env.OUTER_APP_DIR+'/views/partials/footer') %>
+        <% } else { %>
+          <% include partials/footer %>
+        <% } %>
+      </body>
+    </html>

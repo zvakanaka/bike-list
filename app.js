@@ -142,9 +142,10 @@ app.get('/list', whoIsThere, function(req, res) {
 
 app.get('/', function(req, res) {
   debug('GET /');
-  res.render('login', {
+  if (req.user) res.redirect('/add-scrape');
+  else res.render('login', {
             page: process.env.SUB_APP ? req.url : req.url,//url
-            user: req.user });
+            user: {displayName:null} });
 });
 
 app.get('/account', whoIsThere, function(req, res){
@@ -300,7 +301,8 @@ app.get('/db/delete-scrape', whoIsThere, function(req, res) {
   var _id = req.query.id;
   var status = mongoService.deleteScrape(_id);
   console.log(status);
-  res.json({ success: 'deleted scrape: ' + _id})
+  //res.json({ success: 'deleted scrape: ' + _id})
+  res.redirect('/manage-scrapes');
 });
 
 app.get('/db/delete-my-items', whoIsThere, function(req, res) {
