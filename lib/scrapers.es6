@@ -118,7 +118,7 @@ const SITE_ELEMENTS = {
         "description": ".description-text",
         "img": ".photo a img",
         "price": ".price"
-  }, "goodwill": {
+  }, "shopgoodwill": {
         "listing": "body > div.mainbluebox > div.searchresults > table > tbody > tr",
         "title": "th a",
         "link": "th a",
@@ -156,10 +156,10 @@ const SITE_URL_PARTS = {
         "distance": "distance",
         "extra": "",
         "protocol": "http"
-  }, "goodwill": {
+  }, "shopgoodwill": {
         "siteUrl": "shopgoodwill.com",
         "searchPrefix": "/search/SearchKey.asp?itemTitle=",
-        "section": "",
+        "section": "catID",
         "sortParam": "SortOrder",
         "sortType": "a",
         "maxPrice": "maxPrice",
@@ -246,11 +246,58 @@ const SITE_SECTIONS = {
     "trailers": "tra",
     "video gaming": "vga",
     "wanted": "waa"
-  }
+  }, "shopgoodwill": {
+      "": "",
+      "all": "",
+      "antiques": "1",
+      "appliances": "195",
+      "arts+crafts": "15",
+      "atvs/utvs/snow": "23",
+      "auto parts": "23",
+      "auto wheels &amp; tires": "23",
+      "baby+kids": "453",
+      "barter": "",
+      "beauty+hlth": "337",
+      "bike parts": "369",
+      "bikes": "369",
+      "boat parts": "",
+      "boats": "",
+      "books": "2",
+      "business": "",
+      "cars+trucks": "23",
+      "cds/dvd/vhs": "2",
+      "cell phones": "185",
+      "clothes+acc": "10",
+      "collectibles": "4",
+      "computer parts": "7",
+      "computers": "7",
+      "electronics": "7",
+      "farm+garden": "240",
+      "free stuff": "",
+      "furniture": "200",
+      "garage sales": "",
+      "general": "",
+      "heavy equipment": "",
+      "household": "195",
+      "jewelry": "6",
+      "materials": "202",
+      "motorcycle parts": "2184",
+      "motorcycles": "460",
+      "music instr": "13",
+      "photo+video": "170",
+      "RVs": "23",
+      "sporting": "12",
+      "tickets": "",
+      "tools": "114",
+      "toys+games": "9",
+      "trailers": "23",
+      "video gaming": "33",
+      "wanted": ""
+    }
 };
 
 module.exports.getSection = function (site, section) {
-  return SITE_SECTIONS[site.toLowerCase()][section.toLowerCase()] || "";
+  return SITE_SECTIONS[site.toLowerCase()][section] || "";
 }
 
 //options: zip, minPrice, maxPrice, resultsPerPage, sortType
@@ -267,20 +314,20 @@ module.exports.scrape = function (options) {
     const resultsPerPage = options.resultsPerPage || 50;
     const insert = options.insert || true;
     const sendMessage = options.sendMessage;
-
     const distance = options.maxMiles || '25';
 
+    let section = "";
+    if (options.section) {
+      section = module.exports.getSection(options.site, options.section);
+    } else if (param.section) {
+      section = param.section;
+    }
+
     let subdomain = "";
-    let searchSegment = `${param.siteUrl}${param.searchPrefix}${searchTerm}`;
+    let searchSegment = `${param.siteUrl}${param.searchPrefix}${searchTerm}&${param.section}=${section}`;
     // craiglist special treatment
     if (options.site.toLowerCase() === 'craigslist') {
       subdomain = `${module.exports.getArea(zip)}.`;
-      let section = "";
-      if (options.site, options.section) {
-        section = module.exports.getSection(options.section);
-      } else if (param.section) {
-        section = param.section;
-      }
       searchSegment = `${subdomain}${param.siteUrl}${param.searchPrefix}${section}${param.searchSuffix}${searchTerm}`;
     }
 
