@@ -23,6 +23,8 @@ describe('Get section name ', function() {
     sectionName.should.equal('ata');
     sectionName = scrapers.getSection('craigslist', 'cars+trucks');
     sectionName.should.equal('cta');
+    sectionName = scrapers.getSection('shopgoodwill', 'photo+video');
+    sectionName.should.equal('170');
     sectionName = scrapers.getSection('craigslist', '');
     sectionName.should.equal('sss');
   });
@@ -64,10 +66,10 @@ describe('Scrape Goodwill for cameras ', function() {
       sendMessage: false,
       sendTo: 'nobody@ihopethisdoesntexist.com',
       userId: 123,
-      section: '',
+      section: 'photo+video',
       maxMiles: 30,
       scrapeName: 'Raharizuandrinarina',
-      site: 'goodwill',
+      site: 'shopgoodwill',
       zip: ""
     };
     scrapers.scrape(search)
