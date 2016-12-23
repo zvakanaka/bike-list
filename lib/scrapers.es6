@@ -155,7 +155,7 @@ const SITE_URL_PARTS = {
         "zip": "zip",
         "distance": "distance",
         "extra": "",
-        "protocol": "http"
+        "protocol": "https"
   }, "shopgoodwill": {
         "siteUrl": "shopgoodwill.com",
         "searchPrefix": "/search/SearchKey.asp?itemTitle=",
@@ -180,7 +180,7 @@ const SITE_URL_PARTS = {
         "zip": "postal",
         "distance": "search_distance",
         "extra": "",
-        "protocol": "http"
+        "protocol": "https"
   }, "howtoterminal": {
         "siteUrl": "howtoterminal.com/php-class/dynamic/",
         "searchPrefix": "?action=home",
@@ -409,7 +409,7 @@ module.exports.scrape = function (options) {
               // console.dir(result);
               if (result && result.length === 0) {//NEW! if not found
                 console.log('NEW ITEM FOUND     ', item.title, item.link);
-                // console.log('insert', insert);
+                console.log('insert?', insert);
                 if (insert === true) mongoService.insert(item);
                 console.log('sendMessage', sendMessage);
                 if (sendMessage === true) sendMail.sendText([item], options.sendTo);
