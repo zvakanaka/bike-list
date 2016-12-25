@@ -1,5 +1,7 @@
 const cheerio = require('cheerio');
 const request = require('sync-request');
+const colors = require('colors');
+
 const sendMail = require('./sendMail.js');
 const mongoService = require('./mongoService.js');
 
@@ -301,11 +303,14 @@ module.exports.getSection = function (site, section) {
 }
 
 //options: zip, minPrice, maxPrice, resultsPerPage, sortType
-module.exports.scrape = function (options) {
+module.exports.scrape = function (options, color = 'green') {
   const promise = new Promise(function(resolve, reject) {
     const quals = SITE_ELEMENTS[options.site.toLowerCase()];
     const param = SITE_URL_PARTS[options.site.toLowerCase()];
-    console.log(`SCRAPING ${param.siteUrl}...`);
+    colors.setTheme({
+      custom: [color]
+    });
+    console.log(`SCRAPING ${param.siteUrl}...`.custom);
 
     const zip = options.zip;
     const searchTerm = options.searchTerm.replace(' ', '+') || '';
@@ -332,7 +337,7 @@ module.exports.scrape = function (options) {
     }
 
     const url = `${param.protocol}://${searchSegment}&${param.zip}=${zip}&${param.distance}=${distance}&${param.minPrice}=${minPrice}&${param.maxPrice}=${maxPrice}&${param.sortParam}=${param.sortType}${param.extra}`;
-    console.log('url:', url);
+    console.log('url:', url.custom);
     const response = request('GET', url);
     const $ = cheerio.load(response.getBody());
     //console.log('Got Body');
@@ -341,11 +346,12 @@ module.exports.scrape = function (options) {
 
     let listingLength = $(quals.listing).length;//to know when to resolve
 
-    console.log(listingLength, ' items found');
+    console.log(`${listingLength} items found`.custom);
     if (listingLength !== 0) {
       // set all previous to deleted and reset to true if we find same again
       mongoService.updateItemsDeleted(searchTerm, true).then((mRes) => {
         $(quals.listing).each(function(index) {
+
           // get image
           let img = "";
           if (quals.img) {
@@ -366,7 +372,7 @@ module.exports.scrape = function (options) {
               img = 'images/not-found.png';
           }
 
-          const title = $(this).find(quals.title).text().trim()
+          const title = $(this).find(quals.title).text().trim();
           let link = $(this).find(quals.link)['0']['attribs']['href'];
           if (link.startsWith(`${param.protocol}://`)) {
             //do nothing... at the moment
@@ -408,10 +414,10 @@ module.exports.scrape = function (options) {
               // console.log('Searching for', title);
               // console.dir(result);
               if (result && result.length === 0) {//NEW! if not found
-                console.log('NEW ITEM FOUND     ', item.title, item.link);
-                console.log('insert?', insert);
+                console.log(`NEW ITEM FOUND     ${item.title} ${item.link}`.custom);
+                // console.log(`insert? ${insert}`.custom);
                 if (insert === true) mongoService.insert(item);
-                console.log('sendMessage', sendMessage);
+                console.log(`sendMessage ${sendMessage}`.custom);
                 if (sendMessage === true) sendMail.sendText([item], options.sendTo);
               } else {
                 //console.log(`EXISTING LINK FOUND: ${item.title} - ${item.link}, ${result[0].link}`)
@@ -420,7 +426,7 @@ module.exports.scrape = function (options) {
               }
             }
             else {
-              console.log('Error');
+              console.log('Error'.custom);
             }
             if (index === listingLength-1) {
               // console.dir(listings)
