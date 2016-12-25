@@ -363,15 +363,19 @@ function whoIsThere(req, res, next) {
 app.get('/scrape', function(req, res) {
   debug('GET /scrape');
   res.type('json');
+  const CUSTOM_COLORS = ['red', 'yellow', 'green', 'blue', 'magenta'];
 
   console.log('Scraping');
   var results = mongoService.getAllActiveScrapes();
   results.exec(function(err, results) {
     if (!err) {
       console.log('Number of Scrapes:', results.length);
+      let i = 0;
       results.forEach(function(options) {
+        let custom = [CUSTOM_COLORS[i%(CUSTOM_COLORS.length-1)]];
         console.log('Scraping:', options.site, 'for', options.scrapeName);
-        scrapeSite(options);
+        scrapeSite(options, custom);
+        i++;
       });
       res.send(results);
     }
@@ -381,15 +385,14 @@ app.get('/scrape', function(req, res) {
   });
 });
 
-function scrapeSite(options) {
+function scrapeSite(options, customColor) {
   if (options.section === 'cta') {
     scrapers.cars(options)
       .then(function() {
         console.log('DONE SCRAPING', options.scrapeName);
       });
   } else {
-    console.log('insert',options.insert);
-    scrapers.scrape(options)
+    scrapers.scrape(options, customColor)
       .then(function() {
         console.log('DONE SCRAPING', options.scrapeName);
       });
