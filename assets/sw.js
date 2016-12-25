@@ -3,6 +3,7 @@ this.addEventListener('install', function(event) {
     caches.open('v1').then(function(cache) {
       return cache.addAll([
         '.',
+        'add-scrape',
         'js/main.js',
         'js/load-sw.js',
         'images/github.gif',
