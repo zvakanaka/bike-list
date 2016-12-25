@@ -1,0 +1,53 @@
+{
+  "ksl": {
+        "siteUrl": "ksl.com",
+        "searchPrefix": "/classifieds/search/?keyword=",
+        "section": "",
+        "sortParam": "sort",
+        "sortType": "0",
+        "maxPrice": "priceTo",
+        "minPrice": "priceFrom",
+        "zip": "zip",
+        "distance": "distance",
+        "extra": "",
+        "protocol": "https"
+  }, "shopgoodwill": {
+        "siteUrl": "shopgoodwill.com",
+        "searchPrefix": "/search/SearchKey.asp?itemTitle=",
+        "section": "catID",
+        "sortParam": "SortOrder",
+        "sortType": "a",
+        "maxPrice": "maxPrice",
+        "minPrice": "minPrice",
+        "zip": "sellerId",
+        "distance": "distance",
+        "extra": "&showthumbs=on",
+        "protocol": "http"
+  }, "craigslist": {
+        "siteUrl": "craigslist.com",
+        "searchPrefix": "/search/",
+        "section": "sss",
+        "searchSuffix": "?query=",
+        "sortParam": "sort",
+        "sortType": "date",
+        "maxPrice": "max_price",
+        "minPrice": "min_price",
+        "zip": "postal",
+        "distance": "search_distance",
+        "extra": "",
+        "protocol": "https"
+  }, "howtoterminal": {
+        "siteUrl": "howtoterminal.com/php-class/dynamic/",
+        "searchPrefix": "?action=home",
+        "imgPrefix": "howtoterminal.com",
+        "sortParam": "",
+        "sortType": "",
+        "section": "",
+        "maxPrice": "",
+        "minPrice": "",
+        "zip": "",
+        "distance": "",
+        "extra": "",
+        "protocol": "http"
+  }
+}
