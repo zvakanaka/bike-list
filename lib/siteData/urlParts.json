@@ -36,6 +36,31 @@
         "distance": "search_distance",
         "extra": "",
         "protocol": "https"
+  }, "craigslistcars": {
+        "siteUrl": "craigslist.org",
+        "searchPrefix": "/search/",
+        "section": "cto",
+        "searchSuffix": "?query=",
+        "sortParam": "sort",
+        "sortType": "date",
+        "maxPrice": "max_price",
+        "minPrice": "min_price",
+        "zip": "postal",
+        "distance": "search_distance",
+        "extra": "",
+        "protocol": "http"
+  }, "kslrent": {
+        "siteUrl": "ksl.com/homes/index/rentler",
+        "searchPrefix": "?nid=651&Location=Orem%2C+UT%2C+United+States&PropertyTypeCode=7&MinPrice=&MaxPrice=&MinLease=&MaxLease=",
+        "section": "",
+        "sortParam": "",
+        "sortType": "",
+        "maxPrice": "",
+        "minPrice": "",
+        "zip": "",
+        "distance": "",
+        "extra": "",
+        "protocol": "https"
   }, "howtoterminal": {
         "siteUrl": "howtoterminal.com/php-class/dynamic/",
         "searchPrefix": "?action=home",

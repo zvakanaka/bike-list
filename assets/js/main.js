@@ -1,12 +1,12 @@
 function addAlert(content, kind) {
-  var newDiv = document.createElement("div");
+  var newDiv = document.createElement('div');
   var newContent = document.createTextNode(content);
   newDiv.setAttribute('class', `alert alert-${kind}`);
   newDiv.setAttribute('role', 'alert');
   newDiv.appendChild(newContent); //add the text node to the newly created div.
 
   // add the newly created element and its content into the DOM
-  var currentDiv = document.getElementById("form-add-scrape");
+  var currentDiv = document.getElementById('form-add-scrape');
   currentDiv.parentNode.insertBefore(newDiv, currentDiv.nextSibling);
 }
 /***************************
@@ -14,8 +14,8 @@ function addAlert(content, kind) {
  ***************************/
 function postJSON(url, data, $loader) {
   var http = new XMLHttpRequest();
-  http.open("POST", url, true);
-  http.setRequestHeader("Content-type", "application/json; charset=utf-8");
+  http.open('POST', url, true);
+  http.setRequestHeader('Content-type', 'application/json; charset=utf-8');
   http.onreadystatechange = function() {
     if (http.readyState == 4 && http.status == 200) {
       //response
@@ -55,23 +55,23 @@ function sendMessage(message) {
 }
 
 //check local storage, if scrape exists, call addscrape
-if (localStorage.getItem("scrape") !== null) {
-  console.log("pending scrape", localStorage.getItem("scrape"));
+if (localStorage.getItem('scrape') !== null) {
+  console.log('pending scrape', localStorage.getItem('scrape'));
   // var $btn = btnAddScrape.button('loading');
-  addScrape(JSON.parse(localStorage.getItem("scrape")));
+  addScrape(JSON.parse(localStorage.getItem('scrape')));
 }
 
 function addScrape(options, $loader) {
   if (!navigator.onLine) {
-    if (localStorage.getItem("scrape") === null) {
-      console.log("adding scrape to local storage", JSON.stringify(options));
-      localStorage.setItem("scrape", JSON.stringify(options));
+    if (localStorage.getItem('scrape') === null) {
+      console.log('adding scrape to local storage', JSON.stringify(options));
+      localStorage.setItem('scrape', JSON.stringify(options));
     }
     console.log('Warning:', 'scrape will be added on connection');
     addAlert(`Warning: ${'scrape will be added on connection'}`, 'warning');
     sendMessage(JSON.stringify(options)).then(function(result){
       //when sendMessage resolves:
-      localStorage.removeItem("scrape");
+      localStorage.removeItem('scrape');
       console.log('DATAS');
       console.log(result);
       postJSON('/new-scrape', result, $loader);
