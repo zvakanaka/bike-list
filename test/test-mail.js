@@ -60,7 +60,7 @@ if (sendTo !== undefined) {
       var rl = readline.createInterface(process.stdin, process.stdout),
       prefix = 'You have 15 seconds. Did you receive a text?[y,n] ';
       rl.on('line', function(line) {
-        line.trim().should.equal("y");
+        line.trim().should.equal('y');
         done();
       });
       rl.setPrompt(prefix, prefix.length);

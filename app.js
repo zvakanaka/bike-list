@@ -51,7 +51,7 @@ app.use(cookieParser());
 
 app.set('json spaces', 2);
 
-app.set("views", path.join(__dirname, "views"));
+app.set('views', path.join(__dirname, 'views'));
 app.set('view engine', 'ejs');
 app.use(express.static(path.join(__dirname, 'dist')));
 app.use('/components', express.static(__dirname + '/components'));

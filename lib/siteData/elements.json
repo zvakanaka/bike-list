@@ -20,6 +20,20 @@
         "description": false,
         "img": false,
         "price": "span.result-meta span.result-price"
+  }, "craigslistcars": {
+        "listing": "ul.rows li.result-row",
+        "title": "p.result-info a.result-title",
+        "link": "a.result-image",
+        "description": false,
+        "img": false,
+        "price": "span.result-meta span.result-price"
+  }, "kslrent": {
+        "listing": ".listings .listing",
+        "title": ".title",
+        "link": ".title .link",
+        "description": ".address",
+        "img": "a.photo img",
+        "price": false
   }, "howtoterminal": {
         "listing": "main .album-thumb",
         "title": "div > div",

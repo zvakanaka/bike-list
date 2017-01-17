@@ -5,6 +5,17 @@ const colors = require('colors');
 const sendMail = require('./sendMail.js');
 const mongoService = require('./mongoService.js');
 
+// css selectors for cheerio
+const SITE_ELEMENTS = require('../siteData/elements.json');
+// pieces that make up the url
+const SITE_URL_PARTS = require('../siteData/urlParts.json');
+//these translate the select list to the specific site format
+const SITE_SECTIONS = require('../siteData/sections.json');
+
+module.exports.getSection = function (site, section) {
+  return SITE_SECTIONS[site.toLowerCase()][section] || '';
+}
+
 module.exports.getCity = (zip) => {
   zip = parseInt(zip);
   if (zip > 83400 && zip <= 83499)
@@ -55,10 +66,10 @@ module.exports.cars = (options) => {
     if (listingLength !== 0) {
       // set all previous to deleted and reset to true if we find same again
       mongoService.updateItemsDeleted('Car', true).then((mRes) => {
-        $(".listing").each(function(index) {
+        $('.listing').each(function(index) {
           let img = $(this).find('.photo')['0']['attribs']['style'];
           if (img !== undefined) {
-            img = img.substring(img.indexOf("url(")+4, img.indexOf(')'));
+            img = img.substring(img.indexOf('url(')+4, img.indexOf(')'));
             img = img.substr(0, img.indexOf('?'));//remove query params
           } else {
             img = 'images/not-found.png';
@@ -71,7 +82,7 @@ module.exports.cars = (options) => {
           const mileage = $(this).find('.mileage').text().trim();
           let dateTemp = $(this).find('.nowrap').text().trim();
           let dateFormatted = dateTemp.substring(dateTemp.indexOf('min(')+4, dateTemp.indexOf(')'));
-          let dateVal ="/Date("+dateFormatted+"000)/";
+          let dateVal = '/Date('+dateFormatted+'000)/';
           const date = new Date(parseFloat(dateVal.substr(6)));
           //TODO: get real place
           const place = 'UT';
@@ -111,18 +122,6 @@ module.exports.cars = (options) => {
   return promise;
 }
 
-// css selectors for cheerio
-const SITE_ELEMENTS = require("../siteData/elements.json");
-
-// pieces that make up the url
-const SITE_URL_PARTS = require("../siteData/urlParts.json");
-
-//these translate the select list to the specific site format
-const SITE_SECTIONS = require("../siteData/sections.json");
-
-module.exports.getSection = function (site, section) {
-  return SITE_SECTIONS[site.toLowerCase()][section] || "";
-}
 
 //options: zip, minPrice, maxPrice, resultsPerPage, sortType
 module.exports.scrape = function (options, color = 'green') {
@@ -143,17 +142,17 @@ module.exports.scrape = function (options, color = 'green') {
     const sendMessage = options.sendMessage;
     const distance = options.maxMiles || '25';
 
-    let section = "";
+    let section = '';
     if (options.section) {
       section = module.exports.getSection(options.site, options.section);
     } else if (param.section) {
       section = param.section;
     }
 
-    let subdomain = "";
+    let subdomain = '';
     let searchSegment = `${param.siteUrl}${param.searchPrefix}${searchTerm}&${param.section}=${section}`;
     // craiglist special treatment
-    if (options.site.toLowerCase() === 'craigslist') {
+    if (options.site.toLowerCase().includes('craigslist')) {
       subdomain = `${module.exports.getArea(zip)}.`;
       searchSegment = `${subdomain}${param.siteUrl}${param.searchPrefix}${section}${param.searchSuffix}${searchTerm}`;
     }
@@ -175,7 +174,7 @@ module.exports.scrape = function (options, color = 'green') {
         $(quals.listing).each(function(index) {
 
           // get image
-          let img = "";
+          let img = '';
           if (quals.img) {
             img = $(this).find(quals.img)['0']['attribs']['src'];
             if (img !== undefined) {
@@ -194,7 +193,10 @@ module.exports.scrape = function (options, color = 'green') {
               img = 'images/not-found.png';
           }
 
-          const title = $(this).find(quals.title).text().trim();
+          let title = '';
+          if (quals.title) {
+            title = $(this).find(quals.title).text().trim();
+          }
           let link = $(this).find(quals.link)['0']['attribs']['href'];
           if (link.startsWith(`${param.protocol}://`)) {
             //do nothing... at the moment
@@ -202,7 +204,7 @@ module.exports.scrape = function (options, color = 'green') {
             link = `${param.protocol}://${subdomain}${param.siteUrl}${link}`;
           }
           //link = link.substr(0, link.indexOf('?'));//remove query params
-          let price = "0";
+          let price = '0';
           if (quals.price) {
             price = $(this).find(quals.price).text().trim();
           }
@@ -214,7 +216,7 @@ module.exports.scrape = function (options, color = 'green') {
           //date
           let date = new Date()
           //description
-          let description = "";
+          let description = '';
           if (quals.description) {
             description = $(this).find(quals.description).text().trim();
           }

@@ -39,7 +39,7 @@ module.exports.buildBody = (listings, subject) => {
  array of results to send
  ********/
 module.exports.sendText = (listings, sendTo) => {
-  console.log("Sending Text");
+  console.log('Sending Text');
   let subject = module.exports.buildSubject(listings);
   let text = module.exports.buildBody(listings, subject);
 
@@ -50,7 +50,7 @@ module.exports.sendText = (listings, sendTo) => {
        to: sendTo || process.env.EMAIL_TO,
        subject: subject
     }, function(err, message) {
-    //  console.log(err || message); 
+    //  console.log(err || message);
     });
   } else {
     console.log('MAIL IS OFF: re-enable by removing config var \'NO_SEND_MAIL\'');

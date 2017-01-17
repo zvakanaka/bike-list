@@ -40,7 +40,7 @@ module.exports.saveOrLoginUser = (profile) => {
           if(err) {
             console.log(err);  // handle errors!
           } else {
-            console.log("Saving user", profile.email);
+            console.log('Saving user', profile.email);
             resolve(user);
           }
         });
@@ -70,7 +70,7 @@ const ScrapeModel = mongoose.model('Scrapes', scrapeSchema);
 
 module.exports.insertScrape = (scrape) => {
   let maxAutoMiles;
-  if (typeof(scrape.maxAutoMiles) === "string") {
+  if (typeof(scrape.maxAutoMiles) === 'string') {
     maxAutoMiles = scrape.maxAutoMiles.replace(',','');
   }
   const scrapeToInsert = new ScrapeModel({
