@@ -203,6 +203,11 @@ app.post('/new-scrape', function(req, res) {
   res.type('json');
 
   var userId = req.cookies.id;
+  if (req.user) {
+    userId = req.user.id;
+  } else {
+    console.log('ERROR: not logged in');
+  }
 
   var search = {
     searchTerm: req.body.searchTerm || '',
