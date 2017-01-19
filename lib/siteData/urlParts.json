@@ -49,17 +49,17 @@
         "distance": "search_distance",
         "extra": "",
         "protocol": "http"
-  }, "kslrent": {
-        "siteUrl": "ksl.com/homes/index/rentler",
-        "searchPrefix": "?nid=651&Location=Orem%2C+UT%2C+United+States&PropertyTypeCode=7&MinPrice=&MaxPrice=&MinLease=&MaxLease=",
+  }, "kslcars": {
+        "siteUrl": "ksl.com",
+        "searchPrefix": "/auto/search/index?keyword=",
         "section": "",
         "sortParam": "",
         "sortType": "",
-        "maxPrice": "",
-        "minPrice": "",
-        "zip": "",
-        "distance": "",
-        "extra": "",
+        "maxPrice": "priceTo",
+        "minPrice": "priceFrom",
+        "zip": "zip",
+        "distance": "miles",
+        "extra": "&mileageTo=110000&newUsed%5B%5D=Used&newUsed%5B%5D=Certified&sellerType%5B%5D=For+Sale+By+Owner",
         "protocol": "https"
   }, "howtoterminal": {
         "siteUrl": "howtoterminal.com/php-class/dynamic/",
