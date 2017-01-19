@@ -6,6 +6,13 @@
         "description": ".description-text",
         "img": ".photo a img",
         "price": ".price"
+  },"kslcars": {
+        "listing": ".listing-group .listing",
+        "title": ".title",
+        "link": ".title .link",
+        "description": ".description-text",
+        "img": ".photo-block a img",
+        "price": ".price"
   }, "shopgoodwill": {
         "listing": "body > div.mainbluebox > div.searchresults > table > tbody > tr",
         "title": "th a",
