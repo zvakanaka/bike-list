@@ -392,12 +392,12 @@ function scrapeSite(options, customColor) {
   if (options.section === 'cta') {
     scrapers.cars(options)
       .then(function() {
-        console.log('DONE SCRAPING', options.scrapeName);
+        console.log('DONE SCRAPING', options.searchTerm);
       });
   } else {
     scrapers.scrape(options, customColor)
       .then(function() {
-        console.log('DONE SCRAPING', options.scrapeName);
+        console.log('DONE SCRAPING', options.searchTerm);
       });
   }
 }
