@@ -24,9 +24,9 @@ describe('Scrape craiglsist cars for CR-Vs ', function() {
       zip: 90620
     };
     scrapers.scrape(search)
-      .then(function(listings) {
-        console.log(listings.length + ' items found');
-        listings.length.should.be.at.least(1);
+      .then(function(res) {
+        console.log(res.listings.length + ' items found');
+        res.listings.length.should.be.at.least(1);
         done();
       });
   });

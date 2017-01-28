@@ -24,9 +24,13 @@ describe('Scrape ksl for single rooms ', function() {
       zip: 0
     };
     scrapers.scrape(search)
-      .then(function(listings) {
-        console.log(listings.length + ' items found');
-        listings.length.should.be.at.least(1);
+      .then(function(res) {
+        console.log(res.listings.length + ' items found');
+        res.listings.length.should.be.at.least(1);
+        done();
+      }).catch(err => {
+        console.log(err);
+        true.should.equal(false);
         done();
       });
   });

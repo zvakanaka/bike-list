@@ -30,6 +30,20 @@ describe('Get section name ', function() {
   });
 });
 
+describe('Get body ', function() {
+  this.timeout(15000);
+  it('should return a body for a page that needs JavaScript', function() {
+    scrapers.getPageBody('http://howtoterminal.com', true)
+    .then((bod, err) => {
+      bod.size.should.be.greater.than(1);
+      done();
+    }).catch(err => {
+      true.should.equal(false);
+      console.log(err);
+      done();
+    });
+  });
+});
 
 describe('Scrape KSL for couches ', function() {
   this.timeout(15000);
@@ -48,9 +62,9 @@ describe('Scrape KSL for couches ', function() {
       zip: 84606
     };
     scrapers.scrape(search)
-      .then(function(listings) {
-        console.log(listings.length + ' items found');
-        listings.length.should.be.at.least(1);
+      .then(function(res) {
+        console.log(res.listings.length + ' items found');
+        res.listings.length.should.be.at.least(1);
         done();
       });
   });
@@ -66,6 +80,7 @@ describe('Scrape Goodwill for cameras ', function() {
       sendMessage: false,
       sendTo: 'nobody@ihopethisdoesntexist.com',
       userId: 123,
+      section: '',
       section: 'photo+video',
       maxMiles: 30,
       scrapeName: 'Raharizuandrinarina',
@@ -73,9 +88,12 @@ describe('Scrape Goodwill for cameras ', function() {
       zip: ""
     };
     scrapers.scrape(search)
-      .then(function(listings) {
-        console.log(listings.length + ' items found');
-        listings.length.should.be.at.least(1);
+      .then(function(res) {
+        console.log(res.listings.length + ' items found');
+        res.listings.length.should.be.at.least(1);
+        done();
+      }).catch(function(err) {
+        console.log(err);
         done();
       });
   });
@@ -98,9 +116,9 @@ describe('Scrape Craigslist for cameras ', function() {
       zip: "90620"
     };
     scrapers.scrape(search)
-      .then(function(listings) {
-        console.log(listings.length + ' items found');
-        listings.length.should.be.at.least(1);
+      .then(function(res) {
+        console.log(res.listings.length + ' items found');
+        res.listings.length.should.be.at.least(1);
         done();
       });
   });
