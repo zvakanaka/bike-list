@@ -253,6 +253,9 @@ app.get('/manage-scrapes', whoIsThere, function(req, res) {
   var results = mongoService.getScrapesForUser(req.user.id);
   results.exec(function(err, result) {
     if (!err) {
+      result.forEach(one => { //add url of search
+        one.searchUrl = scrapers.buildUrl(one).url;
+      });
       res.render('manage-scrapes', {
         page: process.env.SUB_APP ? req.url + 'scrape' : req.url,//url
         myScrapes: result,
