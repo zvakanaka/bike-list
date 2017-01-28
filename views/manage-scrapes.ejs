@@ -29,7 +29,7 @@
           </thead>
           <tbody>
             <% myScrapes.forEach(function(data) { %>
-            <tr><td><%= data.searchTerm %></td></td><td>$<%= data.maxPrice %></td><td><%= data.zip %></td><td><a href="scrape-details?id=<%= data._id %>" class="btn btn-primary" role="button">Details</a></td></tr>
+            <tr><td><a href="<%= data.searchUrl %>"><%= data.searchTerm %></a></td></td><td>$<%= data.maxPrice %></td><td><%= data.zip %></td><td><a href="scrape-details?id=<%= data._id %>" class="btn btn-primary" role="button">Details</a></td></tr>
             <% }); %>
           </tbody>
         </table>

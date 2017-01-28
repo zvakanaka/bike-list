@@ -57,7 +57,11 @@ module.exports.getPageBody = function (url, needsJavaScript) {
   });
 }
 
+//second parameter optional
 module.exports.buildUrl = function (options, param) {
+  if (!param) {
+    param = SITE_URL_PARTS[options.site.toLowerCase()];
+  }
   const zip = options.zip;
   const minPrice = options.minPrice || 30;
   const maxPrice = options.maxPrice || 200;
