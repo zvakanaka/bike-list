@@ -43,7 +43,8 @@
     "require": "^2.4.20",
     "run-sequence": "^1.2.2",
     "stylus": "^0.54.5",
-    "sync-request": "^3.0.1"
+    "sync-request": "^3.0.1",
+    "zombie": "^5.0.5"
   },
   "devDependencies": {
     "browser-sync": "^2.13.0",

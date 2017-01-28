@@ -9,7 +9,7 @@
         "minPrice": "priceFrom",
         "zip": "zip",
         "distance": "distance",
-        "extra": "",
+        "extra": "&marketType=Sale",
         "protocol": "https"
   }, "shopgoodwill": {
         "siteUrl": "shopgoodwill.com",
@@ -61,6 +61,32 @@
         "distance": "miles",
         "extra": "&mileageTo=110000&newUsed%5B%5D=Used&newUsed%5B%5D=Certified&sellerType%5B%5D=For+Sale+By+Owner",
         "protocol": "https"
+  }, "facebookrent": {
+        "siteUrl": "facebook.com",
+        "searchPrefix": "/groups/1416560698596674?",
+        "section": "",
+        "sortParam": "",
+        "sortType": "",
+        "maxPrice": "",
+        "minPrice": "",
+        "zip": "",
+        "distance": "",
+        "extra": "",
+        "protocol": "http",
+        "needsJavaScript": true
+  }, "kslrent": {
+        "siteUrl": "ksl.com/homes/search/rentler",
+        "searchPrefix": "?nid=651&Location=Orem%2C+UT%2C+United+States&PropertyTypeCode=7&MinBedrooms=&MinBathrooms=&MinPrice=&MaxPrice=&MinLease=&MaxLease=&MinYearBuilt=&MaxYearBuilt=&MinSquareFootage=&MinAcres=&Keywords=",
+        "section": "",
+        "sortParam": "",
+        "sortType": "",
+        "maxPrice": "",
+        "minPrice": "",
+        "zip": "",
+        "distance": "",
+        "extra": "",
+        "protocol": "http",
+        "needsJavaScript": true
   }, "howtoterminal": {
         "siteUrl": "howtoterminal.com/php-class/dynamic/",
         "searchPrefix": "?action=home",

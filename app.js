@@ -374,18 +374,18 @@ app.get('/scrape', function(req, res) {
   const CUSTOM_COLORS = ['red', 'yellow', 'green', 'blue', 'magenta'];
 
   console.log('Scraping');
-  var results = mongoService.getAllActiveScrapes();
-  results.exec(function(err, results) {
+  var scrapes = mongoService.getAllActiveScrapes();
+  scrapes.exec(function(err, scrapes) {
     if (!err) {
-      console.log('Number of Scrapes:', results.length);
+      console.log('Number of Scrapes:', scrapes.length);
       let i = 0;
-      results.forEach(function(options) {
+      scrapes.forEach(function(options) {
         let custom = [CUSTOM_COLORS[i%(CUSTOM_COLORS.length-1)]];
         console.log('Scraping:', options.site, 'for', options.scrapeName);
         scrapeSite(options, custom);
         i++;
       });
-      res.send(results);
+      res.send(scrapes);
     }
     else {
       res.json(err);
@@ -394,17 +394,15 @@ app.get('/scrape', function(req, res) {
 });
 
 function scrapeSite(options, customColor) {
-  if (options.section === 'cta') {
-    scrapers.cars(options)
-      .then(function() {
-        console.log('DONE SCRAPING', options.searchTerm);
-      });
-  } else {
+  // if (options.section === 'cta') {
+  // } else {
     scrapers.scrape(options, customColor)
-      .then(function() {
-        console.log('DONE SCRAPING', options.searchTerm);
+      .then(function(result) {
+        console.log('DONE SCRAPING' + options.searchTerm + ' at ' + result.url);
+      }).catch(function(err) {
+        console.log(err);
       });
-  }
+  // }
 }
 if (process.env.SUB_APP) {
   console.log('Exporting as sub-app');

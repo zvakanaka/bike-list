@@ -41,6 +41,13 @@
         "description": ".address",
         "img": "a.photo img",
         "price": false
+  }, "facebookrent": {
+        "listing": "div._1dwg > div:nth-child(3)",
+        "title": ".mtm span:nth-child(2)",
+        "link": false,
+        "description": ".mtm p",
+        "img": false,
+        "price": false
   }, "howtoterminal": {
         "listing": "main .album-thumb",
         "title": "div > div",

@@ -8,7 +8,7 @@ chai.use(chaiHttp);
 var scrapers = require('../lib/js/scrapers.js');
 
 describe('Scrape howtoterminal for albums ', function() {
-  this.timeout(5000);
+  this.timeout(15000);
   it('should return at least one album', function(done) {
     var search = {
       searchTerm: '',
@@ -24,9 +24,9 @@ describe('Scrape howtoterminal for albums ', function() {
       zip: 0
     };
     scrapers.scrape(search)
-      .then(function(listings) {
-        console.log(listings.length + ' items found');
-        listings.length.should.be.at.least(1);
+      .then(function(res) {
+        console.log(res.listings.length + ' items found');
+        res.listings.length.should.be.at.least(1);
         done();
       });
   });

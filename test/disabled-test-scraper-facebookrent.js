@@ -7,26 +7,30 @@ chai.use(chaiHttp);
 
 var scrapers = require('../lib/js/scrapers.js');
 
-describe('Scrape ksl cars for CR-Vs ', function() {
-  this.timeout(5000);
-  it('should return at least one car', function(done) {
+describe('Scrape facebook for apartments ', function() {
+  this.timeout(15000);
+  it('should return at least one result', function(done) {
     var search = {
-      searchTerm: 'cr-v',
-      maxPrice: 11000,
+      searchTerm: '',
+      maxPrice: 0,
       insert: true, // does not carry through to mongodb
       sendMessage: false,
       sendTo: 'nobody@ihopethisdoesntexist.com',
       userId: 123,
-      section: '',
-      maxMiles: 100000,
+      section: "",
+      maxMiles: 0,
       scrapeName: 'Raharizuandrinarina',
-      site: 'kslcars',
-      zip: 84606
+      site: 'facebookrent',
+      zip: 0
     };
     scrapers.scrape(search)
       .then(function(res) {
         console.log(res.listings.length + ' items found');
         res.listings.length.should.be.at.least(1);
+        done();
+      }).catch(err => {
+        console.log(err);
+        true.should.equal(false);
         done();
       });
   });
