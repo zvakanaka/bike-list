@@ -41,88 +41,6 @@ module.exports.getArea = (zip) => {
     return 'provo';
 }
 
-// options: searchTerm, zip, minPrice, maxPrice, minYear, maxYear, minMiles, maxMiles
-module.exports.cars = (options) => {
-  console.log('SCRAPING KSL AUTOS...');
-  const promise = new Promise((resolve, reject) => {
-    const siteUrl = 'http://www.ksl.com/auto/search/index';
-    let searchTerm = options.searchTerm || '';
-    const zip = options.zip || 84606;
-    const minPrice = options.minPrice || 2;
-    const maxPrice = options.maxPrice || 2000;
-    const minYear = options.minYear || 1985;
-    const maxYear = options.maxYear || 2016;
-    const minMiles = options.minMiles || 0;
-    const maxMiles = options.maxAutoMiles || 200000;
-    const insert = options.insert || true;
-    const sendMessage = options.sendMessage || true;
-
-    const url = `${siteUrl}?keyword=${searchTerm.replace(' ','+')}&yearFrom=${minYear}&yearTo=${maxYear}&mileageFrom=${minMiles}&mileageTo=${maxMiles}&priceFrom=${minPrice}&priceTo=${maxPrice}&zip=${zip}&miles=${0}&newUsed%5B%5D=${'Used'}&newUsed%5B%5D=${'Certified'}&page=${0}&sellerType=${'For+Sale+By+Owner'}&postedTime=${'15DAYS'}&titleType=${'Clean+Title'}&sort=1&body=&transmission=&cylinders=&liters=&fuel=&drive=&numberDoors=&exteriorCondition=&interiorCondition=&cx_navSource=hp_search&search.x=65&search.y=7&search=Search+raquo%3B`;
-
-    const response = request('GET', url);
-    console.log('Getting\n'+url+' ...');
-    const $ = cheerio.load(response.getBody());
-    const listings = [];
-    const listingLength = $('.listing').length;//to know when to resolve
-    if (listingLength !== 0) {
-      // set all previous to deleted and reset to true if we find same again
-      mongoService.updateItemsDeleted('Car', true).then((mRes) => {
-        $('.listing').each(function(index) {
-          let img = $(this).find('.photo')['0']['attribs']['style'];
-          if (img !== undefined) {
-            img = img.substring(img.indexOf('url(')+4, img.indexOf(')'));
-            img = img.substr(0, img.indexOf('?'));//remove query params
-          } else {
-            img = 'images/not-found.png';
-          }
-          console.log(img);
-          const title = $(this).find('.title').text().trim();
-          let link = 'http://www.ksl.com' + $(this).find('.title .link')['0']['attribs']['href'];
-          link = link.substr(0, link.indexOf('?'));//remove query params
-          const price = $(this).find('.price').text().trim().substr(1);
-          const mileage = $(this).find('.mileage').text().trim();
-          let dateTemp = $(this).find('.nowrap').text().trim();
-          let dateFormatted = dateTemp.substring(dateTemp.indexOf('min(')+4, dateTemp.indexOf(')'));
-          let dateVal = '/Date('+dateFormatted+'000)/';
-          const date = new Date(parseFloat(dateVal.substr(6)));
-          //TODO: get real place
-          const place = 'UT';
-
-          const item = {itemType: 'Car',
-              img: img, userId: options.userId,
-              title: title, link: link,
-              price: price, info: mileage,
-              place: place, date: date};
-
-          const result = mongoService.findByLink(link);
-          result.exec(function(err, result) {
-            if (!err) {
-              if (result && result.length === 0) {//NEW! if not found
-                if (insert === true) mongoService.insert(item);
-                if (sendMessage === true) sendMail.sendText([item]);
-              } else {
-                console.log('EXISTING LINK FOUND', result[0].link);
-                // set to active
-                mongoService.updateItemDeleted(result[0].link, false);
-              }
-            }
-            else {
-              console.log('Error');
-            }
-            if (index === listingLength-1) {
-              resolve(listings);//done checking duplicates in $list
-            }
-            listings.push(item);
-          });
-        });
-      });
-    } else {
-      reject(Error('Error: no listings'));
-    }
-  });
-  return promise;
-}
-
 module.exports.getPageBody = function (url, needsJavaScript) {
   return new Promise(function(resolve, reject) {
     if (needsJavaScript) { // use zombie for needsJS sites
@@ -139,49 +57,57 @@ module.exports.getPageBody = function (url, needsJavaScript) {
   });
 }
 
+module.exports.buildUrl = function (options, param) {
+  const zip = options.zip;
+  const minPrice = options.minPrice || 30;
+  const maxPrice = options.maxPrice || 200;
+  const resultsPerPage = options.resultsPerPage || 50;
+  const distance = options.maxMiles || '25';
+
+  let section = '';
+  if (options.section) {
+    section = module.exports.getSection(options.site, options.section);
+  } else if (param.section) {
+    section = param.section;
+  }
+
+  let subdomain = '';
+  let searchSegment = `${param.siteUrl}${param.searchPrefix}${options.searchTerm}&${param.section}=${section}`;
+  // craiglist special treatment
+  if (options.site.toLowerCase().includes('craigslist')) {
+    subdomain = `${module.exports.getArea(zip)}.`;
+    searchSegment = `${subdomain}${param.siteUrl}${param.searchPrefix}${section}${param.searchSuffix}${options.searchTerm}`;
+  }
+
+  return {
+    url: `${param.protocol}://${searchSegment}&${param.zip}=${zip}&${param.distance}=${distance}&${param.minPrice}=${minPrice}&${param.maxPrice}=${maxPrice}&${param.sortParam}=${param.sortType}${param.extra}`,
+    subdomain: subdomain,
+    searchSegment: searchSegment };
+}
+
 //options: zip, minPrice, maxPrice, resultsPerPage, sortType
 module.exports.scrape = function (options, color = 'green') {
   const promise = new Promise(function(resolve, reject) {
     const quals = SITE_ELEMENTS[options.site.toLowerCase()];
     const param = SITE_URL_PARTS[options.site.toLowerCase()];
+    options.searchTerm = options.searchTerm.replace(' ', '+') || '';
+    console.log(options.searchTerm);
     colors.setTheme({
       custom: [color]
     });
-    console.log(`SCRAPING ${param.siteUrl}...`.custom);
-
-    const zip = options.zip;
-    const searchTerm = options.searchTerm.replace(' ', '+') || '';
-    const minPrice = options.minPrice || 30;
-    const maxPrice = options.maxPrice || 200;
-    const resultsPerPage = options.resultsPerPage || 50;
     const insert = options.insert || true;
     const sendMessage = options.sendMessage;
-    const distance = options.maxMiles || '25';
 
-    let section = '';
-    if (options.section) {
-      section = module.exports.getSection(options.site, options.section);
-    } else if (param.section) {
-      section = param.section;
-    }
+    console.log(`SCRAPING ${param.siteUrl}...`.custom);
 
-    let subdomain = '';
-    let searchSegment = `${param.siteUrl}${param.searchPrefix}${searchTerm}&${param.section}=${section}`;
-    // craiglist special treatment
-    if (options.site.toLowerCase().includes('craigslist')) {
-      subdomain = `${module.exports.getArea(zip)}.`;
-      searchSegment = `${subdomain}${param.siteUrl}${param.searchPrefix}${section}${param.searchSuffix}${searchTerm}`;
-    }
+    const url = module.exports.buildUrl(options, param);
 
-    const url = `${param.protocol}://${searchSegment}&${param.zip}=${zip}&${param.distance}=${distance}&${param.minPrice}=${minPrice}&${param.maxPrice}=${maxPrice}&${param.sortParam}=${param.sortType}${param.extra}`;
-    module.exports.getPageBody(url, param.needsJavaScript).then((bod, err) => {
+    module.exports.getPageBody(url.url, param.needsJavaScript).then((bod, err) => {
       const $ = cheerio.load(bod, { withDomLvl1: false,
                                     normalizeWhitespace: true,
                                     xmlMode: true,
                                     decodeEntities: true
                                   });
-
-
 
       let listings = [];
 
@@ -190,7 +116,7 @@ module.exports.scrape = function (options, color = 'green') {
       console.log(`${listingLength} items found`.custom);
       if (listingLength !== 0) {
         // set all previous to deleted and reset to true if we find same again
-        mongoService.updateItemsDeleted(searchTerm, true).then((mRes) => {
+        mongoService.updateItemsDeleted(options.searchTerm, true).then((mRes) => {
           $(quals.listing).each(function(index) {
 
             // get image
@@ -221,7 +147,7 @@ module.exports.scrape = function (options, color = 'green') {
             if (link.startsWith(`${param.protocol}://`)) {
               //do nothing... at the moment
             } else {
-              link = `${param.protocol}://${subdomain}${param.siteUrl}${link}`;
+              link = `${param.protocol}://${url.subdomain}${param.siteUrl}${link}`;
             }
             //link = link.substr(0, link.indexOf('?'));//remove query params
             let price = '0';
@@ -243,10 +169,10 @@ module.exports.scrape = function (options, color = 'green') {
             if (description.length > 256) { // add ellipses if long
               description = `${description.substring(0, 256)}...`;
             }
-            const place = module.exports.getCity(zip);
+            const place = module.exports.getCity(options.zip);
 
             const item = {
-                itemType: searchTerm,
+                itemType: options.searchTerm,
                 img: img, userId: options.userId,
                 title: title, link: link,
                 price: price, info: description,
@@ -274,17 +200,17 @@ module.exports.scrape = function (options, color = 'green') {
               }
               if (index === listingLength-1) {
                 // console.dir(listings)
-                resolve({url: url, listings: listings});//done checking duplicates in $list
+                resolve({url: url.url, listings: listings});//done checking duplicates in $list
               }
               listings.push(item);
             });
           });
         });
       } else {
-        resolve({url: url, listings: []});
+        resolve({url: url.url, listings: []});
       }
     }).catch(err => {
-        reject(Error(`unable to get body for ${url}:`, err));
+        reject(Error(`unable to get body for ${url.url}:`, err));
     });
   });
   return promise;
