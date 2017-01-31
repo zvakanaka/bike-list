@@ -8,7 +8,7 @@
         "maxPrice": "priceTo",
         "minPrice": "priceFrom",
         "zip": "zip",
-        "distance": "distance",
+        "distance": "miles",
         "extra": "&marketType=Sale",
         "protocol": "https"
   }, "shopgoodwill": {
