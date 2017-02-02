@@ -82,9 +82,12 @@ module.exports.buildUrl = function (options, param) {
     subdomain = `${module.exports.getArea(zip)}.`;
     searchSegment = `${subdomain}${param.siteUrl}${param.searchPrefix}${section}${param.searchSuffix}${options.searchTerm}`;
   }
-
+  let priceInfo = `&${param.minPrice}=${minPrice}&${param.maxPrice}=${maxPrice}`;
+  if (options.section == 'jobs') {
+    priceInfo = '';
+  }
   return {
-    url: `${param.protocol}://${searchSegment}&${param.zip}=${zip}&${param.distance}=${distance}&${param.minPrice}=${minPrice}&${param.maxPrice}=${maxPrice}&${param.sortParam}=${param.sortType}${param.extra}`,
+    url: `${param.protocol}://${searchSegment}&${param.zip}=${zip}&${param.distance}=${distance}${priceInfo}&${param.sortParam}=${param.sortType}${param.extra}`,
     subdomain: subdomain,
     searchSegment: searchSegment };
 }
@@ -157,6 +160,9 @@ module.exports.scrape = function (options, color = 'green') {
             let price = '0';
             if (quals.price) {
               price = $(this).find(quals.price).text().trim();
+              if (price === '') {
+                price = '0';
+              }
             }
             // console.dir(price)
             if (price[0] === '$') {

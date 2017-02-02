@@ -363,15 +363,23 @@ app.get('/db/delete-all-scrapes', whoIsThere, function(req, res) {
   res.json({ result: result });
 });
 
-// test authentication
+// authentication
 function whoIsThere(req, res, next) {
   if (req.isAuthenticated()) { return next(); }
   console.log('Not authenticated - redirecting');
   res.redirect('/auth/google');
 }
 
+// admin
+function requireAdmin(req, res, next) {
+  if (req.ip.includes('127.0.0.1') || req.ip.includes('localhost')) {
+    return next();
+  }
+  console.log(req.ip + 'is not admin - redirecting');
+  res.status(403).send('Must be admin');
+}
 // scrapes poll
-app.get('/scrape', function(req, res) {
+app.get('/scrape', requireAdmin, function(req, res) {
   debug('GET /scrape');
   res.type('json');
   const CUSTOM_COLORS = ['red', 'yellow', 'green', 'blue', 'magenta'];
