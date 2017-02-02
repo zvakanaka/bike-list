@@ -7,21 +7,21 @@ chai.use(chaiHttp);
 
 var scrapers = require('../lib/js/scrapers.js');
 
-describe('Scrape craiglsist cars for Fords ', function() {
+describe('Scrape craiglsist for jobs ', function() {
   this.timeout(5000);
-  it('should return at least one car', function(done) {
+  it('should return at least one job', function(done) {
     var search = {
-      searchTerm: 'ford',
+      searchTerm: 'tech',
       maxPrice: 11000,
       insert: true, // does not carry through to mongodb
       sendMessage: false,
       sendTo: 'nobody@ihopethisdoesntexist.com',
       userId: 123,
-      section: '',
+      section: 'jobs',
       maxMiles: 100000,
       scrapeName: 'Raharizuandrinarina',
-      site: 'craigslistcars',
-      zip: 90620
+      site: 'craigslist',
+      zip: 84606
     };
     scrapers.scrape(search)
       .then(function(res) {
