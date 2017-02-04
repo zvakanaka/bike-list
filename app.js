@@ -6,6 +6,7 @@ var path = require('path');
 var middleware = require('./lib/middleware/middleware.js');
 var scrapers = require('./lib/js/scrapers.js');
 var mongoService = require('./lib/js/mongoService.js');
+var isAdmin = require('./lib/js/isAdmin.js');
 var passport = require('passport');
 var config = require('./private-auth.js');
 var GoogleStrategy = require('passport-google-oauth2').Strategy;
@@ -370,9 +371,8 @@ function whoIsThere(req, res, next) {
   res.redirect('/auth/google');
 }
 
-// admin
 function requireAdmin(req, res, next) {
-  if (req.ip.includes('127.0.0.1') || req.ip.includes('localhost') || req.ip.includes(process.env.SERVER_IP)) {
+  if (isAdmin.check(req.ip)) {
     return next();
   }
   console.log(req.ip + 'is not admin - redirecting');
