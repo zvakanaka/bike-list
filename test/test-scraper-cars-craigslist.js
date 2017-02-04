@@ -8,7 +8,7 @@ chai.use(chaiHttp);
 var scrapers = require('../lib/js/scrapers.js');
 
 describe('Scrape craiglsist cars for Fords ', function() {
-  this.timeout(5000);
+  this.timeout(10000);
   it('should return at least one car', function(done) {
     var search = {
       searchTerm: 'ford',

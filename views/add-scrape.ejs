@@ -36,9 +36,9 @@
               <label for="select-site">Site</label>
               <select class="form-control" id="select-site">
                 <option>KSL</option>
-                <option value="kslcars">KSL Autos</option>
+                <option value="kslcars" data-toggle="collapse" data-target="#car-slects">KSL Autos</option>
                 <option>Craigslist</option>
-                <option value="craigslistcars">Craigslist Autos</option>
+                <option value="craigslistcars" data-toggle="collapse" data-target="#car-slects">Craigslist Autos</option>
                 <option>Howtoterminal</option>
                 <option>Shopgoodwill</option>
               </select>
@@ -64,7 +64,6 @@
                 <option value="boats">Boats</option>
                 <option value="books">Books</option>
                 <option value="business">Business</option>
-                <option data-toggle="collapse" data-target="#car-slects" value="cars+trucks">Cars</option>
                 <option value="cds/dvd/vhs">Cds/dvd/vhs</option>
                 <option value="cell phones">Cell phones</option>
                 <option value="clothes+acc">Clothes+acc</option>
@@ -115,7 +114,7 @@
 
 
             <div class="form-group">
-             <label class="sr-only" for="input-max-miles">Max Miles from Zip (in miles)</label>
+             <label class="sr-only" for="input-max-miles">Max Distance from Zip (in miles)</label>
              <div class="input-group">
                <div class="input-group-addon">Max Miles from Zip</div>
                <input type="text" class="form-control" id="input-max-miles" placeholder="e.g. 30">

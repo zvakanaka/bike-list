@@ -7,11 +7,11 @@ chai.use(chaiHttp);
 
 var scrapers = require('../lib/js/scrapers.js');
 
-describe('Scrape ksl cars for CR-Vs ', function() {
-  this.timeout(5000);
+describe('Scrape ksl cars for Fords ', function() {
+  this.timeout(10000);
   it('should return at least one car', function(done) {
     var search = {
-      searchTerm: 'cr-v',
+      searchTerm: 'ford',
       maxPrice: 11000,
       insert: true, // does not carry through to mongodb
       sendMessage: false,
