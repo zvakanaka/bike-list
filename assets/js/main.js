@@ -22,7 +22,7 @@ function postJSON(url, data, $loader) {
       var resData = (http.responseText);
       console.log('RESPONSE! ' + resData);
       resData = JSON.parse(resData);
-      addAlert(`Success! Added new scrape: ${resData[0].scrapeName}`, 'success');
+      addAlert(`Success! Added new scrape: ${resData[0].searchTerm} on ${resData[0].site}`, 'success');
       if ($loader) $loader.button('reset');
     } else if (http.status != 200) {
       console.log('Error:', http.status, 'while sending', data);
@@ -85,10 +85,10 @@ function addScrape(options, $loader) {
 }
 
 document.getElementById('car-selects').hidden = true;
-var selectSection = document.getElementById('select-section');
+var selectSection = document.getElementById('select-site');
 selectSection.addEventListener('change', function() {
   document.getElementById('car-selects').hidden = true;
-  if (selectSection.selectedIndex === 2) {
+  if (selectSection.selectedIndex === 1 || selectSection.selectedIndex === 3) {
     document.getElementById('car-selects').hidden = false;
   }
 });

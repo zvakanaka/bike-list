@@ -59,7 +59,8 @@
         "minPrice": "priceFrom",
         "zip": "zip",
         "distance": "miles",
-        "extra": "&mileageTo=110000&newUsed%5B%5D=Used&newUsed%5B%5D=Certified&sellerType%5B%5D=For+Sale+By+Owner",
+        "maxMileage": "mileageTo",
+        "extra": "&newUsed%5B%5D=Used&newUsed%5B%5D=Certified&sellerType%5B%5D=For+Sale+By+Owner",
         "protocol": "https"
   }, "facebookrent": {
         "siteUrl": "facebook.com",

@@ -82,12 +82,19 @@ module.exports.buildUrl = function (options, param) {
     subdomain = `${module.exports.getArea(zip)}.`;
     searchSegment = `${subdomain}${param.siteUrl}${param.searchPrefix}${section}${param.searchSuffix}${options.searchTerm}`;
   }
+
+  let maxAutoMiles = '';
+  if (options.site.includes('cars')) {
+    maxAutoMiles = `&${param.maxAutoMiles}=${options.maxAutoMiles}`;
+  }
+
   let priceInfo = `&${param.minPrice}=${minPrice}&${param.maxPrice}=${maxPrice}`;
   if (options.section == 'jobs') {
     priceInfo = '';
   }
+
   return {
-    url: `${param.protocol}://${searchSegment}&${param.zip}=${zip}&${param.distance}=${distance}${priceInfo}&${param.sortParam}=${param.sortType}${param.extra}`,
+    url: `${param.protocol}://${searchSegment}&${param.zip}=${zip}&${param.distance}=${distance}${priceInfo}&${param.sortParam}=${param.sortType}${maxAutoMiles}${param.extra}`,
     subdomain: subdomain,
     searchSegment: searchSegment };
 }
@@ -220,7 +227,7 @@ module.exports.scrape = function (options, color = 'green') {
         resolve({url: url.url, listings: []});
       }
     }).catch(err => {
-        reject(Error(`unable to get body for ${url.url}:`, err));
+        reject(Error(`unable to get body for ${url.url}`, err));
     });
   });
   return promise;
