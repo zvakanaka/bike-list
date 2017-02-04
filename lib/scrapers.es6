@@ -86,7 +86,7 @@ module.exports.buildUrl = function (options, param) {
 
   let maxAutoMileage = '';
   if (options.site.includes('cars')) {
-    maxAutoMileage = `&${param.maxAutoMiles}=${maxAutoMiles}`;
+    maxAutoMileage = `&${param.maxMileage}=${maxAutoMiles}`;
   }
 
   let priceInfo = `&${param.minPrice}=${minPrice}&${param.maxPrice}=${maxPrice}`;
