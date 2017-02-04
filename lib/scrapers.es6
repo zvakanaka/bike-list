@@ -66,6 +66,7 @@ module.exports.buildUrl = function (options, param) {
   const minPrice = options.minPrice || 30;
   const maxPrice = options.maxPrice || 200;
   const resultsPerPage = options.resultsPerPage || 50;
+  const maxAutoMiles = options.maxAutoMiles || 120000;
   const distance = options.maxMiles || '25';
 
   let section = '';
@@ -83,9 +84,9 @@ module.exports.buildUrl = function (options, param) {
     searchSegment = `${subdomain}${param.siteUrl}${param.searchPrefix}${section}${param.searchSuffix}${options.searchTerm}`;
   }
 
-  let maxAutoMiles = '';
+  let maxAutoMileage = '';
   if (options.site.includes('cars')) {
-    maxAutoMiles = `&${param.maxAutoMiles}=${options.maxAutoMiles}`;
+    maxAutoMileage = `&${param.maxAutoMiles}=${maxAutoMiles}`;
   }
 
   let priceInfo = `&${param.minPrice}=${minPrice}&${param.maxPrice}=${maxPrice}`;
@@ -94,7 +95,7 @@ module.exports.buildUrl = function (options, param) {
   }
 
   return {
-    url: `${param.protocol}://${searchSegment}&${param.zip}=${zip}&${param.distance}=${distance}${priceInfo}&${param.sortParam}=${param.sortType}${maxAutoMiles}${param.extra}`,
+    url: `${param.protocol}://${searchSegment}&${param.zip}=${zip}&${param.distance}=${distance}${priceInfo}&${param.sortParam}=${param.sortType}${maxAutoMileage}${param.extra}`,
     subdomain: subdomain,
     searchSegment: searchSegment };
 }
