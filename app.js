@@ -372,7 +372,7 @@ function whoIsThere(req, res, next) {
 
 // admin
 function requireAdmin(req, res, next) {
-  if (req.ip.includes('127.0.0.1') || req.ip.includes('localhost')) {
+  if (req.ip.includes('127.0.0.1') || req.ip.includes('localhost') || req.ip.includes(process.env.SERVER_IP)) {
     return next();
   }
   console.log(req.ip + 'is not admin - redirecting');

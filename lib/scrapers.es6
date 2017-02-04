@@ -208,7 +208,7 @@ module.exports.scrape = function (options, color = 'green') {
                   console.log(`sendMessage ${sendMessage}`.custom);
                   if (sendMessage === true) sendMail.sendText([item], options.sendTo);
                 } else {
-                  //console.log(`EXISTING LINK FOUND: ${item.title} - ${item.link}, ${result[0].link}`)
+                  // console.log(`EXISTING LINK FOUND: ${item.title} - ${item.link}, ${result[0].link}`)
                   // set to active because it does still exist
                   mongoService.updateItemDeleted(result[0].link, false);
                 }
