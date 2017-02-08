@@ -6,7 +6,7 @@ env(path.join(__dirname, '/../../.env'));
 
 // http://mongodb.github.io/node-mongodb-native/driver-articles/mongoclient.html#mongoclient-connect-options
 const MONGO_URI = process.env.MONGO_URI || '';
-mongoose.connect(MONGO_URI, { auto_reconnect: true }, (err, res) => {
+mongoose.connect(MONGO_URI, { auto_reconnect: true, connectTimeoutMS: 30000 }, (err, res) => {
   if (err) {
     console.log('ERROR connecting to: ' + MONGO_URI + '. ' + err + res);
   } else {
