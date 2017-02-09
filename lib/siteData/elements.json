@@ -6,6 +6,13 @@
         "description": ".description-text",
         "img": ".photo a img",
         "price": ".price"
+  },"aaacars": {
+        "listing": ".search-results .row",
+        "title": ".vdp-link",
+        "link": ".vdp-link",
+        "description": "",
+        "img": ".vehicle-thumbnail",
+        "price": ".price"
   },"kslcars": {
         "listing": ".listing-group .listing",
         "title": ".title",

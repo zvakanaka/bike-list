@@ -77,7 +77,7 @@ module.exports.buildUrl = function (options, param) {
   }
 
   let subdomain = '';
-  let searchSegment = `${param.siteUrl}${param.searchPrefix}${options.searchTerm}&${param.section}=${section}`;
+  let searchSegment = `${param.siteUrl}${param.searchPrefix}${options.searchTerm}${param.section}${section}`;
   // craiglist special treatment
   if (options.site.toLowerCase().includes('craigslist')) {
     subdomain = `${module.exports.getArea(zip)}.`;
@@ -86,16 +86,17 @@ module.exports.buildUrl = function (options, param) {
 
   let maxAutoMileage = '';
   if (options.site.includes('cars')) {
-    maxAutoMileage = `&${param.maxMileage}=${maxAutoMiles}`;
+    maxAutoMileage = `${param.maxMileage}${maxAutoMiles}`;
   }
 
-  let priceInfo = `&${param.minPrice}=${minPrice}&${param.maxPrice}=${maxPrice}`;
+  let priceInfo = `${param.minPrice}${minPrice}${param.maxPrice}${maxPrice}`;
   if (options.section == 'jobs') {
     priceInfo = '';
   }
-
+  let url = `${param.protocol}://${searchSegment}${param.zip}${zip}${param.distance}${distance}${priceInfo}${param.sortParam}${param.sortType}${maxAutoMileage}${param.extra}`;
+console.log(url);
   return {
-    url: `${param.protocol}://${searchSegment}&${param.zip}=${zip}&${param.distance}=${distance}${priceInfo}&${param.sortParam}=${param.sortType}${maxAutoMileage}${param.extra}`,
+    url: url,
     subdomain: subdomain,
     searchSegment: searchSegment };
 }
