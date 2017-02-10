@@ -1,7 +1,7 @@
 const cheerio = require('cheerio');
 const Browser = require('zombie');
-const request = require('sync-request');
 const colors = require('colors');
+const tinyreq = require('tinyreq');
 
 const sendMail = require('./sendMail.js');
 const mongoService = require('./mongoService.js');
@@ -52,7 +52,15 @@ module.exports.getPageBody = function (url, needsJavaScript) {
         resolve(Buffer.from(body, 'utf8'));
       }).catch(err => reject(err));
     } else {
-      resolve(request('GET', url).getBody());
+      tinyreq({ url: url,
+                headers: {
+                    "user-agent": "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/56.0.2924.59 Safari/537.36"
+                }}, (err, bodaciousBody) => {
+        if (err) {
+          reject(err);
+        }
+        resolve(bodaciousBody);
+      });
     }
   });
 }
@@ -93,8 +101,13 @@ module.exports.buildUrl = function (options, param) {
   if (options.section == 'jobs') {
     priceInfo = '';
   }
-  let url = `${param.protocol}://${searchSegment}${param.zip}${zip}${param.distance}${distance}${priceInfo}${param.sortParam}${param.sortType}${maxAutoMileage}${param.extra}`;
-console.log(url);
+  let url = '';
+  if (options.site.includes('aaacars')) {
+    url = `${param.protocol}://${searchSegment}${param.zip}${zip}${priceInfo}${maxAutoMileage}${param.distance}${distance}${param.extra}`;
+  } else {
+    url = `${param.protocol}://${searchSegment}${param.zip}${zip}${param.distance}${distance}${priceInfo}${param.sortParam}${param.sortType}${maxAutoMileage}${param.extra}`;
+  }
+// console.log(url);
   return {
     url: url,
     subdomain: subdomain,
@@ -123,7 +136,7 @@ module.exports.scrape = function (options, color = 'green') {
                                     normalizeWhitespace: true,
                                     xmlMode: true,
                                     decodeEntities: true
-                                  });
+                                  })
 
       let listings = [];
 

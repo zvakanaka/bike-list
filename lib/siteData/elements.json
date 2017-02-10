@@ -11,7 +11,7 @@
         "title": ".vdp-link",
         "link": ".vdp-link",
         "description": "",
-        "img": ".vehicle-thumbnail",
+        "img": false,
         "price": ".price"
   },"kslcars": {
         "listing": ".listing-group .listing",
