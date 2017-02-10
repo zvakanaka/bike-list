@@ -88,8 +88,12 @@ document.getElementById('car-selects').hidden = true;
 var selectSection = document.getElementById('select-site');
 selectSection.addEventListener('change', function() {
   document.getElementById('car-selects').hidden = true;
-  if (selectSection.selectedIndex === 1 || selectSection.selectedIndex === 3) {
+  document.getElementById('section-form').hidden = true;
+
+  if (selectSection.selectedIndex === 1 || selectSection.selectedIndex === 2 || selectSection.selectedIndex === 4) {
     document.getElementById('car-selects').hidden = false;
+  } else {
+    document.getElementById('section-form').hidden = false;
   }
 });
 
