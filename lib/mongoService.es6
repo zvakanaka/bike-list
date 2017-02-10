@@ -155,6 +155,9 @@ module.exports.insert = (item) => {
   if (typeof(item.price === 'string')) {
     item.price = parseFloat(item.price.replace(',', ''));
   }
+  if (isNaN(item.price)) {
+    item.price = 0;
+  }
   const itemToInsert = new ItemModel({
     userId: item.userId,
     itemType: item.itemType,
@@ -170,7 +173,7 @@ module.exports.insert = (item) => {
   return new Promise((resolve, reject) => {
       itemToInsert.save((err) => {
         if (err) {
-          console.log('SAVE ERROR', err);
+          console.log('Save error', err);
           reject(new Error(err));
         }
         resolve(item);
