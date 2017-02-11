@@ -7,6 +7,7 @@
         "img": ".photo a img",
         "price": ".price"
   },"aaacars": {
+        "bogusResults": ".search-results .alert-warning",
         "listing": ".search-results .row",
         "title": ".vdp-link",
         "link": ".vdp-link",
