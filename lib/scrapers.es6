@@ -141,7 +141,9 @@ module.exports.scrape = function (options, color = 'green') {
       let listings = [];
 
       let listingLength = $(quals.listing).length;//to know when to resolve
-
+      if ($(quals.bogusResults).text().includes('similar')) {
+        listingLength = 0;
+      }
       console.log(`${listingLength} items found`.custom);
       if (listingLength !== 0) {
         // set all previous to deleted and reset to true if we find same again
@@ -186,7 +188,6 @@ module.exports.scrape = function (options, color = 'green') {
                 price = '0';
               }
             }
-            // console.dir(price)
             if (price[0] === '$') {
               price = price.substring(1, price.length);
             }
