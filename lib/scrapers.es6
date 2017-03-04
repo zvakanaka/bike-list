@@ -180,7 +180,10 @@ module.exports.scrape = function (options, color = 'green') {
             } else {
               link = `${param.protocol}://${url.subdomain}${param.siteUrl}${link}`;
             }
-            //link = link.substr(0, link.indexOf('?'));//remove query params
+            if (options.site === 'kslcars') {
+              console.log('KSL CARS, IGNORING LINK');
+              link = link.substr(0, link.indexOf('?'));//remove query params
+            }
             let price = '0';
             if (quals.price) {
               price = $(this).find(quals.price).text().trim();
