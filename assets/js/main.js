@@ -90,7 +90,7 @@ selectSection.addEventListener('change', function() {
   document.getElementById('car-selects').hidden = true;
   document.getElementById('section-form').hidden = true;
 
-  if (selectSection.selectedIndex === 0 || selectSection.selectedIndex === 1 || selectSection.selectedIndex === 2) {
+  if (selectSection.selectedIndex === 1 || selectSection.selectedIndex === 2 || selectSection.selectedIndex === 3) {
     document.getElementById('car-selects').hidden = false;
   } else {
     document.getElementById('section-form').hidden = false;
