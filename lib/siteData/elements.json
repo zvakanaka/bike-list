@@ -21,6 +21,13 @@
         "description": ".description-text",
         "img": ".photo-block a img",
         "price": ".price"
+  }, "hondacerritos": {
+        "listing": ".vehicle--inventory__list > li",
+        "title": ".header--title a",
+        "link": ".header--title a",
+        "description": ".vehicle--specs__list",
+        "img": false,
+        "price": ".value"
   }, "shopgoodwill": {
         "listing": "body > div.mainbluebox > div.searchresults > table > tbody > tr",
         "title": "th a",

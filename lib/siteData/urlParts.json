@@ -62,6 +62,20 @@
         "maxMileage": "&mileageTo=",
         "extra": "&newUsed%5B%5D=Used&newUsed%5B%5D=Certified&sellerType%5B%5D=For+Sale+By+Owner",
         "protocol": "https"
+  }, "hondacerritos": {
+        "siteUrl": "normreeveshondacerritos.com",
+        "searchPrefix": "/used-cars/all-years/honda/",
+        "section": "",
+        "sortParam": "",
+        "sortType": "",
+        "maxPrice": "",
+        "minPrice": "",
+        "zip": "",
+        "distance": "",
+        "maxMileage": "",
+        "extra": "/all-trims/rows-12/index-1/sort-year-asc,price-asc/pricefield-sellingprice/",
+        "protocol": "http",
+        "needsJavaScript": false
   }, "aaacars": {
         "siteUrl": "calstate-aaa.truecar.com",
         "searchPrefix": "/used-cars-for-sale/listings/",
