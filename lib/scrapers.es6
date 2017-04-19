@@ -71,11 +71,11 @@ module.exports.buildUrl = function (options, param) {
     param = SITE_URL_PARTS[options.site.toLowerCase()];
   }
   const zip = options.zip;
-  const minPrice = options.minPrice || 30;
-  const maxPrice = options.maxPrice || 200;
+  const minPrice = options.minPrice || "";
+  const maxPrice = options.maxPrice || "";
   const resultsPerPage = options.resultsPerPage || 50;
   const maxAutoMiles = options.maxAutoMiles || 120000;
-  const distance = options.maxMiles || '25';
+  const distance = options.maxMiles || '';
 
   let section = '';
   if (options.section) {
@@ -130,7 +130,6 @@ module.exports.scrape = function (options, color = 'green') {
     console.log(`SCRAPING ${param.siteUrl}...`.custom);
 
     const url = module.exports.buildUrl(options, param);
-
     module.exports.getPageBody(url.url, param.needsJavaScript).then((bod, err) => {
       const $ = cheerio.load(bod, { withDomLvl1: false,
                                     normalizeWhitespace: true,
@@ -174,6 +173,8 @@ module.exports.scrape = function (options, color = 'green') {
             if (quals.title) {
               title = $(this).find(quals.title).text().trim();
             }
+            // console.log($(this));
+            // console.log($(this).find(quals.link)['0']);
             let link = $(this).find(quals.link)['0']['attribs']['href'];
             if (link.startsWith(`${param.protocol}://`)) {
               //do nothing... at the moment
@@ -181,7 +182,6 @@ module.exports.scrape = function (options, color = 'green') {
               link = `${param.protocol}://${url.subdomain}${param.siteUrl}${link}`;
             }
             if (options.site === 'kslcars') {
-              console.log('KSL CARS, IGNORING LINK');
               link = link.substr(0, link.indexOf('?'));//remove query params
             }
             let price = '0';
@@ -217,8 +217,6 @@ module.exports.scrape = function (options, color = 'green') {
             const result = mongoService.findByLink(link);
             result.exec(function(err, result) {
               if (!err) {
-                // console.log('Searching for', title);
-                // console.dir(result);
                 if (result && result.length === 0) {//NEW! if not found
                   console.log(`NEW ITEM FOUND     ${item.title} ${item.link}`.custom);
                   // console.log(`insert? ${insert}`.custom);
